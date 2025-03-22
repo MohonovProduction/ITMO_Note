@@ -34,5 +34,7 @@ export default {
 </template>
 
 <style scoped>
-
+.container {
+  margin-top: 5rem;
+}
 </style>
