@@ -13,9 +13,7 @@ export default {
       this.notifications.push({ id, message, type });
 
       // Автоматическое удаление уведомления через заданное время
-      setTimeout(() => {
-        this.removeNotificationById(id);
-      }, timeout);
+      setTimeout(() => this.removeNotificationById(id), timeout);
     },
 
     // Удаление уведомления по индексу
