@@ -1,146 +1,64 @@
 <template>
-  <div class="home">
-    <div class="container">
-      <h1>Проект: Конспекты</h1>
-      <p>
-        Это веб-приложение для создания и хранения конспектов, написанных в формате Markdown.
-        Оно позволяет легко организовывать учебные материалы, автоматически генерирует оглавление
-        и поддерживает адаптивный дизайн для удобного использования на любых устройствах.
-      </p>
-
-      <h2>Особенности</h2>
-      <ul>
-        <li>📝 <strong>Поддержка Markdown</strong>: Конспекты пишутся в Markdown и отображаются в виде чистого HTML.</li>
-        <li>📚 <strong>Автоматическое оглавление</strong>: Оглавление генерируется автоматически на основе заголовков.</li>
-        <li>🎨 <strong>Светлая тема</strong>: Чистый и минималистичный дизайн для комфортного чтения.</li>
-        <li>📱 <strong>Адаптивность</strong>: Оптимизировано для работы на компьютерах, планшетах и смартфонах.</li>
-        <li>🚀 <strong>Простое развертывание</strong>: Готово к публикации на GitHub Pages или любом другом хостинге.</li>
-      </ul>
-
-      <h2>Технологии</h2>
-      <ul>
-        <li><strong>Vue.js</strong>: Основной фреймворк для создания приложения.</li>
-        <li><strong>Vuex</strong>: Управление состоянием приложения.</li>
-        <li><strong>Vue Router</strong>: Навигация между страницами.</li>
-        <li><strong>Marked.js</strong>: Преобразование Markdown в HTML.</li>
-        <li><strong>CSS-переменные</strong>: Гибкая настройка стилей.</li>
-      </ul>
-
-      <h2>Как это работает</h2>
-      <ol>
-        <li>Конспекты хранятся в виде Markdown-файлов в папке <code>src/markdown/</code>.</li>
-        <li>Приложение динамически загружает и отображает эти файлы как отдельные страницы.</li>
-        <li>Оглавление генерируется автоматически на основе доступных конспектов.</li>
-        <li>Пользователи могут переходить между конспектами через боковое меню или прямые ссылки.</li>
-      </ol>
-
-      <h2>Установка и запуск</h2>
-      <ol>
-        <li>Клонируйте репозиторий:
-          <pre><code>git clone https://github.com/ваш-username/study-notes-app.git</code></pre>
-        </li>
-        <li>Установите зависимости:
-          <pre><code>npm install</code></pre>
-        </li>
-        <li>Запустите сервер для разработки:
-          <pre><code>npm run serve</code></pre>
-        </li>
-        <li>Соберите проект для production:
-          <pre><code>npm run build</code></pre>
-        </li>
-        <li>Опубликуйте на GitHub Pages:
-          <pre><code>npm run deploy</code></pre>
-        </li>
-      </ol>
-
-      <h2>Настройка</h2>
-      <ul>
-        <li>Добавьте свои конспекты в папку <code>src/markdown/</code>.</li>
-        <li>Обновите файл <code>index.json</code>, чтобы добавить метаданные для каждого конспекта.</li>
-        <li>Настройте тему, изменив CSS-переменные в <code>src/styles/main.css</code>.</li>
-      </ul>
-
-      <h2>Демо</h2>
-      <p>
-        Посмотрите живой пример на GitHub Pages:
-        <a href="https://ваш-username.github.io/study-notes-app/" target="_blank">Конспекты</a>.
-      </p>
-
-      <h2>Лицензия</h2>
-      <p>Этот проект распространяется под лицензией MIT. Подробности см. в файле <code>LICENSE</code>.</p>
-
-      <h2>Автор</h2>
-      <p>Разработано с ❤️ вашим именем.</p>
-    </div>
-
+  <div class="notes-list">
+    <h1>Список конспектов</h1>
     <ul>
-      <li v-for="note in notes">
-        <router-link :to="`/note/${note.id}`"> {{ note.title }} </router-link>
+      <li v-for="note in notes" :key="note.id">
+          <router-link class="card" :to="`/note/${note.id}`">
+            <h2>{{ note.title }}</h2>
+            <p>{{ note.description }}</p>
+          </router-link>
       </li>
     </ul>
   </div>
 </template>
 
 <style>
-body {
-  font-family: 'Roboto', sans-serif;
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
-}
-.container {
+.notes-list {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
 }
-h1, h2, h3 {
-  color: #4d6bfe;
-}
+
 h1 {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
+  color: #4d6bfe;
+  margin-bottom: 1.5rem;
 }
-h2 {
-  font-size: 2rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-}
-h3 {
-  font-size: 1.75rem;
-  margin-top: 1.25rem;
-  margin-bottom: 0.5rem;
-}
-p {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
-}
+
 ul {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
-  padding-left: 1.5rem;
+  list-style-type: none;
+  padding: 0;
 }
-li {
-  margin-bottom: 0.5rem;
+
+.card {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: content-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: block;
 }
-a {
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #4d6bfe;
   text-decoration: none;
   transition: color 0.3s ease;
 }
-a:hover {
-  color: #3a5bff;
-  text-decoration: underline;
-}
-code {
-  background-color: #f4f4f4;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
+
+p {
+  margin-top: 0.5rem;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 </style>
 

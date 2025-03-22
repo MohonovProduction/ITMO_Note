@@ -24,7 +24,6 @@
 - **Vuex**: Управление состоянием приложения.
 - **Vue Router**: Навигация между страницами.
 - **Marked.js**: Преобразование Markdown в HTML.
-- **CSS-переменные**: Гибкая настройка стилей.
 
 ---
 
@@ -41,7 +40,7 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/ваш-username/study-notes-app.git
+   git clone https://github.com/mohonovproduction/ITMO_Note.git
 
 ![orzh5](https://github.com/user-attachments/assets/57dab812-7ea8-4017-9cae-776514d7638c)
 

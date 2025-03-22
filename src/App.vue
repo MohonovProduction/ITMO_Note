@@ -1,14 +1,25 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+  <Navigation />
+
+  <Breadcrumbs />
+
   <router-view/>
 </template>
 
-<style>
-/* src/styles/main.css */
+<script>
+import Navigation from "@/components/navigation.vue";
+import Breadcrumbs from "@/components/breadcrumbs.vue";
 
+export default {
+  name: 'App',
+  components: {
+    Navigation,
+    Breadcrumbs
+  }
+}
+</script>
+
+<style>
 /* Переменные для цветов и шрифтов */
 :root {
   --font-family: 'Roboto', sans-serif;
@@ -141,4 +152,6 @@ a:hover {
     font-size: 1.25rem;
   }
 }
+
+
 </style>
