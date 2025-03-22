@@ -3,7 +3,11 @@
 
   <Breadcrumbs />
 
-  <router-view/>
+  <router-view v-slot="{ Component }">
+    <transition name="m-fade">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <script>
@@ -15,11 +19,23 @@ export default {
   components: {
     Navigation,
     Breadcrumbs
+  },
+  methods: {
+    restScroll() {
+      window.scrollTo({
+        top: 0, // Позиция, до которой нужно прокрутить
+        behavior: 'smooth' // Включает плавный скролл
+      });
+    }
   }
 }
 </script>
 
 <style>
+html {
+  scroll-behavior: smooth;
+}
+
 /* Переменные для цветов и шрифтов */
 :root {
   --font-family: 'Roboto', sans-serif;
@@ -153,5 +169,21 @@ a:hover {
   }
 }
 
+/* Стили для анимации */
+.m-fade-enter-active {
+  transition: opacity 0.3s ease-in;
+}
+.m-fade-leave-active {
+  transition: opacity 0.3s ease-out;
+}
 
+.m-fade-enter-from,
+.m-fade-leave-to{
+  opacity: 0;
+}
+
+.m-fade-enter-to,
+.m-fade-leave-from {
+  opacity: 1;
+}
 </style>

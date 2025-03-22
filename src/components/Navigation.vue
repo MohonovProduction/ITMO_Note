@@ -13,6 +13,11 @@
 <style scoped>
 /* Основные стили для навигации */
 nav {
+  position: sticky;
+  top: 0;
+
+  z-index: 99;
+
   background-color: #4d6bfe; /* Акцентный цвет */
   padding: 1rem;
   text-align: center;

@@ -43,14 +43,16 @@ export default {
 
 <template>
   <div class="breadcrumbs">
-    <router-link
-        v-for="(crumb, index) in crumbs"
-        :key="index"
-        :to="crumb.path"
-        class="breadcrumb"
-    >
-      {{ crumb.name }}
-    </router-link>
+    <transition-group name="m-fade">
+      <router-link
+          v-for="(crumb, index) in crumbs"
+          :key="index"
+          :to="crumb.path"
+          class="breadcrumb"
+      >
+        {{ crumb.name }}
+      </router-link>
+    </transition-group>
   </div>
 </template>
 
