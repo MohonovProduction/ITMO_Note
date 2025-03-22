@@ -23,6 +23,11 @@ const routes = [
     }
   },
   {
+    path: '/generator',
+    name: 'generator',
+    component: import( '@/views/GeneratorView.vue')
+  },
+  {
     path: '/note/:id',
     component: async () => await import('@/views/Note.vue'),
     props: true
