@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? '/ITMO_Note/' : '/',
+    publicPath: '/ITMO_Note/',
     chainWebpack: config => {
         config.module
             .rule('md')
