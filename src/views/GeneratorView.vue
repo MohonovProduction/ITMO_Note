@@ -131,6 +131,7 @@ export default {
           ? firstParagraph.slice(0, 100).trim() + '...'
           : firstParagraph;
     },
+
     copyToClipboard() {
       // Создаём временный textarea для копирования
       const textarea = document.createElement('textarea');
@@ -162,8 +163,6 @@ export default {
       }
     },
 
-  },
-
     // Сброс ошибок
     resetErrors() {
       this.errors = {
@@ -173,9 +172,7 @@ export default {
         category: false,
       };
     },
-
-    // Остальные методы (saveFile, extractFirstLevelHeading, extractFirstParagraphPreview, copyToClipboard) остаются без изменений
-  },
+  }
 };
 </script>
 
