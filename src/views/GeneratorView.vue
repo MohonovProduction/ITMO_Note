@@ -132,17 +132,37 @@ export default {
           : firstParagraph;
     },
     copyToClipboard() {
-      navigator.clipboard
-          .writeText(this.code)
-          .then(() => {
-            console.log('Текст скопирован в буфер обмена:', this.code);
-            this.$refs.notification.addNotification('Текст скопирован в буфер обмена', 'success')
-          })
-          .catch((err) => {
-            console.error('Не удалось скопировать текст:', this.code);
-            this.$refs.notification.addNotification('Не удалось скопировать текст\n' + err, 'error')
-          });
+      // Создаём временный textarea для копирования
+      const textarea = document.createElement('textarea');
+      textarea.value = this.code;
+      textarea.setAttribute('readonly', ''); // Делаем textarea недоступной для редактирования
+      textarea.style.position = 'absolute';
+      textarea.style.left = '-9999px'; // Выносим за пределы экрана
+      document.body.appendChild(textarea);
+
+      // Выделяем текст в textarea
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length); // Для мобильных устройств
+
+      // Копируем текст
+      try {
+        const success = document.execCommand('copy');
+        if (success) {
+          console.log('Текст скопирован в буфер обмена:', this.code);
+          this.$refs.notification.addNotification('Текст скопирован в буфер обмена', 'success');
+        } else {
+          throw new Error('Не удалось скопировать текст');
+        }
+      } catch (err) {
+        console.error('Не удалось скопировать текст:', err);
+        this.$refs.notification.addNotification('Не удалось скопировать текст\n' + err, 'error');
+      } finally {
+        // Удаляем textarea
+        document.body.removeChild(textarea);
+      }
     },
+
+  },
 
     // Сброс ошибок
     resetErrors() {
