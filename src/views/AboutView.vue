@@ -64,7 +64,7 @@
         <h2>Демо</h2>
         <p>
           Посмотрите живой пример на GitHub Pages:
-          <a href="https://ваш-username.github.io/study-notes-app/" target="_blank">Конспекты</a>.
+          <a href="https://mohonovproduction.github.io/ITMO_note/" target="_blank">Конспекты</a>.
         </p>
 
         <h2>Лицензия</h2>
