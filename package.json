@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "marked": "^15.0.7",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
