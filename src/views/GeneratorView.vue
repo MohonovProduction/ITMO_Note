@@ -13,28 +13,45 @@ export default {
       startFileNumber: 0,
       category: '',
       code: 'Здесь будет код для вставки в markdown/index.js',
+      errors: {
+        inputText: false,
+        baseFileName: false,
+        startFileNumber: false,
+        category: false,
+      },
     };
   },
   methods: {
     saveFiles() {
+      // Сбрасываем ошибки
+      this.resetErrors();
+
       // Проверка наличия текста Markdown
       if (this.inputText.trim() === '') {
-        return this.$refs.notification.addNotification('Добавьте текст в формате Markdown', 'error');
+        this.errors.inputText = true;
+        this.$refs.notification.addNotification('Добавьте текст в формате Markdown', 'error');
+        return;
       }
 
       // Проверка названия файлов
       if (this.baseFileName.trim() === '') {
-        return this.$refs.notification.addNotification('Введите название файлов', 'error');
+        this.errors.baseFileName = true;
+        this.$refs.notification.addNotification('Введите название файлов', 'error');
+        return;
       }
 
       // Проверка номера файла
       if (this.startFileNumber === null || this.startFileNumber === '') {
-        return this.$refs.notification.addNotification('Введите начальный номер файла', 'error');
+        this.errors.startFileNumber = true;
+        this.$refs.notification.addNotification('Введите начальный номер файла', 'error');
+        return;
       }
 
       // Проверка категории
       if (this.category.trim() === '') {
-        return this.$refs.notification.addNotification('Введите категорию', 'error');
+        this.errors.category = true;
+        this.$refs.notification.addNotification('Введите категорию', 'error');
+        return;
       }
 
       // Разделяем текст по символу //end
@@ -52,18 +69,21 @@ export default {
         const heading = this.extractFirstLevelHeading(part);
 
         // Формируем JSON-структуру
-        this.code += `,\n{
-        "id": "${fileName}",
-        "title": "${heading || fileName}",
-        "description": "${this.extractFirstParagraphPreview(part)}",
-        "file": "${fileName}",
-        "category": "${this.category}"
-      }`;
+        this.code += index === 0 ? '\n' : ',\n'; // Добавляем запятую перед каждым объектом, кроме первого
+        this.code += `  {
+    "id": "${fileName}",
+    "title": "${heading || fileName}",
+    "description": "${this.extractFirstParagraphPreview(part)}",
+    "file": "${fileName}",
+    "category": "${this.category}"
+  }`;
       });
+
 
       // Уведомление об успешном сохранении
       this.$refs.notification.addNotification('Файлы успешно сохранены!', 'success');
     },
+
     saveFile(fileName, content) {
       // Создаём Blob с содержимым
       const blob = new Blob([content], { type: 'text/markdown' });
@@ -79,6 +99,7 @@ export default {
       // Освобождаем память
       URL.revokeObjectURL(link.href);
     },
+
     extractFirstLevelHeading(markdownText) {
       const headingRegex = /^#\s+(.+)$/m;
 
@@ -90,6 +111,7 @@ export default {
 
       return '';
     },
+
     extractFirstParagraphPreview(markdownText) {
       // Убираем заголовки, списки и другие элементы Markdown
       const plainText = markdownText
@@ -120,8 +142,20 @@ export default {
             console.error('Не удалось скопировать текст:', this.code);
             this.$refs.notification.addNotification('Не удалось скопировать текст\n' + err, 'error')
           });
-    }
-  }
+    },
+
+    // Сброс ошибок
+    resetErrors() {
+      this.errors = {
+        inputText: false,
+        baseFileName: false,
+        startFileNumber: false,
+        category: false,
+      };
+    },
+
+    // Остальные методы (saveFile, extractFirstLevelHeading, extractFirstParagraphPreview, copyToClipboard) остаются без изменений
+  },
 };
 </script>
 
@@ -139,7 +173,7 @@ export default {
                 id="base-name"
                 v-model="baseFileName"
                 placeholder="Motion_design"
-                class="input-field"
+                :class="['input-field', { 'error': errors.baseFileName }]"
             />
           </div>
           <div class="input-section">
@@ -149,7 +183,7 @@ export default {
                 id="start-file-number"
                 v-model="startFileNumber"
                 placeholder="4"
-                class="input-field"
+                :class="['input-field', { 'error': errors.startFileNumber }]"
             />
           </div>
           <div class="input-section">
@@ -158,7 +192,7 @@ export default {
                 id="category"
                 v-model="category"
                 placeholder="Motion Design"
-                class="input-field"
+                :class="['input-field', { 'error': errors.category }]"
             />
           </div>
         </div>
@@ -172,7 +206,7 @@ export default {
         <textarea
             v-model="inputText"
             placeholder="Введите текст в формате Markdown, разделяя части с помощью //end"
-            class="markdown-input"
+            :class="['markdown-input', { 'error': errors.inputText }]"
         ></textarea>
 
         <!-- Кнопка сохранения файлов -->
@@ -347,5 +381,11 @@ label {
   .input-section {
     width: 100%;
   }
+}
+
+.error {
+  border-color: #f44336 !important; /* Красная граница */
+  background-color: #ffebee; /* Светло-красный фон */
+  transition: border-color 0.3s ease;
 }
 </style>
