@@ -13,7 +13,7 @@ export default {
       this.notifications.push({ id, message, type });
 
       // Автоматическое удаление уведомления через заданное время
-      setTimeout(() => this.removeNotificationById(id), timeout);
+      this.delay(timeout).then(() => this.removeNotificationById(id));
     },
 
     // Удаление уведомления по индексу
@@ -26,6 +26,20 @@ export default {
       this.notifications = this.notifications.filter(
           (notification) => notification.id !== id
       );
+    },
+
+    delay(ms) {
+      return new Promise((resolve) => {
+        const start = Date.now();
+        const check = () => {
+          if (Date.now() - start >= ms) {
+            resolve();
+          } else {
+            requestAnimationFrame(check);
+          }
+        };
+        requestAnimationFrame(check);
+      });
     },
   },
 };
