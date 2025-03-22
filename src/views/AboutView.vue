@@ -2,7 +2,7 @@
   <div class="about">
     <div class="home">
       <div class="container">
-        <h1>Проект: Конспекты</h1>
+        <h1>ITMO Notes</h1>
         <p>
           Это веб-приложение для создания и хранения конспектов, написанных в формате Markdown.
           Оно позволяет легко организовывать учебные материалы, автоматически генерирует оглавление
@@ -71,72 +71,116 @@
         <p>Этот проект распространяется под лицензией MIT. Подробности см. в файле <code>LICENSE</code>.</p>
 
         <h2>Автор</h2>
-        <p>Разработано с ❤️ Михаилом Мохоновым.</p>
+        <p>
+          Разработано с ❤️ Михаилом Мохоновым.
+          <br>
+          Подписывайтесь на мой Telegram-канал:
+          <a href="https://t.me/mohonovschannel" target="_blank">@mohonovschannel</a>.
+        </p>
       </div>
     </div>
   </div>
 </template>
 
-<style>
-body {
-  font-family: 'Roboto', sans-serif;
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
+<style scoped>
+.about {
+  padding: 2rem;
   background-color: #f9f9f9;
-  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.container {
+
+.home {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
 }
-h1, h2, h3 {
-  color: #4d6bfe;
+
+.container {
+  padding: 1rem;
 }
+
 h1 {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
+  color: #4d6bfe;
+  margin-bottom: 1.5rem;
 }
+
 h2 {
   font-size: 2rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+  color: #4d6bfe;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
-h3 {
-  font-size: 1.75rem;
-  margin-top: 1.25rem;
-  margin-bottom: 0.5rem;
-}
+
 p {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #333;
 }
-ul {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
+
+ul, ol {
+  margin: 1rem 0;
   padding-left: 1.5rem;
 }
+
 li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
+
+code {
+  background-color: #f4f4f4;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #d63384;
+}
+
+pre {
+  background-color: #2d2d2d;
+  color: #f8f8f2;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 1rem 0;
+}
+
+pre code {
+  background: inherit;
+  color: inherit;
+}
+
 a {
   color: #4d6bfe;
   text-decoration: none;
   transition: color 0.3s ease;
 }
+
 a:hover {
   color: #3a5bff;
   text-decoration: underline;
 }
-code {
-  background-color: #f4f4f4;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
+
+@media (max-width: 768px) {
+  .about {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  p, li {
+    font-size: 1rem;
+  }
 }
 </style>
 
