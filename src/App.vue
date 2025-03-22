@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import Navigation from "@/components/navigation.vue";
-import Breadcrumbs from "@/components/breadcrumbs.vue";
+import Navigation from "@/components/Navigation.vue";
+import Breadcrumbs from "@/components/Breadcrumbs.vue";
 
 export default {
   name: 'App',

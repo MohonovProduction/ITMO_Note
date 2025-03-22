@@ -1,5 +1,11 @@
-<script >
+<script>
+import Notification from '@/components/Notification.vue';
+
 export default {
+  name: 'GeneratorView',
+  components: {
+    Notification,
+  },
   data() {
     return {
       inputText: '', // Введённый текст
@@ -31,7 +37,7 @@ export default {
         }`
       });
 
-      alert(`Сохранено ${parts.length} файлов!`);
+      this.$refs.notification.addNotification('Файлы успешно сохранены!', 'success')
     },
     saveFile(fileName, content) {
       // Создаём Blob с содержимым
@@ -86,9 +92,11 @@ export default {
           .writeText(this.code)
           .then(() => {
             console.log('Текст скопирован в буфер обмена:', this.code);
+            this.$refs.notification.addNotification('Текст скопирован в буфер обмена', 'success')
           })
           .catch((err) => {
             console.error('Не удалось скопировать текст:', this.code);
+            this.$refs.notification.addNotification('Не удалось скопировать текст\n' + err, 'error')
           });
     }
   }
@@ -96,63 +104,66 @@ export default {
 </script>
 
 <template>
-  <div class="editor">
-    <h1>Онлайн редактор Markdown</h1>
-    <div class="editor-container">
-      <!-- Секция ввода данных -->
-      <div class="input-group">
-        <div class="input-section">
-          <label for="base-name">Название файлов:</label>
-          <input
-              id="base-name"
-              v-model="baseFileName"
-              placeholder="Motion_design"
-              class="input-field"
-          />
+  <div>
+    <Notification ref="notification" />
+    <div class="editor">
+      <h1>Онлайн редактор Markdown</h1>
+      <div class="editor-container">
+        <!-- Секция ввода данных -->
+        <div class="input-group">
+          <div class="input-section">
+            <label for="base-name">Название файлов:</label>
+            <input
+                id="base-name"
+                v-model="baseFileName"
+                placeholder="Motion_design"
+                class="input-field"
+            />
+          </div>
+          <div class="input-section">
+            <label for="start-file-number">Первый номер файла:</label>
+            <input
+                type="number"
+                id="start-file-number"
+                v-model="startFileNumber"
+                placeholder="4"
+                class="input-field"
+            />
+          </div>
+          <div class="input-section">
+            <label for="category">Категория:</label>
+            <input
+                id="category"
+                v-model="category"
+                placeholder="Motion Design"
+                class="input-field"
+            />
+          </div>
         </div>
-        <div class="input-section">
-          <label for="start-file-number">Первый номер файла:</label>
-          <input
-              type="number"
-              id="start-file-number"
-              v-model="startFileNumber"
-              placeholder="4"
-              class="input-field"
-          />
+
+        <!-- Пример имени файла -->
+        <p class="file-name-example">
+          Пример имени файла: <code>{{`${baseFileName}_${startFileNumber}.md`}}</code>
+        </p>
+
+        <!-- Текстовое поле для ввода Markdown -->
+        <textarea
+            v-model="inputText"
+            placeholder="Введите текст в формате Markdown, разделяя части с помощью //end"
+            class="markdown-input"
+        ></textarea>
+
+        <!-- Кнопка сохранения файлов -->
+        <button @click="saveFiles" class="save-button">Сохранить файлы</button>
+
+        <!-- Секция с примером кода -->
+        <div class="code-section">
+          <div class="code-header">
+            <p>JavaScript</p>
+            <button @click="copyToClipboard" class="copy-button">Скопировать код</button>
+          </div>
+          <pre class="code-block">{{ code }}</pre>
         </div>
-        <div class="input-section">
-          <label for="category">Категория:</label>
-          <input
-              id="category"
-              v-model="category"
-              placeholder="Motion Design"
-              class="input-field"
-          />
-        </div>
-      </div>
-
-      <!-- Пример имени файла -->
-      <p class="file-name-example">
-        Пример имени файла: <code>{{`${baseFileName}_${startFileNumber}.md`}}</code>
-      </p>
-
-      <!-- Текстовое поле для ввода Markdown -->
-      <textarea
-          v-model="inputText"
-          placeholder="Введите текст в формате Markdown, разделяя части с помощью //end"
-          class="markdown-input"
-      ></textarea>
-
-      <!-- Кнопка сохранения файлов -->
-      <button @click="saveFiles" class="save-button">Сохранить файлы</button>
-
-      <!-- Секция с примером кода -->
-      <div class="code-section">
-        <div class="code-header">
-          <p>JavaScript</p>
-          <button @click="copyToClipboard" class="copy-button">Скопировать код</button>
-        </div>
-        <pre class="code-block">{{ code }}</pre>
       </div>
     </div>
   </div>
