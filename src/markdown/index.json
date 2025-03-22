@@ -12,5 +12,47 @@
         "description": "Test",
         "file": "test_2.md",
         "category": "test"
+    },
+    {
+        "id": "2D_Animation_0.md",
+        "title": "2D_Animation_0.md }",
+        "description": ",**8 занятий: теория + практика** --- --- **Эмиль Рено** **Мультфильм \"Бедный Пьеро\"** --- --- --- --...",
+        "file": "2D_Animation_0.md",
+        "category": "2D Анимация"
+    },
+    {
+        "id": "Motion_0.md",
+        "title": "Motion_0.md }",
+        "description": "#Motion Design - Sigma **Особенности MacOS и iOS:** **Группы анимаций:** **Звуковые взаимодействия:*...",
+        "file": "Motion_0.md",
+        "category": "Motion Design"
+    },
+    {
+        "id": "Layout_systems_0.md",
+        "title": "Литература:",
+        "description": "[Ссылка на книгу](https://search.rsl.ru/ru/record/01009920157) [Ссылка на книгу](https://vk.com/s/v1...",
+        "file": "Layout_systems_0.md",
+        "category": "Системы вёрстки"
+    },
+    {
+        "id": "Layout_systems_1.md",
+        "title": "Домашка 07.02.2025",
+        "description": "Находим любой сайт с модульной сеткой берем одну главную и одну внутреннюю страницы Нужно реконструи...",
+        "file": "Layout_systems_1.md",
+        "category": "Системы вёрстки"
+    },
+    {
+        "id": "Layout_systems_2.md",
+        "title": "Системы вёрстки и исторический контекст",
+        "description": "--- --- --- --- --- --- --- --- --- ---",
+        "file": "Layout_systems_2.md",
+        "category": "Системы вёрстки"
+    },
+    {
+        "id": "Layout_systems_3.md",
+        "title": "Системы вёрстки",
+        "description": "**Задача:** Создать макеты или презентацию (главное, чтобы на её основе можно было сделать любую дру...",
+        "file": "Layout_systems_3.md",
+        "category": "Системы вёрстки"
     }
 ]
