@@ -171,10 +171,10 @@ a:hover {
 
 /* Стили для анимации */
 .m-fade-enter-active {
-  transition: opacity 0.3s ease-in;
+  transition: opacity 0.3s ease-in-out;
 }
 .m-fade-leave-active {
-  transition: opacity 0.3s ease-out;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .m-fade-enter-from,

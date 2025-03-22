@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@rive-app/canvas": "^2.26.4",
     "dotenv": "^16.4.7",
     "marked": "^15.0.7",
     "vue": "^3.2.13",
