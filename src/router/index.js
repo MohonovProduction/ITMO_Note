@@ -1,5 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import store from "@/store";
+import App from "@/App.vue";
+import Vue from "vue";
+
+
 
 const routes = [
   {
@@ -16,6 +21,11 @@ const routes = [
     component: function () {
       return import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
     }
+  },
+  {
+    path: '/note/:id',
+    component: async () => await import('@/views/Note.vue'),
+    props: true
   }
 ]
 
