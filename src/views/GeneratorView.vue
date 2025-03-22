@@ -17,9 +17,30 @@ export default {
   },
   methods: {
     saveFiles() {
+      // Проверка наличия текста Markdown
+      if (this.inputText.trim() === '') {
+        return this.$refs.notification.addNotification('Добавьте текст в формате Markdown', 'error');
+      }
+
+      // Проверка названия файлов
+      if (this.baseFileName.trim() === '') {
+        return this.$refs.notification.addNotification('Введите название файлов', 'error');
+      }
+
+      // Проверка номера файла
+      if (this.startFileNumber === null || this.startFileNumber === '') {
+        return this.$refs.notification.addNotification('Введите начальный номер файла', 'error');
+      }
+
+      // Проверка категории
+      if (this.category.trim() === '') {
+        return this.$refs.notification.addNotification('Введите категорию', 'error');
+      }
+
       // Разделяем текст по символу //end
       const parts = this.inputText.split('//end').filter(part => part.trim());
 
+      // Очищаем переменную для кода
       this.code = '';
 
       // Сохраняем каждый кусок как отдельный файл
@@ -27,17 +48,21 @@ export default {
         const fileName = `${this.baseFileName}_${this.startFileNumber + index}.md`;
         this.saveFile(fileName, part.trim());
 
+        // Извлекаем заголовок первого уровня
         const heading = this.extractFirstLevelHeading(part);
+
+        // Формируем JSON-структуру
         this.code += `,\n{
         "id": "${fileName}",
-        "title": "${heading !== '' ? heading : fileName} }",
+        "title": "${heading || fileName}",
         "description": "${this.extractFirstParagraphPreview(part)}",
-        "file": "${fileName}.md",
+        "file": "${fileName}",
         "category": "${this.category}"
-        }`
+      }`;
       });
 
-      this.$refs.notification.addNotification('Файлы успешно сохранены!', 'success')
+      // Уведомление об успешном сохранении
+      this.$refs.notification.addNotification('Файлы успешно сохранены!', 'success');
     },
     saveFile(fileName, content) {
       // Создаём Blob с содержимым
@@ -80,12 +105,9 @@ export default {
       const firstParagraph = plainText.split('\n\n')[0] || plainText;
 
       // Обрезаем до 100 символов и добавляем троеточие, если текст длиннее
-      const preview =
-          firstParagraph.length > 100
-              ? firstParagraph.slice(0, 100).trim() + '...'
-              : firstParagraph;
-
-      return preview;
+      return firstParagraph.length > 100
+          ? firstParagraph.slice(0, 100).trim() + '...'
+          : firstParagraph;
     },
     copyToClipboard() {
       navigator.clipboard
