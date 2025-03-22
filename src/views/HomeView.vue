@@ -184,9 +184,13 @@ li {
 }
 
 /* Анимация для раскрытия/закрытия */
-.slide-enter-active,
+.slide-enter-active {
+  transition: max-height 0.5s ease-in;
+  overflow: hidden;
+}
+
 .slide-leave-active {
-  transition: max-height 0.5s ease;
+  transition: max-height 0.5s ease-out;
   overflow: hidden;
 }
 
