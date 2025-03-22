@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-  <div class="note">
+  <div class="container">
     <h1>{{ note.title }}</h1>
     <div v-html="content"></div>
   </div>
