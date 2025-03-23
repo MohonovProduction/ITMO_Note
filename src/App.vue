@@ -8,17 +8,31 @@
       <component :is="Component" />
     </transition>
   </router-view>
+
+  <transition name="m-fade">
+    <Loader v-if="loader" />
+  </transition>
 </template>
 
 <script>
 import Navigation from "@/components/Navigation.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Loader from "@/components/Loader.vue";
 
 export default {
   name: 'App',
   components: {
+    Loader,
     Navigation,
     Breadcrumbs
+  },
+  created () {
+    setTimeout(() => this.loader = false, 2000)
+  },
+  data() {
+    return {
+      loader: true,
+    }
   },
   methods: {
     restScroll() {
