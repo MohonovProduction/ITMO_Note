@@ -200,4 +200,8 @@ a:hover {
 .m-fade-leave-from {
   opacity: 1;
 }
+
+* {
+  box-sizing: border-box;
+}
 </style>
