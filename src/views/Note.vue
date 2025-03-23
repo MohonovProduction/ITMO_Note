@@ -28,13 +28,25 @@ export default {
 
 <template>
   <div class="container">
-    <h1>{{ note.title }}</h1>
+    <h1><code>File_name.md &#171;{{ note.title }}&#187;</code></h1>
     <div v-html="content"></div>
   </div>
 </template>
 
 <style scoped>
 .container {
-  margin-top: 5rem;
+  margin-top: 2rem;
+}
+
+h1 {
+  font-size: 0.8rem;
+}
+
+code {
+  background-color: #f4f4f4;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #d63384;
 }
 </style>
