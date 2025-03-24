@@ -75,5 +75,55 @@
         "description": "--- --- ![](https://sun9-13.userapi.com/impg/DJXPopx0CVEEAF1S4aoFaz_zGU-zEqImSbZrxQ/Y8FtW0mj248.jpg?...",
         "file": "Composition_1.md",
         "category": "Композиция"
+    },
+    {
+        "id": "Draw_and_color_0.md",
+        "title": "Организационная информация",
+        "description": "--- ---",
+        "file": "Draw_and_color_0.md",
+        "category": "Живопись и Цветоведение"
+    },
+    {
+        "id": "Draw_and_color_1.md",
+        "title": "Теория и практические советы",
+        "description": "---",
+        "file": "Draw_and_color_1.md",
+        "category": "Живопись и Цветоведение"
+    },
+
+    {
+        "id": "Draw_and_color_2.md",
+        "title": "06.02.2025 (Занятие 1)",
+        "description": "**Тема**: Введение в тональные отношения **Задания**:",
+        "file": "Draw_and_color_2.md",
+        "category": "Живопись и Цветоведение"
+    },
+    {
+        "id": "Draw_and_color_3.md",
+        "title": "11.02.2025 (Занятие 2)",
+        "description": "**Тема**: Мастер-класс по акварели **Задания**: **ДЗ до 06.03.2025**:",
+        "file": "Draw_and_color_3.md",
+        "category": "Живопись и Цветоведение"
+    },
+    {
+        "id": "Draw_and_color_4.md",
+        "title": "20.02.2025",
+        "description": "**Объявлено**: **ДЗ до 20.03.2025**:",
+        "file": "Draw_and_color_4.md",
+        "category": "Живопись и Цветоведение"
+    },
+    {
+        "id": "Draw_and_color_5.md",
+        "title": "06.03.2025 (Занятие 3)",
+        "description": "**Тема**: Мастер-класс по натягиванию бумаги **Материалы**: **ДЗ**: **Тема**: Работа с тушью и аквар...",
+        "file": "Draw_and_color_5.md",
+        "category": "Живопись и Цветоведение"
+    },
+    {
+        "id": "Draw_and_color_6.md",
+        "title": "20.03.2025 (Занятие 4)",
+        "description": "**Тема**: Работа с тушью и акварелью  ",
+        "file": "Draw_and_color_6.md",
+        "category": "Живопись и Цветоведение"
     }
 ]
