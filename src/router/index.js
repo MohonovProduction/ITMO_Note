@@ -27,7 +27,7 @@ const routes = [
   },
   {
     path: '/note/:id',
-    component: async () => await import('@/views/Note.vue'),
+    component: async () => await import('@/views/NoteView.vue'),
     props: true
   }
 ]
