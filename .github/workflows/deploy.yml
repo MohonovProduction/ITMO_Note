@@ -19,7 +19,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
+      - name: Build with env vars
+        env:
+          VUE_APP_API_BASE_URL: ${{ secrets.VUE_APP_API_BASE_URL }}
+          VUE_APP_ROOT_URL: ${{ secrets.VUE_APP_ROOT_URL }}
+          VUE_APP_API_TIMEOUT: 5000
+          VUE_APP_DEBUG: false
         run: npm run build
 
       - name: Deploy to GitHub Pages
