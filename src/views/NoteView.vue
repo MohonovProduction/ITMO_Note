@@ -105,7 +105,7 @@ export default {
       try {
         console.log('Loading markdown from:', this.note.file);
 
-        const response = await axios.get(process.env.VUE_APP_ROOT_URL + this.note.file, {
+        const response = await axios.get( 'http://185.72.145.216:5000' /*process.env.VUE_APP_ROOT_URL*/ + this.note.file, {
           responseType: 'text', // Указываем, что ожидаем текстовый ответ
           transformResponse: [data => data], // Отключаем автоматическое преобразование JSON
           validateStatus: status => status === 200 // Только статус 200 считается успешным
