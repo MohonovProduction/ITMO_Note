@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <template v-if="loading">
+    <template v-if="isLoading">
       <div class="loading">Loading note...</div>
     </template>
     <template v-else-if="note">
@@ -18,7 +18,9 @@
 </template>
 
 <script>
-import { marked } from 'marked';
+import { mapGetters, mapActions } from 'vuex'
+import { marked } from 'marked'
+import axios from "axios";
 
 export default {
   props: {
@@ -27,68 +29,100 @@ export default {
       required: true
     }
   },
+
   data() {
     return {
-      loading: false,
       markdownContent: '',
-      markedInstance: null
+      markedInstance: marked
     }
   },
+
   computed: {
+    ...mapGetters('notes', ['currentNote', 'isLoading']),
+
     note() {
-      return this.$store.getters.currentNote;
+      return this.currentNote
     },
+
     compiledMarkdown() {
-      if (!this.markdownContent || !this.markedInstance) return '';
-      return this.markedInstance.parse(this.markdownContent);
+      if (!this.markdownContent) return ''
+
+      // Crunch: Egor otdavay normy failes
+      const regex = /```markdown/g;
+      const text = this.markdownContent.replace(regex, '')
+      console.log('text', text)
+      // Crunch off
+
+      return this.markedInstance.parse(text)
     },
+
     formattedDate() {
-      return this.note ? new Date(this.note.date).toLocaleString() : '';
+      return this.note ? new Date(this.note.date).toLocaleString() : ''
     }
   },
+
   watch: {
     id: {
       immediate: true,
       handler() {
-        this.fetchNoteData();
+        this.fetchNoteData()
       }
     }
   },
-  async created() {
-    // Настройка marked
-    this.markedInstance = marked;
-    this.markedInstance.setOptions({
-      sanitize: true, // Безопасный рендеринг
-      breaks: true,  // Переносы строк как <br>
-      gfm: true      // GitHub Flavored Markdown
-    });
-  },
-  methods: {
-    async fetchNoteData() {
-      this.loading = true;
-      try {
-        // 1. Загружаем метаданные заметки
-        await this.$store.dispatch('fetchNoteById', this.id);
 
-        // 2. Если заметка найдена, загружаем содержимое MD файла
-        if (this.note) {
-          const response = await fetch(this.note.file);
-          if (response.ok) {
-            this.markdownContent = await response.text();
-          } else {
-            console.error('Failed to load markdown content');
-            this.markdownContent = '# Error loading content\nCould not load the markdown file.';
-          }
+  created() {
+    this.initMarked()
+  },
+
+  methods: {
+    ...mapActions('notes', ['fetchNoteById']),
+
+    initMarked() {
+      this.markedInstance.setOptions({
+        sanitize: true,
+        breaks: true,
+        gfm: true,
+        highlight(code) {
+          return code // Можно добавить highlight.js
+        }
+      })
+    },
+
+    async fetchNoteData() {
+      try {
+        await this.fetchNoteById(this.id)
+
+        if (this.note?.file) {
+          await this.loadMarkdownContent()
         }
       } catch (error) {
-        console.error('Error fetching note:', error);
-        this.markdownContent = '# Error\nFailed to load note data.';
-      } finally {
-        this.loading = false;
+        console.error('Error loading note:', error)
+        this.markdownContent = `# Error\n${error.message}`
+      }
+    },
+
+    async loadMarkdownContent() {
+      try {
+        console.log('Loading markdown from:', this.note.file);
+
+        const response = await axios.get(process.env.VUE_APP_ROOT_URL + this.note.file, {
+          responseType: 'text', // Указываем, что ожидаем текстовый ответ
+          transformResponse: [data => data], // Отключаем автоматическое преобразование JSON
+          validateStatus: status => status === 200 // Только статус 200 считается успешным
+        });
+
+        console.log(response)
+
+        this.markdownContent = response.data;
+      } catch (error) {
+        console.error('Markdown load error:', error);
+        this.markdownContent = `# Error loading content\n${
+            error.response?.statusText || error.message
+        }`;
       }
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -130,6 +164,9 @@ code {
 .error {
   padding: 2rem;
   text-align: center;
+}
+
+.loading {
   color: #666;
 }
 
