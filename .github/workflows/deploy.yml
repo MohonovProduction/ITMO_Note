@@ -25,7 +25,13 @@ jobs:
           VUE_APP_ROOT_URL: ${{ secrets.VUE_APP_ROOT_URL }}
           VUE_APP_API_TIMEOUT: 5000
           VUE_APP_DEBUG: false
-        run: npm run build
+          NODE_ENV: production
+        run: |
+          echo "VUE_APP_API_BASE_URL=$VUE_APP_API_BASE_URL" >> .env.production
+          echo "VUE_APP_ROOT_URL=$VUE_APP_ROOT_URL" >> .env.production
+          echo "VUE_APP_API_TIMEOUT=$VUE_APP_API_TIMEOUT" >> .env.production
+          echo "VUE_APP_DEBUG=$VUE_APP_DEBUG" >> .env.production
+          npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
