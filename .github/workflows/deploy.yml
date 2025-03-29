@@ -16,17 +16,12 @@ jobs:
           node-version: 16
 
       - name: Create .env file
-        env:
-          VUE_APP_API_BASE_URL: ${{ secrets.VUE_APP_API_BASE_URL }}
-          VUE_APP_ROOT_URL: ${{ secrets.VUE_APP_ROOT_URL }}
-          VUE_APP_API_TIMEOUT: 5000
-          VUE_APP_DEBUG: false
-          NODE_ENV: production
         run: |
-          echo "VUE_APP_API_BASE_URL=$VUE_APP_API_BASE_URL" >> .env.production
-          echo "VUE_APP_ROOT_URL=$VUE_APP_ROOT_URL" >> .env.production
-          echo "VUE_APP_API_TIMEOUT=$VUE_APP_API_TIMEOUT" >> .env.production
-          echo "VUE_APP_DEBUG=$VUE_APP_DEBUG" >> .env.production
+          echo "VUE_APP_API_BASE_URL=http://185.72.145.216:5000/api/" > .env.production
+          echo "VUE_APP_ROOT_URL=http://185.72.145.216:5000" >> .env.production
+          echo "VUE_APP_API_TIMEOUT=5000" >> .env.production
+          echo "VUE_APP_DEBUG=false" >> .env.production
+          echo "NODE_ENV=production" >> .env.production
 
       - name: Install dependencies
         run: npm install
