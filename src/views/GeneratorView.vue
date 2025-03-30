@@ -1,4 +1,6 @@
 <script>
+//TODO: Update generator for work with api
+
 import Notification from '@/components/Notification.vue';
 
 export default {
@@ -177,12 +179,12 @@ export default {
 </script>
 
 <template>
-  <div>
+<!--  <div>
     <Notification ref="notification" />
     <div class="editor">
       <h1>Онлайн редактор Markdown</h1>
       <div class="editor-container">
-        <!-- Секция ввода данных -->
+        &lt;!&ndash; Секция ввода данных &ndash;&gt;
         <div class="input-group">
           <div class="input-section">
             <label for="base-name">Название файлов:</label>
@@ -214,22 +216,22 @@ export default {
           </div>
         </div>
 
-        <!-- Пример имени файла -->
+        &lt;!&ndash; Пример имени файла &ndash;&gt;
         <p class="file-name-example">
           Пример имени файла: <code>{{`${baseFileName}_${startFileNumber}.md`}}</code>
         </p>
 
-        <!-- Текстовое поле для ввода Markdown -->
+        &lt;!&ndash; Текстовое поле для ввода Markdown &ndash;&gt;
         <textarea
             v-model="inputText"
             placeholder="Введите текст в формате Markdown, разделяя части с помощью //end"
             :class="['markdown-input', { 'error': errors.inputText }]"
         ></textarea>
 
-        <!-- Кнопка сохранения файлов -->
+        &lt;!&ndash; Кнопка сохранения файлов &ndash;&gt;
         <button @click="saveFiles" class="save-button">Сохранить файлы</button>
 
-        <!-- Секция с примером кода -->
+        &lt;!&ndash; Секция с примером кода &ndash;&gt;
         <div class="code-section">
           <div class="code-header">
             <p>JavaScript</p>
@@ -239,7 +241,9 @@ export default {
         </div>
       </div>
     </div>
-  </div>
+  </div>-->
+
+  <h1>Page is on capitalynay fix</h1>
 </template>
 
 <style scoped>

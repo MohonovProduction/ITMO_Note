@@ -1,31 +1,15 @@
+// store/index.js
 import { createStore } from 'vuex'
-import notesMetadata from '@/markdown/index.json';
-import marked from "marked";
+import notesModule from './modules/notes'
+import createPersistedState from 'vuex-persistedstate' // для сохранения состояния
 
 export default createStore({
-  state: {
-    notes: [],
-  },
-  getters: {
-    allNotes: state => state.notes
-  },
-  mutations: {
-    SET_NOTES(state, notes) {
-      state.notes = notes;
-    }
-  },
-  actions: {
-    loadNotes({ commit }) {
-      const notes = notesMetadata.map(note => {
-        const content = require(`@/markdown/${note.file}`).default;
-        return {
-          ...note,
-          content
-        };
-      });
-      commit('SET_NOTES', notes);
-    }
-  },
   modules: {
-  }
+    notes: notesModule
+  },
+  plugins: [
+    createPersistedState({
+      paths: ['notes.notes'] // сохраняем только список заметок
+    })
+  ]
 })

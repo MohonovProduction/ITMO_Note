@@ -27,6 +27,7 @@ export default {
     Breadcrumbs
   },
   created () {
+    console.log("App created");
     setTimeout(() => this.loader = false, 2000)
   },
   data() {
@@ -35,12 +36,7 @@ export default {
     }
   },
   methods: {
-    restScroll() {
-      window.scrollTo({
-        top: 0, // Позиция, до которой нужно прокрутить
-        behavior: 'smooth' // Включает плавный скролл
-      });
-    }
+
   }
 }
 </script>

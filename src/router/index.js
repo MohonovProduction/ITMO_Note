@@ -27,8 +27,14 @@ const routes = [
   },
   {
     path: '/note/:id',
-    component: async () => await import('@/views/Note.vue'),
+    name: 'note',
+    component: async () => await import('@/views/NoteView.vue'),
     props: true
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('../views/NotFound.vue')
   }
 ]
 

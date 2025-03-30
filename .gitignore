@@ -4,7 +4,8 @@ dist
 
 # local env files
 .env.development
-.env.*.local
+.env.*
+!.env.example
 
 # Log files
 npm-debug.log*

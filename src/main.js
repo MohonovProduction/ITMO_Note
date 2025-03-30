@@ -2,10 +2,34 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import { marked } from 'marked'
 
-store.dispatch('loadNotes').then(() => {
-    createApp(App)
-        .use(store)
-        .use(router)
-        .mount('#app')
-});
+// Инициализация marked
+marked.setOptions({
+    sanitize: true,
+    breaks: true,
+    gfm: true
+})
+
+const initApp = async () => {
+    try {
+        // Загрузка начальных данных
+        await store.dispatch('notes/fetchAllNotes')
+
+        const app = createApp(App)
+
+        // Глобальные свойства
+        app.config.globalProperties.$marked = marked
+
+        // Подключение плагинов
+        app.use(store)
+        app.use(router)
+
+        app.mount('#app')
+    } catch (error) {
+        console.error('Application initialization failed:', error)
+        // Показать fallback UI
+    }
+}
+
+initApp()

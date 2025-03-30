@@ -8,11 +8,13 @@
   },
   "dependencies": {
     "@rive-app/canvas": "^2.26.4",
+    "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "marked": "^15.0.7",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-router": "~5.0.0",

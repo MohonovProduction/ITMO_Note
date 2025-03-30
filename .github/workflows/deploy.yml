@@ -2,27 +2,34 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main  # Или master, в зависимости от вашей ветки
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Create .env file
+        run: |
+          echo "VUE_APP_API_BASE_URL=http://185.72.145.216:5000/api/" > .env.production
+          echo "VUE_APP_ROOT_URL=http://185.72.145.216:5000" >> .env.production
+          echo "VUE_APP_API_TIMEOUT=5000" >> .env.production
+          echo "VUE_APP_DEBUG=false" >> .env.production
+          echo "NODE_ENV=production" >> .env.production
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
+      - name: Build
         run: npm run build
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,206 +1,213 @@
-<script>
-export default {
-  name: 'HomeView',
-  data() {
-    return {
-      openCategories: [], // Массив для хранения открытых категорий
-    }
-  },
-  computed: {
-    categories() {
-      const allNotes = this.$store.getters.allNotes;
-
-      // Группируем конспекты по категориям
-      const categories = allNotes.reduce((acc, note) => {
-        // Ищем категорию в аккумуляторе
-        const category = acc.find((cat) => cat.name === note.category);
-
-        if (category) {
-          // Если категория уже существует, добавляем конспект в неё
-          category.notes.push(note);
-        } else {
-          // Если категории нет, создаём новую
-          acc.push({
-            name: note.category,
-            notes: [note],
-          });
-        }
-
-        return acc;
-      }, []);
-
-      return categories;
-    },
-  },
-  methods: {
-    // Переключение состояния категории (открыта/закрыта)
-    toggleCategory(index) {
-      if (this.isCategoryOpen(index)) {
-        this.openCategories = this.openCategories.filter((i) => i !== index);
-      } else {
-        this.openCategories.push(index);
-      }
-    },
-
-    // Проверка, открыта ли категория
-    isCategoryOpen(index) {
-      return this.openCategories.includes(index);
-    },
-
-    // Развернуть все категории
-    expandAll() {
-      this.openCategories = this.categories.map((_, index) => index);
-    },
-
-    // Свернуть все категории
-    collapseAll() {
-      this.openCategories = [];
-    },
-  }
-}
-</script>
-
 <template>
   <div class="notes-list">
     <h1>Список конспектов</h1>
 
-    <!-- Кнопки для управления всеми категориями -->
     <div class="controls">
       <button @click="expandAll">Развернуть все</button>
       <button @click="collapseAll">Свернуть все</button>
+      <button @click="refreshNotes">Обновить</button>
+      <span v-if="isLoading" class="loading-status">Загрузка...</span>
     </div>
 
-    <!-- Список категорий -->
-    <div class="category" v-for="(category, index) in categories" :key="index">
-      <div class="category-header" @click="toggleCategory(index)">
-        <h2>{{ category.name }}</h2>
-        <span class="toggle-icon">{{ isCategoryOpen(index) ? '▼' : '▶' }}</span>
-      </div>
+    <div v-if="error" class="error-message">
+      Ошибка загрузки данных: {{ error }}
+    </div>
 
-      <!-- Список конспектов в категории -->
-      <transition name="slide">
-        <ul v-if="isCategoryOpen(index)">
-          <li v-for="note in category.notes" :key="note.id">
-            <router-link class="card" :to="`/note/${note.id}`">
-              <h3>{{ note.title }}</h3>
-              <p>{{ note.description }}</p>
-            </router-link>
-          </li>
-        </ul>
-      </transition>
+    <template v-if="!isLoading && !error">
+      <div class="category" v-for="(category, index) in groupedNotes" :key="category.name">
+        <div class="category-header" @click="toggleCategory(index)">
+          <h2>{{ category.name || 'Без категории' }}</h2>
+          <span class="toggle-icon">{{ isCategoryOpen(index) ? '▼' : '▶' }}</span>
+          <span class="note-count">({{ category.notes.length }})</span>
+        </div>
+
+        <transition name="slide">
+          <ul v-if="isCategoryOpen(index)" class="notes-container">
+            <li v-for="note in category.notes" :key="note.id">
+              <router-link
+                  :to="{ name: 'note', params: { id: note.id } }"
+                  class="note-card"
+              >
+                <h3>{{ note.title }}</h3>
+                <p class="description">{{ note.description }}</p>
+                <div class="meta">
+                  <span class="date">{{ formatDate(note.date) }}</span>
+                  <span class="category-badge">{{ note.category }}</span>
+                </div>
+              </router-link>
+            </li>
+          </ul>
+        </transition>
+      </div>
+    </template>
+
+    <div v-if="!isLoading && !groupedNotes.length" class="empty-state">
+      Нет доступных конспектов
+      <button @click="refreshNotes" class="retry-button">Попробовать снова</button>
     </div>
   </div>
 </template>
 
+<script>
+import { mapState, mapGetters, mapActions } from 'vuex'
+
+export default {
+  name: 'HomeView',
+
+  data() {
+    return {
+      openCategories: []
+    }
+  },
+
+  computed: {
+    ...mapState('notes', ['error']),
+    ...mapGetters('notes', ['isLoading', 'allNotes', 'getCategories']),
+
+    groupedNotes() {
+      const categoriesMap = {}
+      const categoriesOrder = []
+
+      try {
+        this.allNotes.forEach(note => {
+          const categoryName = note.category || 'Без категории'
+
+          if (!categoriesMap[categoryName]) {
+            categoriesMap[categoryName] = []
+            categoriesOrder.push(categoryName)
+          }
+
+          categoriesMap[categoryName].push(note)
+        })
+      } catch (error) {
+        console.error(error)
+      }
+
+      return categoriesOrder.map(name => ({
+        name,
+        notes: categoriesMap[name].sort((a, b) => new Date(b.date) - new Date(a.date))
+      }))
+    }
+  },
+
+  methods: {
+    ...mapActions('notes', ['fetchAllNotes']),
+
+    async refreshNotes() {
+      try {
+        await this.fetchAllNotes()
+        if (this.groupedNotes.length > 0 && this.openCategories.length === 0) {
+          this.openCategories = [0]
+        }
+      } catch (error) {
+        console.error('Ошибка обновления:', error)
+      }
+    },
+
+    toggleCategory(index) {
+      if (this.isCategoryOpen(index)) {
+        this.openCategories = this.openCategories.filter(i => i !== index)
+      } else {
+        this.openCategories.push(index)
+      }
+    },
+
+    isCategoryOpen(index) {
+      return this.openCategories.includes(index)
+    },
+
+    expandAll() {
+      this.openCategories = this.groupedNotes.map((_, index) => index)
+    },
+
+    collapseAll() {
+      this.openCategories = []
+    },
+
+    formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    }
+  },
+
+  async created() {
+    await this.refreshNotes()
+  },
+
+  watch: {
+    '$route.query.category'(newCategory) {
+      if (newCategory) {
+        const index = this.groupedNotes.findIndex(c => c.name === newCategory)
+        if (index >= 0) this.openCategories = [index]
+      }
+    }
+  }
+}
+</script>
+
 <style scoped>
-.notes-list {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-h1 {
-  font-size: 2.5rem;
-  color: #4d6bfe;
-  margin-bottom: 1.5rem;
-}
-
+/* Основные стили остаются прежними, добавляем новые */
 .controls {
+  display: flex;
+  gap: 10px;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .controls button {
-  margin-right: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #4d6bfe;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s;
 }
 
 .controls button:hover {
-  background-color: #3a5bff;
+  background-color: var(--primary-dark-color);
+  transform: translateY(-1px);
 }
 
-.category {
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: hidden;
+.category-badge {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
 }
 
-.category-header {
+.empty-state {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  background-color: #f9f9f9;
+  gap: 1rem;
+}
+
+.retry-button {
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.category-header:hover {
-  background-color: #f0f0f0;
-}
-
-.category-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-.toggle-icon {
-  font-size: 1.2rem;
-  color: #666;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-li {
-  padding: 1rem;
-  border-top: 1px solid #ddd;
-}
-
-.card {
-  text-decoration: none;
-  color: inherit;
-}
-
-.card h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  color: #4d6bfe;
-}
-
-.card p {
-  margin: 0.5rem 0 0;
-  color: #555;
-}
-
-/* Анимация для раскрытия/закрытия */
+/* Анимации */
 .slide-enter-active {
-  transition: max-height 0.5s ease-in;
-  overflow: hidden;
+  transition: all 0.3s ease-out;
 }
 
 .slide-leave-active {
-  transition: max-height 0.5s ease-out;
-  overflow: hidden;
+  transition: all 0.2s ease-in;
 }
 
 .slide-enter-from,
 .slide-leave-to {
-  max-height: 0;
-}
-
-.slide-enter-to,
-.slide-leave-from {
-  max-height: 500px; /* Максимальная высота для анимации */
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>
