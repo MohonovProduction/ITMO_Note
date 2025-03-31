@@ -1,270 +1,399 @@
-<script>
-//TODO: Update generator for work with api
+<template>
+  <div class="generator-container">
+    <Notification ref="notification" />
+    <h1>Отправка конспектов</h1>
 
+    <div class="upload-section">
+      <!-- Drag and Drop область -->
+      <div
+          class="drop-area"
+          @dragover.prevent="dragOver = true"
+          @dragleave="dragOver = false"
+          @drop.prevent="handleDrop"
+          :class="{ 'drag-over': dragOver }"
+      >
+        <div class="drop-content">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="var(--color-primary)"/>
+          </svg>
+          <p>Перетащите файлы сюда или кликните для выбора</p>
+          <input
+              type="file"
+              id="file-input"
+              @change="handleFileSelect"
+              multiple
+              accept=".md,.markdown,.txt"
+              style="display: none"
+          >
+          <button @click="triggerFileInput" class="select-button">Выбрать файлы</button>
+        </div>
+      </div>
+
+      <div class="selected-files" v-if="selectedFiles.length > 0">
+        <h3>Выбранные файлы:</h3>
+        <ul>
+          <li v-for="(file, index) in selectedFiles" :key="index">
+            {{ file.name }}
+            <button @click="removeFile(index)" class="remove-file-btn">×</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Форма для ввода данных -->
+    <div class="input-group">
+      <div class="input-section">
+        <label for="title">Название:</label>
+        <input
+            id="title"
+            v-model="noteData.title"
+            placeholder="Например: Motion_design"
+            :class="['input-field', { 'error': errors.title }]"
+            @input="saveToLocalStorage"
+        />
+      </div>
+      <div class="input-section">
+        <label for="category">Категория:</label>
+        <input
+            id="category"
+            v-model="noteData.category"
+            placeholder="Например: Motion Design"
+            :class="['input-field', { 'error': errors.category }]"
+            @input="saveToLocalStorage"
+        />
+      </div>
+    </div>
+
+    <!-- Textarea для ввода Markdown -->
+    <div class="markdown-section">
+      <label for="markdown-content">Контент (Markdown):</label>
+      <textarea
+          id="markdown-content"
+          v-model="noteData.content"
+          placeholder="Введите текст в формате Markdown"
+          :class="['markdown-input', { 'error': errors.content }]"
+          @input="saveToLocalStorage"
+      ></textarea>
+    </div>
+
+    <!-- Кнопки действий -->
+    <div class="action-buttons">
+      <button @click="submitNote" class="submit-button" :disabled="isSubmitting">
+        <span v-if="!isSubmitting">Отправить на сервер</span>
+        <span v-else>Отправка...</span>
+      </button>
+      <button @click="clearForm" class="clear-button">Очистить форму</button>
+    </div>
+
+    <div class="status-message" v-if="statusMessage">
+      {{ statusMessage }}
+    </div>
+  </div>
+</template>
+
+<script>
 import Notification from '@/components/Notification.vue';
+import notesApi from '@/api/notes';
+import axios from "axios";
 
 export default {
+
   name: 'GeneratorView',
   components: {
     Notification,
   },
   data() {
     return {
-      inputText: '', // Введённый текст
-      baseFileName: '', // Базовое название файлов
-      startFileNumber: 0,
-      category: '',
-      code: 'Здесь будет код для вставки в markdown/index.js',
-      errors: {
-        inputText: false,
-        baseFileName: false,
-        startFileNumber: false,
-        category: false,
+      dragOver: false,
+      selectedFiles: [],
+      isSubmitting: false,
+      statusMessage: '',
+      noteData: {
+        title: '',
+        category: '',
+        content: '',
       },
+      errors: {
+        title: false,
+        category: false,
+        content: false,
+      }
     };
   },
+  created() {
+    this.loadFromLocalStorage();
+  },
   methods: {
-    saveFiles() {
-      // Сбрасываем ошибки
-      this.resetErrors();
+    triggerFileInput() {
+      document.getElementById('file-input').click();
+    },
+    handleFileSelect(event) {
+      this.addFiles(Array.from(event.target.files));
+      event.target.value = ''; // Сбрасываем значение input
+    },
+    handleDrop(event) {
+      this.dragOver = false;
+      this.addFiles(Array.from(event.dataTransfer.files));
+    },
+    addFiles(files) {
+      const validFiles = files.filter(file =>
+          file.type === 'text/markdown' ||
+          file.type === 'text/plain' ||
+          file.name.endsWith('.md') ||
+          file.name.endsWith('.markdown')
+      );
 
-      // Проверка наличия текста Markdown
-      if (this.inputText.trim() === '') {
-        this.errors.inputText = true;
-        this.$refs.notification.addNotification('Добавьте текст в формате Markdown', 'error');
+      if (validFiles.length === 0) {
+        this.$refs.notification.addNotification('Пожалуйста, выберите файлы Markdown (.md, .markdown)', 'error');
         return;
       }
 
-      // Проверка названия файлов
-      if (this.baseFileName.trim() === '') {
-        this.errors.baseFileName = true;
-        this.$refs.notification.addNotification('Введите название файлов', 'error');
-        return;
-      }
-
-      // Проверка номера файла
-      if (this.startFileNumber === null || this.startFileNumber === '') {
-        this.errors.startFileNumber = true;
-        this.$refs.notification.addNotification('Введите начальный номер файла', 'error');
-        return;
-      }
-
-      // Проверка категории
-      if (this.category.trim() === '') {
-        this.errors.category = true;
-        this.$refs.notification.addNotification('Введите категорию', 'error');
-        return;
-      }
-
-      // Разделяем текст по символу //end
-      const parts = this.inputText.split('//end').filter(part => part.trim());
-
-      // Очищаем переменную для кода
-      this.code = '';
-
-      // Сохраняем каждый кусок как отдельный файл
-      parts.forEach((part, index) => {
-        const fileName = `${this.baseFileName}_${this.startFileNumber + index}.md`;
-        this.saveFile(fileName, part.trim());
-
-        // Извлекаем заголовок первого уровня
-        const heading = this.extractFirstLevelHeading(part);
-
-        // Формируем JSON-структуру
-        this.code += index === 0 ? '\n' : ',\n'; // Добавляем запятую перед каждым объектом, кроме первого
-        this.code += `  {
-    "id": "${fileName}",
-    "title": "${heading || fileName}",
-    "description": "${this.extractFirstParagraphPreview(part)}",
-    "file": "${fileName}",
-    "category": "${this.category}"
-  }`;
+      // Читаем содержимое файлов
+      validFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.noteData.content += e.target.result + '\n\n';
+          this.saveToLocalStorage();
+        };
+        reader.readAsText(file);
       });
 
-
-      // Уведомление об успешном сохранении
-      this.$refs.notification.addNotification('Файлы успешно сохранены!', 'success');
+      this.selectedFiles = [...this.selectedFiles, ...validFiles];
     },
-
-    saveFile(fileName, content) {
-      // Создаём Blob с содержимым
-      const blob = new Blob([content], { type: 'text/markdown' });
-
-      // Создаём ссылку для скачивания
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = fileName;
-
-      // Программно нажимаем на ссылку
-      link.click();
-
-      // Освобождаем память
-      URL.revokeObjectURL(link.href);
+    removeFile(index) {
+      this.selectedFiles.splice(index, 1);
     },
+    async submitNote() {
+      // Валидация
+      this.resetErrors();
+      let hasError = false;
 
-    extractFirstLevelHeading(markdownText) {
-      const headingRegex = /^#\s+(.+)$/m;
-
-      const match = markdownText.match(headingRegex);
-
-      if (match && match[1]) {
-        return match[1].trim(); // Убираем лишние пробелы
+      if (!this.noteData.title.trim()) {
+        this.errors.title = true;
+        hasError = true;
       }
 
-      return '';
-    },
+      if (!this.noteData.category.trim()) {
+        this.errors.category = true;
+        hasError = true;
+      }
 
-    extractFirstParagraphPreview(markdownText) {
-      // Убираем заголовки, списки и другие элементы Markdown
-      const plainText = markdownText
-          .replace(/^#+\s+.+$/gm, '') // Убираем заголовки
-          .replace(/^\s*[-*]\s+.+$/gm, '') // Убираем маркированные списки
-          .replace(/^\s*\d+\.\s+.+$/gm, '') // Убираем нумерованные списки
-          .replace(/`{3}[\s\S]*?`{3}/g, '') // Убираем блоки кода
-          .replace(/`[^`]+`/g, '') // Убираем встроенный код
-          .replace(/\s+/g, ' ') // Убираем лишние пробелы
+      if (!this.extractFirstParagraphPreview(this.noteData.content).trim() && this.selectedFiles.length === 0) {
+        this.errors.content = true;
+        hasError = true;
+      }
+
+      if (hasError) {
+        this.$refs.notification.addNotification('Пожалуйста, заполните все обязательные поля', 'error');
+        return;
+      }
+
+      this.isSubmitting = true;
+      this.statusMessage = '';
+
+      // Подготовка данных для отправки
+      const params = {
+        title: this.noteData.title,
+        category: this.noteData.category,
+        description: this.extractFirstParagraphPreview(this.noteData.content)
+      };
+
+      let bodyContent = '';
+
+      // Обработка файлов (если они есть)
+      if (this.selectedFiles.length > 0) {
+        try {
+          // Читаем содержимое всех файлов и объединяем в одну строку
+          const fileContents = await this.readFileAsText(this.selectedFiles)
+          bodyContent = fileContents.join('\n\n');
+        } catch (error) {
+          console.error('Ошибка чтения файлов:', error);
+          this.$refs.notification.addNotification('Ошибка при чтении файлов', 'error');
+          return;
+        }
+      } else {
+        // Используем текст из textarea, если файлов нет
+        bodyContent = this.noteData.content;
+      }
+
+      // Отправка на сервер
+      try {
+        const response = await notesApi.create(bodyContent, { params });
+
+        this.statusMessage = 'Конспект успешно отправлен на сервер!';
+        this.$refs.notification.addNotification('Конспект успешно отправлен', 'success');
+        this.clearForm();
+        console.log('Ответ сервера:', response.data);
+      } catch (error) {
+        console.error('Ошибка при отправке:', error);
+        this.statusMessage = 'Ошибка при отправке конспекта';
+        this.$refs.notification.addNotification('Ошибка при отправке конспекта', 'error');
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+    clearForm() {
+      this.noteData = {
+        title: '',
+        category: '',
+        content: '',
+      };
+      this.selectedFiles = [];
+      this.resetErrors();
+      localStorage.removeItem('generatorFormData');
+      this.statusMessage = '';
+    },
+    saveToLocalStorage() {
+      localStorage.setItem('generatorFormData', JSON.stringify(this.noteData));
+    },
+    loadFromLocalStorage() {
+      const savedData = localStorage.getItem('generatorFormData');
+      if (savedData) {
+        this.noteData = JSON.parse(savedData);
+      }
+    },
+    resetErrors() {
+      this.errors = {
+        title: false,
+        category: false,
+        content: false,
+      };
+    },
+    extractFirstParagraphPreview(text) {
+      const plainText = text
+          .replace(/^#+\s+.+$/gm, '')
+          .replace(/^\s*[-*]\s+.+$/gm, '')
+          .replace(/^\s*\d+\.\s+.+$/gm, '')
+          .replace(/`{3}[\s\S]*?`{3}/g, '')
+          .replace(/`[^`]+`/g, '')
+          .replace(/\s+/g, ' ')
           .trim();
 
-      // Находим первый абзац
       const firstParagraph = plainText.split('\n\n')[0] || plainText;
-
-      // Обрезаем до 100 символов и добавляем троеточие, если текст длиннее
       return firstParagraph.length > 100
           ? firstParagraph.slice(0, 100).trim() + '...'
           : firstParagraph;
     },
+    async readFileAsText(files) {
+      // Обещаем, что преобразуем все файлы в текст
+      const fileReadPromises = Array.from(files).map(file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
 
-    copyToClipboard() {
-      // Создаём временный textarea для копирования
-      const textarea = document.createElement('textarea');
-      textarea.value = this.code;
-      textarea.setAttribute('readonly', ''); // Делаем textarea недоступной для редактирования
-      textarea.style.position = 'absolute';
-      textarea.style.left = '-9999px'; // Выносим за пределы экрана
-      document.body.appendChild(textarea);
+          reader.onload = (event) => resolve(event.target.result);
+          reader.onerror = (error) => reject(error);
 
-      // Выделяем текст в textarea
-      textarea.select();
-      textarea.setSelectionRange(0, textarea.value.length); // Для мобильных устройств
+          reader.readAsText(file); // Читаем файл как текст
+        });
+      });
 
-      // Копируем текст
       try {
-        const success = document.execCommand('copy');
-        if (success) {
-          console.log('Текст скопирован в буфер обмена:', this.code);
-          this.$refs.notification.addNotification('Текст скопирован в буфер обмена', 'success');
-        } else {
-          throw new Error('Не удалось скопировать текст');
-        }
-      } catch (err) {
-        console.error('Не удалось скопировать текст:', err);
-        this.$refs.notification.addNotification('Не удалось скопировать текст\n' + err, 'error');
-      } finally {
-        // Удаляем textarea
-        document.body.removeChild(textarea);
+        // Ждем, пока все файлы будут прочитаны
+        const fileContents = await Promise.all(fileReadPromises);
+        // Объединяем содержимое файлов через два переноса строки
+        return fileContents.join('\n\n');
+      } catch (error) {
+        console.error('Ошибка чтения файлов:', error);
+        throw new Error('Не удалось прочитать файлы');
       }
-    },
-
-    // Сброс ошибок
-    resetErrors() {
-      this.errors = {
-        inputText: false,
-        baseFileName: false,
-        startFileNumber: false,
-        category: false,
-      };
-    },
+    }
   }
 };
 </script>
 
-<template>
-<!--  <div>
-    <Notification ref="notification" />
-    <div class="editor">
-      <h1>Онлайн редактор Markdown</h1>
-      <div class="editor-container">
-        &lt;!&ndash; Секция ввода данных &ndash;&gt;
-        <div class="input-group">
-          <div class="input-section">
-            <label for="base-name">Название файлов:</label>
-            <input
-                id="base-name"
-                v-model="baseFileName"
-                placeholder="Motion_design"
-                :class="['input-field', { 'error': errors.baseFileName }]"
-            />
-          </div>
-          <div class="input-section">
-            <label for="start-file-number">Первый номер файла:</label>
-            <input
-                type="number"
-                id="start-file-number"
-                v-model="startFileNumber"
-                placeholder="4"
-                :class="['input-field', { 'error': errors.startFileNumber }]"
-            />
-          </div>
-          <div class="input-section">
-            <label for="category">Категория:</label>
-            <input
-                id="category"
-                v-model="category"
-                placeholder="Motion Design"
-                :class="['input-field', { 'error': errors.category }]"
-            />
-          </div>
-        </div>
-
-        &lt;!&ndash; Пример имени файла &ndash;&gt;
-        <p class="file-name-example">
-          Пример имени файла: <code>{{`${baseFileName}_${startFileNumber}.md`}}</code>
-        </p>
-
-        &lt;!&ndash; Текстовое поле для ввода Markdown &ndash;&gt;
-        <textarea
-            v-model="inputText"
-            placeholder="Введите текст в формате Markdown, разделяя части с помощью //end"
-            :class="['markdown-input', { 'error': errors.inputText }]"
-        ></textarea>
-
-        &lt;!&ndash; Кнопка сохранения файлов &ndash;&gt;
-        <button @click="saveFiles" class="save-button">Сохранить файлы</button>
-
-        &lt;!&ndash; Секция с примером кода &ndash;&gt;
-        <div class="code-section">
-          <div class="code-header">
-            <p>JavaScript</p>
-            <button @click="copyToClipboard" class="copy-button">Скопировать код</button>
-          </div>
-          <pre class="code-block">{{ code }}</pre>
-        </div>
-      </div>
-    </div>
-  </div>-->
-
-  <h1>Page is on capitalynay fix</h1>
-</template>
-
 <style scoped>
-.editor {
+.generator-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
+  font-family: var(--font-family);
 }
 
 h1 {
   font-size: 2rem;
-  color: #4d6bfe;
+  color: var(--color-primary);
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
-.editor-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
+.upload-section {
+  margin-bottom: 2rem;
+}
+
+.drop-area {
+  border: 2px dashed var(--color-border);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.drop-area.drag-over {
+  border-color: var(--color-primary);
+  background-color: rgba(77, 107, 254, 0.05);
+}
+
+.drop-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.drop-content p {
+  margin: 0;
+  color: #555;
+}
+
+.select-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.select-button:hover {
+  background-color: var(--color-link-hover);
+}
+
+.selected-files {
+  margin-top: 1rem;
+}
+
+.selected-files h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.selected-files ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.selected-files li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.remove-file-btn {
+  background: none;
+  border: none;
+  color: #f44336;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
 }
 
 .input-group {
@@ -283,115 +412,95 @@ label {
   display: block;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: var(--color-text);
 }
 
 .input-field {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
 }
 
 .input-field:focus {
-  border-color: #4d6bfe;
+  border-color: var(--color-primary);
   outline: none;
 }
 
-.file-name-example {
-  margin: 1.5rem 0;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.file-name-example code {
-  background-color: #f4f4f4;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
-  color: #d63384;
+.markdown-section {
+  margin-bottom: 1.5rem;
 }
 
 .markdown-input {
   width: 100%;
-  height: 200px;
+  min-height: 300px;
   padding: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 1rem;
-  margin-bottom: 1.5rem;
+  font-family: var(--font-family);
+  line-height: 1.6;
   resize: vertical;
   transition: border-color 0.3s ease;
 }
 
 .markdown-input:focus {
-  border-color: #4d6bfe;
+  border-color: var(--color-primary);
   outline: none;
 }
 
-.save-button {
-  width: 100%;
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.submit-button, .clear-button {
+  flex: 1;
   padding: 0.75rem;
-  background-color: #4d6bfe;
-  color: white;
   border: none;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.save-button:hover {
-  background-color: #3a5bff;
-}
-
-.code-section {
-  margin-top: 2rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.code-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.code-header p {
-  margin: 0;
-  font-weight: bold;
-  color: #333;
-}
-
-.copy-button {
-  padding: 0.5rem 1rem;
-  background-color: #4d6bfe;
+.submit-button {
+  background-color: var(--color-primary);
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.copy-button:hover {
-  background-color: #3a5bff;
+.submit-button:hover:not(:disabled) {
+  background-color: var(--color-link-hover);
 }
 
-.code-block {
-  background-color: #2d2d2d;
-  color: #f8f8f2;
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.clear-button {
+  background-color: #f5f5f5;
+  color: #555;
+}
+
+.clear-button:hover {
+  background-color: #e0e0e0;
+}
+
+.status-message {
   padding: 1rem;
   border-radius: 4px;
-  overflow-x: auto;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin: 0;
+  background-color: #f5f7fa;
+  text-align: center;
+  color: #555;
+}
+
+.error {
+  border-color: #f44336 !important;
+  background-color: #ffebee;
 }
 
 @media (max-width: 768px) {
@@ -402,11 +511,19 @@ label {
   .input-section {
     width: 100%;
   }
+
+  .action-buttons {
+    flex-direction: column;
+  }
 }
 
-.error {
-  border-color: #f44336 !important; /* Красная граница */
-  background-color: #ffebee; /* Светло-красный фон */
-  transition: border-color 0.3s ease;
+@media (max-width: 480px) {
+  .generator-container {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
 }
 </style>

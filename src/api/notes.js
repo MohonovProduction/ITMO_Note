@@ -7,8 +7,8 @@ export default {
     getById(id) {
         return api.get(`/notes/${id}`)
     },
-    create(payload) {
-        return api.post('/notes', payload)
+    create(payload, config) {
+        return api.post('/notes', payload, config)
     },
     search(params) {
         return api.get('/notes/search', { params })
