@@ -4,9 +4,9 @@
 
 <template>
   <nav>
-    <router-link to="/">Home</router-link>
-    <router-link to="/about">About</router-link>
-    <router-link to="/generator">Generator</router-link>
+    <router-link to="/">Главная</router-link>
+    <router-link to="/generator">Записать</router-link>
+    <router-link to="/about">О проекте</router-link>
   </nav>
 </template>
 

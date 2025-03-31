@@ -12,6 +12,12 @@
           <a href="https://t.me/mohonovschannel" target="_blank" rel="noopener">Frontend Dev Channel</a>
           <a href="https://t.me/torchchanel" target="_blank" rel="noopener">Backend Dev Channel</a>
         </div>
+        <div class="links-column">
+          <h4>Ссылки</h4>
+          <router-link to="/">Главная</router-link>
+          <router-link to="/generator">Записать</router-link>
+          <router-link to="/about">О проекте</router-link>
+        </div>
       </div>
 
       <div class="footer-info">
