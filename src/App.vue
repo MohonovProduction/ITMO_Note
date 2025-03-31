@@ -9,6 +9,8 @@
     </transition>
   </router-view>
 
+  <Footer />
+
   <transition name="m-fade">
     <Loader v-if="loader" />
   </transition>
@@ -18,13 +20,15 @@
 import Navigation from "@/components/Navigation.vue";
 import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Loader from "@/components/Loader.vue";
+import Footer from "@/components/Footer.vue";
 
 export default {
   name: 'App',
   components: {
     Loader,
     Navigation,
-    Breadcrumbs
+    Breadcrumbs,
+    Footer
   },
   created () {
     console.log("App created");
