@@ -1,7 +1,7 @@
 const { defineConfig } = require('@vue/cli-service');
 
 module.exports = defineConfig({
-    publicPath: '/your-repo-name/', // Replace 'your-repo-name' with your actual repository name
+    publicPath: '/ITMO_Note/', // Replace 'your-repo-name' with your actual repository name
     chainWebpack: config => {
         config.module
             .rule('md')
