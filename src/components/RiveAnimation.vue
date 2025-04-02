@@ -21,41 +21,41 @@ export default {
       default: 600,
     },
   },
-  setup(props) {
-    const canvas = ref(null);
-    let riveInstance = null;
-
-    onMounted(() => {
-      if (canvas.value) {
-        // Инициализация Rive
-        riveInstance = new Rive({
-          src: props.src, // Путь к .riv файлу
-          canvas: canvas.value,
-          autoplay: true,
-          fit: Fit.Cover,
-          alignment: Alignment.Center,
-          onLoad: () => {
-            console.log('Анимация загружена!');
-          },
-          onError: (error) => {
-            console.error('Ошибка загрузки анимации:', error);
-          },
-        });
-      }
-    });
-
-    onUnmounted(() => {
-      // Очистка при уничтожении компонента
-      if (riveInstance) {
-        riveInstance.stop();
-        //riveInstance.unload();
-      }
-    });
-
-    return {
-      canvas,
-    };
-  },
+  // setup(props) {
+  //   const canvas = ref(null);
+  //   let riveInstance = null;
+  //
+  //   onMounted(() => {
+  //     if (canvas.value) {
+  //       // Инициализация Rive
+  //       riveInstance = new Rive({
+  //         src: props.src, // Путь к .riv файлу
+  //         canvas: canvas.value,
+  //         autoplay: true,
+  //         fit: Fit.Cover,
+  //         alignment: Alignment.Center,
+  //         onLoad: () => {
+  //           console.log('Анимация загружена!');
+  //         },
+  //         onError: (error) => {
+  //           console.error('Ошибка загрузки анимации:', error);
+  //         },
+  //       });
+  //     }
+  //   });
+  //
+  //   onUnmounted(() => {
+  //     // Очистка при уничтожении компонента
+  //     if (riveInstance) {
+  //       riveInstance.stop();
+  //       //riveInstance.unload();
+  //     }
+  //   });
+  //
+  //   return {
+  //     canvas,
+  //   };
+  // },
 };
 </script>
 

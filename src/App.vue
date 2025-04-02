@@ -32,6 +32,7 @@ export default {
   },
   created () {
     console.log("App created");
+    console.log(process.env.VUE_APP_API_BASE_URL);
     setTimeout(() => this.loader = false, 2000)
   },
   data() {

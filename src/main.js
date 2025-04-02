@@ -13,8 +13,6 @@ marked.setOptions({
 
 const initApp = async () => {
     try {
-        console.log(process.env.VUE_APP_API_BASE_URL);
-
         // Загрузка начальных данных
         await store.dispatch('notes/fetchAllNotes')
 
