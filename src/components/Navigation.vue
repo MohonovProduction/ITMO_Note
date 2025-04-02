@@ -3,6 +3,7 @@
 </script>
 
 <template>
+  <span class="version">Beta β</span>
   <nav>
     <router-link to="/">Главная</router-link>
     <router-link to="/generator">Записать</router-link>
@@ -17,6 +18,10 @@ nav {
   top: 0;
 
   z-index: 99;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   background-color: #4d6bfe; /* Акцентный цвет */
   padding: 1rem;
@@ -46,5 +51,16 @@ nav a.router-link-exact-active {
 nav a:hover {
   background-color: #3a5bff; /* Более тёмный оттенок при наведении */
   color: #ffffff;
+}
+
+.version {
+  display: block;
+  width: 100%;
+  background-color: #4d6bfe; /* Акцентный цвет */
+  text-align: left;
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 400;
+  padding: 0.5rem 1rem;
 }
 </style>
