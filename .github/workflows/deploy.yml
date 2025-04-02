@@ -2,36 +2,34 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main  # Или master, в зависимости от вашей ветки
+    branches: [ "main" ] # or "master" depending on your default branch
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16  # Укажите нужную версию Node.js
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Inject environment variables
-        run: |
-          echo "VUE_APP_API_BASE_URL=${{ secrets.VUE_APP_API_BASE_URL }}" >> .env
-          echo "VUE_APP_ROOT_URL=${{ secrets.VUE_APP_ROOT_URL }}" >> .env
-          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
-
-      - name: Build project
+      - name: Build with environment variables
         run: npm run build
+        env:
+          VUE_APP_API_BASE_URL: ${{ secrets.VUE_APP_API_BASE_URL }}
+          VUE_APP_ROOT_URL: ${{ secrets.VUE_APP_ROOT_URL }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: true
