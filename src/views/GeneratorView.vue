@@ -49,6 +49,7 @@
           label="Категория:"
           v-model="category"
           :options="categoryOptions"
+          :is-loading="isLoadingCategories"
         />
       </div>
 
@@ -102,34 +103,94 @@ export default {
     return {
       isAuthenticated: process.env.VUE_APP_BYPASS_AUTH === 'true',
       isSubmitting: false,
-      prompt: '',
-      content: '',
-      title: '',
-      description: '',
-      category: 'design',
-      categoryOptions: [
-        { value: 'design', label: 'Дизайн' },
-        { value: 'programming', label: 'Программирование' },
-        { value: 'math', label: 'Математика' },
-        { value: 'physics', label: 'Физика' }
-      ]
+      prompt: this.loadFromStorage('prompt') || '',
+      content: this.loadFromStorage('content') || '',
+      title: this.loadFromStorage('title') || '',
+      description: this.loadFromStorage('description') || '',
+      category: this.loadFromStorage('category') || 'design',
+      categoryOptions: [],
+      isLoadingCategories: false
     };
   },
+  watch: {
+    prompt(newValue) {
+      this.saveToStorage('prompt', newValue);
+    },
+    content(newValue) {
+      this.saveToStorage('content', newValue);
+    },
+    title(newValue) {
+      this.saveToStorage('title', newValue);
+    },
+    description(newValue) {
+      this.saveToStorage('description', newValue);
+    },
+    category(newValue) {
+      this.saveToStorage('category', newValue);
+    }
+  },
+  async created() {
+    if (this.isAuthenticated) {
+      console.log('Loading categories');
+      
+    }
+  },
   methods: {
+    saveToStorage(key, value) {
+      localStorage.setItem(`generator_${key}`, value);
+    },
+    loadFromStorage(key) {
+      return localStorage.getItem(`generator_${key}`);
+    },
+    clearStorage() {
+      localStorage.removeItem('generator_prompt');
+      localStorage.removeItem('generator_content');
+      localStorage.removeItem('generator_title');
+      localStorage.removeItem('generator_description');
+      localStorage.removeItem('generator_category');
+    },
     telegramLoadedCallbackFunc(user) {
       console.log('Telegram widget loaded:', user);
       if (process.env.VUE_APP_BYPASS_AUTH === 'true') {
         this.isAuthenticated = true;
         this.$refs.notification.addNotification('Режим разработки: авторизация пропущена', 'info');
+      } else {
+        const user = {
+          "id": 656626574,
+          "firstName": "Mihail",
+          "lastName": "Mohónov",
+          "username": "mohonovproduction",
+          "authDate": 1743683646,
+          "hash": "0e7efe11ac8c39035e77bf50716003d269aa03c35911f41fc42e9b0cae15c1f6"
+        }
+        console.log('You in dev mode:', user);
+        this.yourCallbackFunction(user);
+      }
+    },
+    async loadCategories() {
+      this.isLoadingCategories = true;
+      try {
+        const categories = await notesApi.getCategories();
+        this.categoryOptions = [
+          { value: 'custom', label: 'Другая категория...' },
+          ...categories,
+        ];
+      } catch (error) {
+        console.error('Ошибка при загрузке категорий:', error);
+        this.$refs.notification.addNotification('Ошибка при загрузке категорий', 'error');
+      } finally {
+        this.isLoadingCategories = false;
       }
     },
     async yourCallbackFunction(user) {
       console.log('Telegram auth callback:', user);
       try {
         const response = await notesApi.authTelegram(user);
-        const token = response.data.token;
+        const token = response.token;
         localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
         this.isAuthenticated = true;
+        await this.loadCategories();
         this.$refs.notification.addNotification('Успешная авторизация', 'success');
       } catch (error) {
         console.error('Ошибка авторизации:', error);
@@ -144,7 +205,8 @@ export default {
 
       try {
         const response = await notesApi.format(this.content, this.prompt);
-        this.content = response.data;
+        console.log(response);
+        this.content = response;
         this.$refs.notification.addNotification('Текст успешно отформатирован', 'success');
       } catch (error) {
         console.error('Ошибка при форматировании:', error);
@@ -157,13 +219,19 @@ export default {
         return;
       }
 
+      if (this.isSubmitting) {
+        return; // Предотвращаем повторную отправку
+      }
+
       this.isSubmitting = true;
       try {
+        const user = JSON.parse(localStorage.getItem('user'));
         const noteData = {
           title: this.title || 'Без названия',
           description: this.description || 'Без описания',
-          category: this.category,
-          content: this.content
+          category: this.category || 'Без категории',
+          userId: user.id,
+          text: this.content
         };
         
         await notesApi.create(noteData);
@@ -182,6 +250,7 @@ export default {
       this.title = '';
       this.description = '';
       this.category = 'design';
+      this.clearStorage();
     }
   }
 };

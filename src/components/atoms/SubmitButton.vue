@@ -1,11 +1,11 @@
 <template>
-  <button 
-    class="submit-button" 
+  <button
+    class="submit-button"
+    :class="{ 'is-submitting': isSubmitting }"
     :disabled="isSubmitting"
-    @click="$emit('click')"
+    @click="handleClick"
   >
-    <span v-if="!isSubmitting">{{ text }}</span>
-    <span v-else>Отправка...</span>
+    {{ text }}
   </button>
 </template>
 
@@ -13,50 +13,53 @@
 export default {
   name: 'SubmitButton',
   props: {
+    text: {
+      type: String,
+      required: true
+    },
     isSubmitting: {
       type: Boolean,
       default: false
-    },
-    text: {
-      type: String,
-      default: 'Отправить на сервер'
     }
-  }
+  },
+  methods: {
+    handleClick(event) {
+      if (!this.isSubmitting) {
+        this.$emit('click', event);
+      }
+    }
+  },
+  emits: ['click']
 }
 </script>
 
 <style scoped>
 .submit-button {
-  padding: var(--spacing-3) var(--spacing-6);
+  padding: var(--spacing-3) var(--spacing-4);
   background-color: var(--color-primary);
-  color: var(--color-white);
+  color: white;
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-normal);
-  min-width: 200px;
+  box-shadow: var(--shadow);
 }
 
 .submit-button:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .submit-button:disabled {
-  background-color: var(--color-gray-400);
+  background-color: var(--color-gray-300);
   cursor: not-allowed;
-  transform: none;
   box-shadow: none;
 }
 
-@media (max-width: 480px) {
-  .submit-button {
-    padding: var(--spacing-2) var(--spacing-4);
-    font-size: var(--font-size-sm);
-    min-width: 160px;
-  }
+.is-submitting {
+  opacity: 0.7;
 }
 </style> 

@@ -7,8 +7,15 @@ export default {
     getById(id) {
         return api.get(`/notes/${id}`)
     },
-    create(noteData) {
-        return api.post('/notes', noteData)
+    create({ title, description, category, userId, text }) {
+        return api.post('/notes', JSON.stringify(text), {
+            params: {
+                title,
+                description,
+                category,
+                userId
+            }
+        })
     },
     update(id, noteData) {
         return api.put(`/notes/${id}`, noteData)
@@ -24,5 +31,13 @@ export default {
     },
     authTelegram(userData) {
         return api.post('/users/auth/telegram', userData)
+    },
+    async getCategories() {
+        const response = await this.getAll();
+        const categories = new Set(response.map(note => note.category));
+        return Array.from(categories).map(category => ({
+            value: category,
+            label: category.charAt(0).toUpperCase() + category.slice(1)
+        }));
     }
 }
