@@ -17,10 +17,10 @@
 </template>
 
 <script>
-import Navigation from "@/components/Navigation.vue";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import Loader from "@/components/Loader.vue";
-import Footer from "@/components/Footer.vue";
+import Navigation from "@/components/organisms/Navigation.vue";
+import Breadcrumbs from "@/components/atoms/Breadcrumbs.vue";
+import Loader from "@/components/atoms/Loader.vue";
+import Footer from "@/components/organisms/Footer.vue";
 
 export default {
   name: 'App',

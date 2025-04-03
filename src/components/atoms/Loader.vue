@@ -1,5 +1,5 @@
 <script>
-import RiveAnimation from "@/components/RiveAnimation.vue";
+import RiveAnimation from "@/components/atoms/RiveAnimation.vue";
 
 export default {
   name: 'Loader',

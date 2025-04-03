@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import Notification from '@/components/Notification.vue';
+import Notification from '@/components/atoms/Notification.vue';
 import notesApi from '@/api/notes';
 import axios from "axios";
 
