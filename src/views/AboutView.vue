@@ -1,185 +1,344 @@
 <template>
   <div class="about">
-    <div class="home">
-      <div class="container">
+    <div class="container">
+      <!-- Заголовок -->
+      <header class="header">
         <h1>ITMO Notes</h1>
+        <p class="subtitle">Платформа для создания и хранения учебных конспектов</p>
+      </header>
+
+      <!-- Основное описание -->
+      <section class="description">
         <p>
-          Это веб-приложение для создания и хранения конспектов, написанных в формате Markdown.
-          Оно позволяет легко организовывать учебные материалы, автоматически генерирует оглавление
-          и поддерживает адаптивный дизайн для удобного использования на любых устройствах.
+          ITMO Notes - это современное веб-приложение для создания, хранения и форматирования учебных конспектов.
+          Платформа предоставляет удобный интерфейс для работы с текстом, автоматическое форматирование
+          и интеграцию с Telegram для авторизации пользователей.
         </p>
+      </section>
 
-        <h2>Особенности</h2>
-        <ul>
-          <li>📝 <strong>Поддержка Markdown</strong>: Конспекты пишутся в Markdown и отображаются в виде чистого HTML.</li>
-          <li>📚 <strong>Автоматическое оглавление</strong>: Оглавление генерируется автоматически на основе заголовков.</li>
-          <li>🎨 <strong>Светлая тема</strong>: Чистый и минималистичный дизайн для комфортного чтения.</li>
-          <li>📱 <strong>Адаптивность</strong>: Оптимизировано для работы на компьютерах, планшетах и смартфонах.</li>
-          <li>🚀 <strong>Простое развертывание</strong>: Готово к публикации на GitHub Pages или любом другом хостинге.</li>
-        </ul>
+      <!-- GitHub виджет -->
+      <section class="github-section">
+        <iframe
+          src="https://ghbtns.com/github-btn.html?user=MohonovProduction&repo=ITMO_Note&type=star&count=true&size=large"
+          frameborder="0"
+          scrolling="0"
+          width="170"
+          height="30"
+          title="GitHub"
+        ></iframe>
+      </section>
 
-        <h2>Технологии</h2>
-        <ul>
-          <li><strong>Vue.js</strong>: Основной фреймворк для создания приложения.</li>
-          <li><strong>Vuex</strong>: Управление состоянием приложения.</li>
-          <li><strong>Vue Router</strong>: Навигация между страницами.</li>
-          <li><strong>Marked.js</strong>: Преобразование Markdown в HTML.</li>
-          <li><strong>CSS-переменные</strong>: Гибкая настройка стилей.</li>
-        </ul>
+      <!-- Основные возможности -->
+      <section class="features">
+        <h2>Основные возможности</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3>Умное форматирование</h3>
+            <p>Автоматическое форматирование текста с помощью AI для лучшей читаемости</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Telegram авторизация</h3>
+            <p>Безопасный вход через Telegram без необходимости запоминать пароль</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Адаптивный дизайн</h3>
+            <p>Оптимизированный интерфейс для всех устройств</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Быстрая работа</h3>
+            <p>Оптимизированная производительность и мгновенное сохранение</p>
+          </div>
+        </div>
+      </section>
 
-        <h2>Как это работает</h2>
-        <ol>
-          <li>Конспекты хранятся в виде Markdown-файлов в папке <code>src/markdown/</code>.</li>
-          <li>Приложение динамически загружает и отображает эти файлы как отдельные страницы.</li>
-          <li>Оглавление генерируется автоматически на основе доступных конспектов.</li>
-          <li>Пользователи могут переходить между конспектами через боковое меню или прямые ссылки.</li>
-        </ol>
+      <!-- Технологии -->
+      <section class="technologies">
+        <h2>Используемые технологии</h2>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <h3>Frontend</h3>
+            <ul>
+              <li>Vue.js 3 - основной фреймворк</li>
+              <li>Vue Router - маршрутизация</li>
+              <li>Vuex - управление состоянием</li>
+              <li>Vue 3 Composition API</li>
+              <li>TypeScript</li>
+            </ul>
+          </div>
+          <div class="tech-card">
+            <h3>UI/UX</h3>
+            <ul>
+              <li>CSS Variables</li>
+              <li>Flexbox & Grid</li>
+              <li>Responsive Design</li>
+              <li>Custom Components</li>
+            </ul>
+          </div>
+          <div class="tech-card">
+            <h3>Интеграции</h3>
+            <ul>
+              <li>Telegram Auth Widget</li>
+              <li>Marked.js</li>
+              <li>Rive Animations</li>
+              <li>GitHub API</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-        <h2>Установка и запуск</h2>
-        <ol>
-          <li>Клонируйте репозиторий:
-            <pre><code>git clone https://github.com/ваш-username/study-notes-app.git</code></pre>
-          </li>
-          <li>Установите зависимости:
-            <pre><code>npm install</code></pre>
-          </li>
-          <li>Запустите сервер для разработки:
-            <pre><code>npm run serve</code></pre>
-          </li>
-          <li>Соберите проект для production:
-            <pre><code>npm run build</code></pre>
-          </li>
-          <li>Опубликуйте на GitHub Pages:
-            <pre><code>npm run deploy</code></pre>
-          </li>
-        </ol>
+      <!-- Авторы -->
+      <section class="authors">
+        <h2>Авторы проекта</h2>
+        <div class="authors-grid">
+          <div class="author-card">
+            <img src="@/assets/images/mohonov.jpg" alt="Михаил Мохонов" class="author-avatar">
+            <h3>Михаил Мохонов</h3>
+            <p>Frontend Developer</p>
+            <div class="author-links">
+              <a href="https://t.me/mohonovschannel" target="_blank" class="telegram-link">
+                <i class="fab fa-telegram"></i> Telegram
+              </a>
+              <a href="https://github.com/MohonovProduction" target="_blank" class="github-link">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+            </div>
+          </div>
+          <div class="author-card">
+            <img src="@/assets/images/tor4narek.jpg" alt="Тор4нарек" class="author-avatar">
+            <h3>Тор4нарек</h3>
+            <p>Backend Developer</p>
+            <div class="author-links">
+              <a href="https://t.me/tor4narek" target="_blank" class="telegram-link">
+                <i class="fab fa-telegram"></i> Telegram
+              </a>
+              <a href="https://github.com/tor4narek" target="_blank" class="github-link">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <h2>Настройка</h2>
-        <ul>
-          <li>Добавьте свои конспекты в папку <code>src/markdown/</code>.</li>
-          <li>Обновите файл <code>index.json</code>, чтобы добавить метаданные для каждого конспекта.</li>
-          <li>Настройте тему, изменив CSS-переменные в <code>src/styles/main.css</code>.</li>
-        </ul>
-
-        <h2>Демо</h2>
-        <p>
-          Посмотрите живой пример на GitHub Pages:
-          <a href="https://mohonovproduction.github.io/ITMO_note/" target="_blank">Конспекты</a>.
-        </p>
-
+      <!-- Лицензия -->
+      <section class="license">
         <h2>Лицензия</h2>
-        <p>Этот проект распространяется под лицензией MIT. Подробности см. в файле <code>LICENSE</code>.</p>
-
-        <h2>Автор</h2>
-        <p>
-          Разработано с ❤️ Михаилом Мохоновым.
-          <br>
-          Подписывайтесь на мой Telegram-канал:
-          <a href="https://t.me/mohonovschannel" target="_blank">@mohonovschannel</a>.
-        </p>
-      </div>
+        <p>Этот проект распространяется под лицензией MIT. Подробности см. в файле <a href="https://github.com/MohonovProduction/ITMO_Note/blob/main/LICENSE" target="_blank">LICENSE</a>.</p>
+      </section>
     </div>
   </div>
 </template>
 
 <style scoped>
 .about {
-  padding: 2rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.home {
-  max-width: 800px;
-  margin: 0 auto;
+  padding: var(--spacing-6);
+  background-color: var(--color-background);
+  min-height: 100vh;
 }
 
 .container {
-  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
 }
 
 h1 {
+  font-size: var(--font-size-4xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-4);
+}
+
+.subtitle {
+  font-size: var(--font-size-xl);
+  color: var(--color-gray-600);
+}
+
+.description {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto var(--spacing-8);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  color: var(--color-gray-700);
+}
+
+.github-section {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+}
+
+.features {
+  margin-bottom: var(--spacing-8);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-6);
+}
+
+.feature-card {
+  background: var(--color-white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-normal);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
   font-size: 2.5rem;
-  color: #4d6bfe;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-4);
 }
 
-h2 {
-  font-size: 2rem;
-  color: #4d6bfe;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-6);
 }
 
-p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #333;
+.tech-card {
+  background: var(--color-white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
-ul, ol {
-  margin: 1rem 0;
-  padding-left: 1.5rem;
+.tech-card h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-4);
 }
 
-li {
-  margin-bottom: 0.75rem;
-  font-size: 1.1rem;
-  line-height: 1.6;
+.tech-card ul {
+  list-style: none;
+  padding: 0;
 }
 
-code {
-  background-color: #f4f4f4;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
-  color: #d63384;
+.tech-card li {
+  margin-bottom: var(--spacing-2);
+  padding-left: var(--spacing-4);
+  position: relative;
 }
 
-pre {
-  background-color: #2d2d2d;
-  color: #f8f8f2;
-  padding: 1rem;
-  border-radius: 4px;
-  overflow-x: auto;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin: 1rem 0;
+.tech-card li::before {
+  content: "•";
+  color: var(--color-primary);
+  position: absolute;
+  left: 0;
 }
 
-pre code {
-  background: inherit;
-  color: inherit;
+.authors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-6);
 }
 
-a {
-  color: #4d6bfe;
+.author-card {
+  background: var(--color-white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.author-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: var(--spacing-4);
+  object-fit: cover;
+}
+
+.author-links {
+  display: flex;
+  gap: var(--spacing-4);
+  justify-content: center;
+  margin-top: var(--spacing-4);
+}
+
+.author-links a {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius-md);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
-a:hover {
-  color: #3a5bff;
-  text-decoration: underline;
+.telegram-link {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.github-link {
+  background-color: var(--color-gray-800);
+  color: white;
+}
+
+.license {
+  text-align: center;
+  margin-top: var(--spacing-8);
+  padding: var(--spacing-6);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 768px) {
   .about {
-    padding: 1rem;
+    padding: var(--spacing-4);
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
   }
 
-  h2 {
-    font-size: 1.75rem;
+  .subtitle {
+    font-size: var(--font-size-lg);
   }
 
-  p, li {
-    font-size: 1rem;
+  .description {
+    font-size: var(--font-size-base);
+  }
+
+  .features-grid,
+  .tech-grid,
+  .authors-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .about {
+    padding: var(--spacing-3);
+  }
+
+  h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .feature-card,
+  .tech-card,
+  .author-card {
+    padding: var(--spacing-4);
+  }
+
+  .author-links {
+    flex-direction: column;
   }
 }
 </style>
