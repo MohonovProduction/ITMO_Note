@@ -108,8 +108,8 @@
             </div>
           </div>
           <div class="author-card">
-            <img src="@/assets/images/tor4narek.jpg" alt="Тор4нарек" class="author-avatar">
-            <h3>Тор4нарек</h3>
+            <img src="@/assets/images/tor4narek.jpg" alt="Егор Кречетов" class="author-avatar">
+            <h3>Егор Кречетов</h3>
             <p>Backend Developer</p>
             <div class="author-links">
               <a href="https://t.me/tor4narek" target="_blank" class="telegram-link">
