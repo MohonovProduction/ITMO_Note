@@ -1,307 +1,122 @@
 <template>
   <div class="generator-container">
     <Notification ref="notification" />
-    <h1>Отправка конспектов</h1>
+    <h1>Генератор конспектов</h1>
 
-    <div class="upload-section">
-      <!-- Drag and Drop область -->
-      <div
-          class="drop-area"
-          @dragover.prevent="dragOver = true"
-          @dragleave="dragOver = false"
-          @drop.prevent="handleDrop"
-          :class="{ 'drag-over': dragOver }"
-      >
-        <div class="drop-content">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="var(--color-primary)"/>
-          </svg>
-          <p>Перетащите файлы сюда или кликните для выбора</p>
-          <input
-              type="file"
-              id="file-input"
-              @change="handleFileSelect"
-              multiple
-              accept=".md,.markdown,.txt"
-              style="display: none"
-          >
-          <BaseButton @click="triggerFileInput" variant="outline" class="select-button">Выбрать файлы</BaseButton>
-        </div>
-      </div>
-
-      <div class="selected-files" v-if="selectedFiles.length > 0">
-        <h3>Выбранные файлы:</h3>
-        <ul>
-          <li v-for="(file, index) in selectedFiles" :key="index">
-            {{ file.name }}
-            <button @click="removeFile(index)" class="remove-file-btn">×</button>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Форма для ввода данных -->
-    <div class="input-group">
-      <div class="input-section">
-        <label for="title">Название:</label>
-        <input
-            id="title"
-            v-model="noteData.title"
-            placeholder="Например: Motion_design"
-            :class="['input-field', { 'error': errors.title }]"
-            @input="saveToLocalStorage"
-        />
-      </div>
-      <div class="input-section">
-        <label for="category">Категория:</label>
-        <input
-            id="category"
-            v-model="noteData.category"
-            placeholder="Например: Motion Design"
-            :class="['input-field', { 'error': errors.category }]"
-            @input="saveToLocalStorage"
-        />
-      </div>
-    </div>
-
-    <!-- Textarea для ввода Markdown -->
-    <div class="markdown-section">
-      <label for="markdown-content">Контент (Markdown):</label>
-      <textarea
-          id="markdown-content"
-          v-model="noteData.content"
-          placeholder="Введите текст в формате Markdown"
-          :class="['markdown-input', { 'error': errors.content }]"
-          @input="saveToLocalStorage"
-      ></textarea>
-    </div>
-
-    <!-- Кнопки действий -->
-    <div class="button-group">
-      <SubmitButton 
-        :is-submitting="isSubmitting"
-        @click="submitNote"
+    <!-- Telegram авторизация -->
+    <div class="auth-section" v-if="!isAuthenticated">
+      <h2>Авторизация</h2>
+      <p>Для использования генератора необходимо авторизоваться через Telegram</p>
+      <telegramLoginTemp
+        mode="callback"
+        telegram-login="itmo_note_bot"
+        @loaded='telegramLoadedCallbackFunc'
+        @callback="yourCallbackFunction"
       />
-      <ClearButton @click="clearForm" />
     </div>
 
-    <div class="status-message" v-if="statusMessage">
-      {{ statusMessage }}
+    <!-- Основной контент -->
+    <div v-else class="content-section">
+      <!-- Секция с промптом -->
+      <div class="prompt-section">
+        <label for="prompt">Промпт:</label>
+        <textarea
+          id="prompt"
+          v-model="prompt"
+          placeholder="Введите промпт для форматирования текста"
+          class="textarea-field"
+        ></textarea>
+        <BaseButton @click="formatText" class="format-button">
+          Форматировать
+        </BaseButton>
+      </div>
+
+      <!-- Секция с текстом -->
+      <div class="text-section">
+        <label for="content">Текст:</label>
+        <textarea
+          id="content"
+          v-model="content"
+          placeholder="Введите или вставьте текст для форматирования"
+          class="textarea-field"
+        ></textarea>
+      </div>
+
+      <!-- Кнопки действий -->
+      <div class="button-group">
+        <SubmitButton 
+          :is-submitting="isSubmitting"
+          text="Сохранить"
+          @click="saveContent"
+        />
+        <ClearButton @click="clearForm" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import Notification from '@/components/atoms/Notification.vue';
-import notesApi from '@/api/notes';
-import axios from "axios";
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import SubmitButton from '@/components/atoms/SubmitButton.vue'
 import ClearButton from '@/components/atoms/ClearButton.vue'
+import { telegramLoginTemp } from "vue3-telegram-login";
 
 export default {
-
   name: 'GeneratorView',
   components: {
     Notification,
     BaseButton,
     SubmitButton,
-    ClearButton
+    ClearButton,
+    telegramLoginTemp
   },
   data() {
     return {
-      dragOver: false,
-      selectedFiles: [],
+      isAuthenticated: process.env.VUE_APP_BYPASS_AUTH === 'true',
       isSubmitting: false,
-      statusMessage: '',
-      noteData: {
-        title: '',
-        category: '',
-        content: '',
-      },
-      errors: {
-        title: false,
-        category: false,
-        content: false,
-      }
+      prompt: '',
+      content: '',
     };
   },
-  created() {
-    this.loadFromLocalStorage();
-  },
   methods: {
-    triggerFileInput() {
-      document.getElementById('file-input').click();
-    },
-    handleFileSelect(event) {
-      this.addFiles(Array.from(event.target.files));
-      event.target.value = ''; // Сбрасываем значение input
-    },
-    handleDrop(event) {
-      this.dragOver = false;
-      this.addFiles(Array.from(event.dataTransfer.files));
-    },
-    addFiles(files) {
-      const validFiles = files.filter(file =>
-          file.type === 'text/markdown' ||
-          file.type === 'text/plain' ||
-          file.name.endsWith('.md') ||
-          file.name.endsWith('.markdown')
-      );
-
-      if (validFiles.length === 0) {
-        this.$refs.notification.addNotification('Пожалуйста, выберите файлы Markdown (.md, .markdown)', 'error');
-        return;
+    telegramLoadedCallbackFunc(user) {
+      console.log('Telegram widget loaded:', user);
+      if (process.env.VUE_APP_BYPASS_AUTH === 'true') {
+        this.isAuthenticated = true;
+        this.$refs.notification.addNotification('Режим разработки: авторизация пропущена', 'info');
       }
-
-      // Читаем содержимое файлов
-      validFiles.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.noteData.content += e.target.result + '\n\n';
-          this.saveToLocalStorage();
-        };
-        reader.readAsText(file);
-      });
-
-      this.selectedFiles = [...this.selectedFiles, ...validFiles];
     },
-    removeFile(index) {
-      this.selectedFiles.splice(index, 1);
+    yourCallbackFunction(user) {
+      console.log('Telegram auth callback:', user);
+      this.isAuthenticated = true;
+      this.$refs.notification.addNotification('Успешная авторизация', 'success');
     },
-    async submitNote() {
-      // Валидация
-      this.resetErrors();
-      let hasError = false;
-
-      if (!this.noteData.title.trim()) {
-        this.errors.title = true;
-        hasError = true;
-      }
-
-      if (!this.noteData.category.trim()) {
-        this.errors.category = true;
-        hasError = true;
-      }
-
-      if (!this.extractFirstParagraphPreview(this.noteData.content).trim() && this.selectedFiles.length === 0) {
-        this.errors.content = true;
-        hasError = true;
-      }
-
-      if (hasError) {
-        this.$refs.notification.addNotification('Пожалуйста, заполните все обязательные поля', 'error');
+    formatText() {
+      // TODO: Добавить логику форматирования
+      this.$refs.notification.addNotification('Функция форматирования в разработке', 'info');
+    },
+    async saveContent() {
+      if (!this.content.trim()) {
+        this.$refs.notification.addNotification('Пожалуйста, введите текст', 'error');
         return;
       }
 
       this.isSubmitting = true;
-      this.statusMessage = '';
-
-      // Подготовка данных для отправки
-      const params = {
-        title: this.noteData.title,
-        category: this.noteData.category,
-        description: this.extractFirstParagraphPreview(this.noteData.content)
-      };
-
-      let bodyContent = '';
-
-      // Обработка файлов (если они есть)
-      if (this.selectedFiles.length > 0) {
-        try {
-          // Читаем содержимое всех файлов и объединяем в одну строку
-          const fileContents = await this.readFileAsText(this.selectedFiles)
-          bodyContent = fileContents.join('\n\n');
-        } catch (error) {
-          console.error('Ошибка чтения файлов:', error);
-          this.$refs.notification.addNotification('Ошибка при чтении файлов', 'error');
-          return;
-        }
-      } else {
-        // Используем текст из textarea, если файлов нет
-        bodyContent = this.noteData.content;
-      }
-
-      // Отправка на сервер
       try {
-        const response = await notesApi.create(bodyContent, { params });
-
-        this.statusMessage = 'Конспект успешно отправлен на сервер!';
-        this.$refs.notification.addNotification('Конспект успешно отправлен', 'success');
+        // TODO: Добавить API для сохранения
+        this.$refs.notification.addNotification('Текст успешно сохранен', 'success');
         this.clearForm();
-        console.log('Ответ сервера:', response.data);
       } catch (error) {
-        console.error('Ошибка при отправке:', error);
-        this.statusMessage = 'Ошибка при отправке конспекта';
-        this.$refs.notification.addNotification('Ошибка при отправке конспекта', 'error');
+        console.error('Ошибка при сохранении:', error);
+        this.$refs.notification.addNotification('Ошибка при сохранении', 'error');
       } finally {
         this.isSubmitting = false;
       }
     },
     clearForm() {
-      this.noteData = {
-        title: '',
-        category: '',
-        content: '',
-      };
-      this.selectedFiles = [];
-      this.resetErrors();
-      localStorage.removeItem('generatorFormData');
-      this.statusMessage = '';
-    },
-    saveToLocalStorage() {
-      localStorage.setItem('generatorFormData', JSON.stringify(this.noteData));
-    },
-    loadFromLocalStorage() {
-      const savedData = localStorage.getItem('generatorFormData');
-      if (savedData) {
-        this.noteData = JSON.parse(savedData);
-      }
-    },
-    resetErrors() {
-      this.errors = {
-        title: false,
-        category: false,
-        content: false,
-      };
-    },
-    extractFirstParagraphPreview(text) {
-      const plainText = text
-          .replace(/^#+\s+.+$/gm, '')
-          .replace(/^\s*[-*]\s+.+$/gm, '')
-          .replace(/^\s*\d+\.\s+.+$/gm, '')
-          .replace(/`{3}[\s\S]*?`{3}/g, '')
-          .replace(/`[^`]+`/g, '')
-          .replace(/\s+/g, ' ')
-          .trim();
-
-      const firstParagraph = plainText.split('\n\n')[0] || plainText;
-      return firstParagraph.length > 100
-          ? firstParagraph.slice(0, 100).trim() + '...'
-          : firstParagraph;
-    },
-    async readFileAsText(files) {
-      // Обещаем, что преобразуем все файлы в текст
-      const fileReadPromises = Array.from(files).map(file => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-
-          reader.onload = (event) => resolve(event.target.result);
-          reader.onerror = (error) => reject(error);
-
-          reader.readAsText(file); // Читаем файл как текст
-        });
-      });
-
-      try {
-        // Ждем, пока все файлы будут прочитаны
-        const fileContents = await Promise.all(fileReadPromises);
-        // Объединяем содержимое файлов через два переноса строки
-        return fileContents.join('\n\n');
-      } catch (error) {
-        console.error('Ошибка чтения файлов:', error);
-        throw new Error('Не удалось прочитать файлы');
-      }
+      this.prompt = '';
+      this.content = '';
     }
   }
 };
@@ -311,185 +126,114 @@ export default {
 .generator-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: var(--font-family);
+  padding: var(--spacing-6);
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: var(--font-size-3xl);
   color: var(--color-primary);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-6);
   text-align: center;
 }
 
-.upload-section {
-  margin-bottom: 2rem;
-}
-
-.drop-area {
-  border: 2px dashed var(--color-border);
-  border-radius: 8px;
-  padding: 2rem;
+h2 {
+  font-size: var(--font-size-xl);
+  color: var(--color-gray-800);
+  margin-bottom: var(--spacing-4);
   text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 1rem;
 }
 
-.drop-area.drag-over {
-  border-color: var(--color-primary);
-  background-color: rgba(77, 107, 254, 0.05);
+.auth-section {
+  text-align: center;
+  padding: var(--spacing-8);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-6);
 }
 
-.drop-content {
+.auth-section p {
+  color: var(--color-gray-600);
+  margin-bottom: var(--spacing-4);
+}
+
+.content-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-6);
 }
 
-.drop-content p {
-  margin: 0;
-  color: #555;
-}
-
-.select-button {
-  padding: 0.5rem 1rem;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.select-button:hover {
-  background-color: var(--color-link-hover);
-}
-
-.selected-files {
-  margin-top: 1rem;
-}
-
-.selected-files h3 {
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  color: #555;
-}
-
-.selected-files ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.selected-files li {
+.prompt-section,
+.text-section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-}
-
-.remove-file-btn {
-  background: none;
-  border: none;
-  color: #f44336;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0 0.5rem;
-}
-
-.input-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.input-section {
-  flex: 1;
-  min-width: 200px;
+  flex-direction: column;
+  gap: var(--spacing-2);
 }
 
 label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
 }
 
-.input-field {
+.textarea-field {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.input-field:focus {
-  border-color: var(--color-primary);
-  outline: none;
-}
-
-.markdown-section {
-  margin-bottom: 1.5rem;
-}
-
-.markdown-input {
-  width: 100%;
-  min-height: 300px;
-  padding: 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: var(--font-family);
+  min-height: 150px;
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
   line-height: 1.6;
   resize: vertical;
-  transition: border-color 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
-.markdown-input:focus {
+.textarea-field:focus {
   border-color: var(--color-primary);
   outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.format-button {
+  align-self: flex-end;
+  margin-top: var(--spacing-2);
 }
 
 .button-group {
   display: flex;
   gap: var(--spacing-4);
-  margin-top: var(--spacing-6);
+  margin-top: var(--spacing-4);
 }
 
 @media (max-width: 768px) {
-  .input-group {
-    flex-direction: column;
+  .generator-container {
+    padding: var(--spacing-4);
   }
 
-  .input-section {
-    width: 100%;
+  h1 {
+    font-size: var(--font-size-2xl);
   }
 
   .button-group {
     flex-direction: column;
-    gap: var(--spacing-2);
   }
 }
 
 @media (max-width: 480px) {
   .generator-container {
-    padding: 15px;
+    padding: var(--spacing-3);
   }
 
   h1 {
-    font-size: 1.75rem;
+    font-size: var(--font-size-xl);
   }
 
-  .button-group {
-    flex-direction: column;
-    gap: var(--spacing-2);
+  .auth-section {
+    padding: var(--spacing-4);
+  }
+
+  .textarea-field {
+    min-height: 120px;
+    padding: var(--spacing-3);
   }
 }
 </style>
