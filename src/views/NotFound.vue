@@ -1,5 +1,5 @@
 <script>
-import StateView from '@/components/StateView.vue'
+import StateView from '@/components/molecules/StateView.vue'
 
 export default {
   name: 'NotFound',

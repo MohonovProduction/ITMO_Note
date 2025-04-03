@@ -40,7 +40,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { marked } from 'marked'
 import axios from "axios"
-import StateView from '@/components/StateView.vue'
+import StateView from '@/components/molecules/StateView.vue'
 
 export default {
   name: 'NoteView',

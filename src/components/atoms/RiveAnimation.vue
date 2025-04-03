@@ -17,11 +17,11 @@ export default {
     },
     width: {
       type: Number,
-      default: 800,
+      default: 500,
     },
     height: {
       type: Number,
-      default: 600,
+      default: 500,
     },
     autoplay: {
       type: Boolean,
@@ -51,10 +51,9 @@ export default {
           }),
           onLoad: () => {
             riveInstance.resizeDrawingSurfaceToCanvas();
-            console.log('Анимация загружена!');
           },
           onError: (error) => {
-            console.error('Ошибка загрузки анимации:', error);
+            console.error('Rive error: ', error);
           },
         });
       }

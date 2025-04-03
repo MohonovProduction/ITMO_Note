@@ -42,7 +42,7 @@ export default {
   computed: {
     animationSize() {
       return window.innerWidth < 768 ? 300 : 400
-    }
+    },
   }
 }
 </script>

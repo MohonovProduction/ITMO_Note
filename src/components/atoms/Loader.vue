@@ -14,8 +14,8 @@ export default {
   <div class="loader">
     <RiveAnimation
         src="./loader.riv"
-        :width="206"
-        :height="206"
+        :width="205"
+        :height="205"
         :autoplay="true"
     />
   </div>
