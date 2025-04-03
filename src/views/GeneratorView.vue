@@ -77,12 +77,12 @@
     </div>
 
     <!-- Кнопки действий -->
-    <div class="action-buttons">
-      <button @click="submitNote" class="submit-button" :disabled="isSubmitting">
-        <span v-if="!isSubmitting">Отправить на сервер</span>
-        <span v-else>Отправка...</span>
-      </button>
-      <button @click="clearForm" class="clear-button">Очистить форму</button>
+    <div class="button-group">
+      <SubmitButton 
+        :is-submitting="isSubmitting"
+        @click="submitNote"
+      />
+      <ClearButton @click="clearForm" />
     </div>
 
     <div class="status-message" v-if="statusMessage">
@@ -96,13 +96,17 @@ import Notification from '@/components/atoms/Notification.vue';
 import notesApi from '@/api/notes';
 import axios from "axios";
 import BaseButton from '@/components/atoms/BaseButton.vue'
+import SubmitButton from '@/components/atoms/SubmitButton.vue'
+import ClearButton from '@/components/atoms/ClearButton.vue'
 
 export default {
 
   name: 'GeneratorView',
   components: {
     Notification,
-    BaseButton
+    BaseButton,
+    SubmitButton,
+    ClearButton
   },
   data() {
     return {
@@ -453,56 +457,10 @@ label {
   outline: none;
 }
 
-.action-buttons {
+.button-group {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.submit-button, .clear-button {
-  flex: 1;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.submit-button {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-.submit-button:hover:not(:disabled) {
-  background-color: var(--color-link-hover);
-}
-
-.submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.clear-button {
-  background-color: #f5f5f5;
-  color: #555;
-}
-
-.clear-button:hover {
-  background-color: #e0e0e0;
-}
-
-.status-message {
-  padding: 1rem;
-  border-radius: 4px;
-  background-color: #f5f7fa;
-  text-align: center;
-  color: #555;
-}
-
-.error {
-  border-color: #f44336 !important;
-  background-color: #ffebee;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-6);
 }
 
 @media (max-width: 768px) {
@@ -514,8 +472,9 @@ label {
     width: 100%;
   }
 
-  .action-buttons {
+  .button-group {
     flex-direction: column;
+    gap: var(--spacing-2);
   }
 }
 
@@ -526,6 +485,11 @@ label {
 
   h1 {
     font-size: 1.75rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: var(--spacing-2);
   }
 }
 </style>
