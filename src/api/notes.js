@@ -21,5 +21,8 @@ export default {
     },
     format(text, prompt) {
         return api.post('/notes/format', { text, prompt })
+    },
+    authTelegram(userData) {
+        return api.post('/users/auth/telegram', userData)
     }
 }

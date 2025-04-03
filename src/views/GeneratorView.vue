@@ -123,10 +123,18 @@ export default {
         this.$refs.notification.addNotification('Режим разработки: авторизация пропущена', 'info');
       }
     },
-    yourCallbackFunction(user) {
+    async yourCallbackFunction(user) {
       console.log('Telegram auth callback:', user);
-      this.isAuthenticated = true;
-      this.$refs.notification.addNotification('Успешная авторизация', 'success');
+      try {
+        const response = await notesApi.authTelegram(user);
+        const token = response.data.token;
+        localStorage.setItem('token', token);
+        this.isAuthenticated = true;
+        this.$refs.notification.addNotification('Успешная авторизация', 'success');
+      } catch (error) {
+        console.error('Ошибка авторизации:', error);
+        this.$refs.notification.addNotification('Ошибка авторизации', 'error');
+      }
     },
     async formatText() {
       if (!this.content.trim()) {
