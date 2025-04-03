@@ -19,8 +19,8 @@
       <div class="footer-section">
         <h3>Навигация</h3>
         <nav class="footer-nav">
-          <router-link to="/" class="nav-link">Главная</router-link>
-          <router-link to="/generator" class="nav-link">Генератор</router-link>
+          <router-link to="/" class="nav-link">Архив</router-link>
+          <router-link to="/generator" class="nav-link">Записать</router-link>
           <router-link to="/about" class="nav-link">О проекте</router-link>
         </nav>
       </div>
