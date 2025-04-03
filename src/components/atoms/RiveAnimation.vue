@@ -1,10 +1,13 @@
 <template>
-  <canvas ref="canvas" :style="`width: ${width}px; height: ${height}px`"></canvas>
+  <canvas
+      ref="canvas"
+      :style="`width: ${width}px; height: ${height}px`"
+  ></canvas>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
-import {Rive, Fit, Alignment, Layout} from '@rive-app/canvas';
+import { Rive, Fit, Alignment, Layout } from '@rive-app/canvas';
 
 export default {
   props: {
@@ -20,6 +23,14 @@ export default {
       type: Number,
       default: 600,
     },
+    autoplay: {
+      type: Boolean,
+      default: true,
+    },
+    stateMachines: {
+      type: [String, Array],
+      default: () => [],
+    }
   },
   setup(props) {
     const canvas = ref(null);
@@ -31,10 +42,11 @@ export default {
         riveInstance = new Rive({
           src: props.src, // Путь к .riv файлу
           canvas: canvas.value,
-          autoplay: true,
+          autoplay: props.autoplay, // Исправлено: используем props вместо this
+          stateMachines: props.stateMachines, // Исправлено: используем props вместо this
           layout: new Layout({
             fit: Fit.ScaleDown,
-
+            alignment: Alignment.Center,
             // layoutScaleFactor: 2, // 2x scale of the layout, when using `Fit.Layout`. This allows you to resize the layout as needed.
           }),
           onLoad: () => {
@@ -52,7 +64,7 @@ export default {
       // Очистка при уничтожении компонента
       if (riveInstance) {
         riveInstance.stop();
-        //riveInstance.unload();
+        riveInstance.cleanup(); // Добавлено: правильный метод для очистки
       }
     });
 
@@ -64,5 +76,7 @@ export default {
 </script>
 
 <style scoped>
-
+canvas {
+  display: block; /* Добавлено: чтобы избежать лишних отступов */
+}
 </style>

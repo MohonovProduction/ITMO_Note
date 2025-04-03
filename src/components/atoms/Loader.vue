@@ -12,7 +12,12 @@ export default {
 
 <template>
   <div class="loader">
-    <RiveAnimation src="./loader.riv" :width="206" :height="206" />
+    <RiveAnimation
+        src="./loader.riv"
+        :width="206"
+        :height="206"
+        :autoplay="true"
+    />
   </div>
 </template>
 

@@ -1,10 +1,18 @@
 <template>
   <div class="note-container">
     <template v-if="isLoading">
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <span>Загрузка заметки...</span>
-      </div>
+      <StateView
+        title="Загрузка конспекта"
+        message="Пожалуйста, подождите..."
+        animation-src="./loader_2.riv"
+      />
+    </template>
+    <template v-else-if="error">
+      <StateView
+        :title="error.title"
+        :message="error.message"
+        animation-src="./loader_2.riv"
+      />
     </template>
     <template v-else-if="note">
       <div class="note-header">
@@ -19,10 +27,11 @@
       <div class="markdown-content" v-html="compiledMarkdown"></div>
     </template>
     <template v-else>
-      <div class="error-state">
-        <i class="error-icon">⚠️</i>
-        <span>Заметка не найдена</span>
-      </div>
+      <StateView
+        title="Конспект не найден"
+        message="К сожалению, запрашиваемый конспект не существует или был удален"
+        animation-src="./loader_2.riv"
+      />
     </template>
   </div>
 </template>
@@ -30,9 +39,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { marked } from 'marked'
-import axios from "axios";
+import axios from "axios"
+import StateView from '@/components/StateView.vue'
 
 export default {
+  name: 'NoteView',
+  components: {
+    StateView
+  },
   props: {
     id: {
       type: [String, Number],
@@ -43,7 +57,8 @@ export default {
   data() {
     return {
       markdownContent: '',
-      markedInstance: marked
+      markedInstance: marked,
+      error: null
     }
   },
 
@@ -75,6 +90,7 @@ export default {
     id: {
       immediate: true,
       handler() {
+        this.error = null
         this.fetchNoteData()
       }
     }
@@ -107,7 +123,10 @@ export default {
         }
       } catch (error) {
         console.error('Error loading note:', error)
-        this.markdownContent = `# Error\n${error.message}`
+        this.error = {
+          title: 'Ошибка загрузки заметки',
+          message: error.response?.data?.message || error.message || 'Произошла ошибка при загрузке заметки'
+        }
       }
     },
 
@@ -126,9 +145,10 @@ export default {
         this.markdownContent = response.data;
       } catch (error) {
         console.error('Markdown load error:', error);
-        this.markdownContent = `# Error loading content\n${
-            error.response?.statusText || error.message
-        }`;
+        this.error = {
+          title: 'Ошибка загрузки содержимого',
+          message: error.response?.statusText || error.message || 'Произошла ошибка при загрузке содержимого заметки'
+        }
       }
     }
   }
@@ -228,40 +248,31 @@ export default {
   color: var(--text-secondary, #666);
 }
 
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 3rem;
-  color: var(--text-secondary, #666);
-}
+@media (max-width: 768px) {
+  .note-container {
+    padding: 0 1rem;
+  }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--border-color, #eaeaea);
-  border-top-color: var(--primary-color, #1976d2);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
+  .note-title {
+    font-size: 1.25rem;
+  }
 
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 3rem;
-  color: var(--error-color, #dc3545);
-}
+  .note-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 
-.error-icon {
-  font-size: 2rem;
-}
+  .markdown-content :deep(h1) {
+    font-size: 1.75rem;
+  }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  .markdown-content :deep(h2) {
+    font-size: 1.5rem;
+  }
+
+  .markdown-content :deep(h3) {
+    font-size: 1.25rem;
   }
 }
 </style>
