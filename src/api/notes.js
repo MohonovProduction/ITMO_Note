@@ -7,13 +7,19 @@ export default {
     getById(id) {
         return api.get(`/notes/${id}`)
     },
-    create(payload, config) {
-        return api.post('/notes', payload, config)
+    create(noteData) {
+        return api.post('/notes', noteData)
+    },
+    update(id, noteData) {
+        return api.put(`/notes/${id}`, noteData)
+    },
+    delete(id) {
+        return api.delete(`/notes/${id}`)
     },
     search(params) {
         return api.get('/notes/search', { params })
     },
-    delete(id) {
-        return api.delete(`/notes/${id}`)
+    format(text, prompt) {
+        return api.post('/notes/format', { text, prompt })
     }
 }

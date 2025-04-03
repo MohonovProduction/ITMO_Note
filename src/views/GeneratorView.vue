@@ -19,27 +19,47 @@
     <div v-else class="content-section">
       <!-- Секция с промптом -->
       <div class="prompt-section">
-        <label for="prompt">Промпт:</label>
-        <textarea
+        <TextAreaField
           id="prompt"
+          label="Промпт:"
           v-model="prompt"
           placeholder="Введите промпт для форматирования текста"
-          class="textarea-field"
-        ></textarea>
+        />
         <BaseButton @click="formatText" class="format-button">
           Форматировать
         </BaseButton>
       </div>
 
+      <!-- Секция с метаданными -->
+      <div class="metadata-section">
+        <TextField
+          id="title"
+          label="Заголовок:"
+          v-model="title"
+          placeholder="Введите заголовок"
+        />
+        <TextField
+          id="description"
+          label="Описание:"
+          v-model="description"
+          placeholder="Введите описание"
+        />
+        <SelectField
+          id="category"
+          label="Категория:"
+          v-model="category"
+          :options="categoryOptions"
+        />
+      </div>
+
       <!-- Секция с текстом -->
       <div class="text-section">
-        <label for="content">Текст:</label>
-        <textarea
+        <TextAreaField
           id="content"
+          label="Текст:"
           v-model="content"
           placeholder="Введите или вставьте текст для форматирования"
-          class="textarea-field"
-        ></textarea>
+        />
       </div>
 
       <!-- Кнопки действий -->
@@ -60,7 +80,11 @@ import Notification from '@/components/atoms/Notification.vue';
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import SubmitButton from '@/components/atoms/SubmitButton.vue'
 import ClearButton from '@/components/atoms/ClearButton.vue'
+import TextField from '@/components/atoms/TextField.vue'
+import SelectField from '@/components/atoms/SelectField.vue'
+import TextAreaField from '@/components/atoms/TextAreaField.vue'
 import { telegramLoginTemp } from "vue3-telegram-login";
+import notesApi from '@/api/notes'
 
 export default {
   name: 'GeneratorView',
@@ -69,6 +93,9 @@ export default {
     BaseButton,
     SubmitButton,
     ClearButton,
+    TextField,
+    SelectField,
+    TextAreaField,
     telegramLoginTemp
   },
   data() {
@@ -77,6 +104,15 @@ export default {
       isSubmitting: false,
       prompt: '',
       content: '',
+      title: '',
+      description: '',
+      category: 'design',
+      categoryOptions: [
+        { value: 'design', label: 'Дизайн' },
+        { value: 'programming', label: 'Программирование' },
+        { value: 'math', label: 'Математика' },
+        { value: 'physics', label: 'Физика' }
+      ]
     };
   },
   methods: {
@@ -92,9 +128,20 @@ export default {
       this.isAuthenticated = true;
       this.$refs.notification.addNotification('Успешная авторизация', 'success');
     },
-    formatText() {
-      // TODO: Добавить логику форматирования
-      this.$refs.notification.addNotification('Функция форматирования в разработке', 'info');
+    async formatText() {
+      if (!this.content.trim()) {
+        this.$refs.notification.addNotification('Пожалуйста, введите текст', 'error');
+        return;
+      }
+
+      try {
+        const response = await notesApi.format(this.content, this.prompt);
+        this.content = response.data;
+        this.$refs.notification.addNotification('Текст успешно отформатирован', 'success');
+      } catch (error) {
+        console.error('Ошибка при форматировании:', error);
+        this.$refs.notification.addNotification('Ошибка при форматировании', 'error');
+      }
     },
     async saveContent() {
       if (!this.content.trim()) {
@@ -104,7 +151,14 @@ export default {
 
       this.isSubmitting = true;
       try {
-        // TODO: Добавить API для сохранения
+        const noteData = {
+          title: this.title || 'Без названия',
+          description: this.description || 'Без описания',
+          category: this.category,
+          content: this.content
+        };
+        
+        await notesApi.create(noteData);
         this.$refs.notification.addNotification('Текст успешно сохранен', 'success');
         this.clearForm();
       } catch (error) {
@@ -117,6 +171,9 @@ export default {
     clearForm() {
       this.prompt = '';
       this.content = '';
+      this.title = '';
+      this.description = '';
+      this.category = 'design';
     }
   }
 };
@@ -204,6 +261,51 @@ label {
   margin-top: var(--spacing-4);
 }
 
+.metadata-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.input-field {
+  width: 100%;
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-normal);
+}
+
+.input-field:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.select-field {
+  width: 100%;
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  background-color: white;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.select-field:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
 @media (max-width: 768px) {
   .generator-container {
     padding: var(--spacing-4);
@@ -215,6 +317,10 @@ label {
 
   .button-group {
     flex-direction: column;
+  }
+
+  .metadata-section {
+    gap: var(--spacing-3);
   }
 }
 
