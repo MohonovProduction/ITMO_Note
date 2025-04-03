@@ -150,11 +150,9 @@ export default {
       localStorage.removeItem('generator_category');
     },
     telegramLoadedCallbackFunc(user) {
-      console.log('Telegram widget loaded:', user);
-      if (process.env.VUE_APP_BYPASS_AUTH === 'true') {
+      if (process.env.VUE_APP_BYPASS_AUTH === 'false') {
         this.isAuthenticated = true;
-        this.$refs.notification.addNotification('Режим разработки: авторизация пропущена', 'info');
-      } else {
+        this.$refs.notification.addNotification('Режим разработки: авторизация пропущена', 'success');
         const user = {
           "id": 656626574,
           "firstName": "Mihail",
