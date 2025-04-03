@@ -20,7 +20,7 @@
 import Navigation from "@/components/organisms/Navigation.vue";
 import Breadcrumbs from "@/components/atoms/Breadcrumbs.vue";
 import Loader from "@/components/atoms/Loader.vue";
-import Footer from "@/components/organisms/Footer.vue";
+import Footer from "@/components/molecules/Footer.vue";
 
 export default {
   name: 'App',
