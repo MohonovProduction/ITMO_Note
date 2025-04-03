@@ -1,10 +1,10 @@
 <template>
-  <canvas ref="canvas" :width="width" :height="height"></canvas>
+  <canvas ref="canvas" :style="`width: ${width}px; height: ${height}px`"></canvas>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { Rive, Fit, Alignment } from '@rive-app/canvas';
+import {Rive, Fit, Alignment, Layout} from '@rive-app/canvas';
 
 export default {
   props: {
@@ -32,6 +32,11 @@ export default {
           src: props.src, // Путь к .riv файлу
           canvas: canvas.value,
           autoplay: true,
+          layout: new Layout({
+            fit: Fit.ScaleDown,
+
+            // layoutScaleFactor: 2, // 2x scale of the layout, when using `Fit.Layout`. This allows you to resize the layout as needed.
+          }),
           onLoad: () => {
             riveInstance.resizeDrawingSurfaceToCanvas();
             console.log('Анимация загружена!');
