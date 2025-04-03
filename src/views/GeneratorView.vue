@@ -1,12 +1,12 @@
 <template>
   <div class="generator-container">
     <Notification ref="notification" />
-    <h1>Генератор конспектов</h1>
+    <h1>Запись конпсекта</h1>
 
     <!-- Telegram авторизация -->
     <div class="auth-section" v-if="!isAuthenticated">
-      <h2>Авторизация</h2>
-      <p>Для использования генератора необходимо авторизоваться через Telegram</p>
+      <h2>Предъявите читательский билет</h2>
+      <p>Чтобы добавлять конспекты необходимо авторизоваться через Telegram</p>
       <telegramLoginTemp
         mode="callback"
         telegram-login="itmo_note_bot"
@@ -17,18 +17,6 @@
 
     <!-- Основной контент -->
     <div v-else class="content-section">
-      <!-- Секция с промптом -->
-      <div class="prompt-section">
-        <TextAreaField
-          id="prompt"
-          label="Промпт:"
-          v-model="prompt"
-          placeholder="Введите промпт для форматирования текста"
-        />
-        <BaseButton @click="formatText" class="format-button">
-          Форматировать
-        </BaseButton>
-      </div>
 
       <!-- Секция с метаданными -->
       <div class="metadata-section">
@@ -51,6 +39,19 @@
           :options="categoryOptions"
           :is-loading="isLoadingCategories"
         />
+      </div>
+
+      <!-- Секция с промптом -->
+      <div class="prompt-section">
+        <TextAreaField
+            id="prompt"
+            label="Промпт:"
+            v-model="prompt"
+            placeholder="Введите промпт для форматирования текста"
+        />
+        <BaseButton @click="formatText" class="format-button">
+          Форматировать
+        </BaseButton>
       </div>
 
       <!-- Секция с текстом -->
@@ -149,6 +150,16 @@ export default {
       localStorage.removeItem('generator_description');
       localStorage.removeItem('generator_category');
     },
+    transformTelegramUser(user) {
+      return {
+        id: user.id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        username: user.username,
+        authDate: user.auth_date,
+        hash: user.hash
+      };
+    },
     telegramLoadedCallbackFunc(user) {
       if (process.env.VUE_APP_BYPASS_AUTH === 'false') {
         this.isAuthenticated = true;
@@ -183,10 +194,11 @@ export default {
     async yourCallbackFunction(user) {
       console.log('Telegram auth callback:', user);
       try {
-        const response = await notesApi.authTelegram(user);
+        const transformedUser = this.transformTelegramUser(user);
+        const response = await notesApi.authTelegram(transformedUser);
         const token = response.token;
         localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(transformedUser));
         this.isAuthenticated = true;
         await this.loadCategories();
         this.$refs.notification.addNotification('Успешная авторизация', 'success');
@@ -203,8 +215,8 @@ export default {
 
       try {
         const response = await notesApi.format(this.content, this.prompt);
-        console.log(response);
         this.content = response;
+        console.log(response);
         this.$refs.notification.addNotification('Текст успешно отформатирован', 'success');
       } catch (error) {
         console.error('Ошибка при форматировании:', error);
