@@ -4,9 +4,9 @@
       <h1>Список конспектов</h1>
 
       <div class="controls">
-        <button @click="expandAll">Развернуть все</button>
-        <button @click="collapseAll">Свернуть все</button>
-        <button @click="refreshNotes">Обновить</button>
+        <BaseButton @click="expandAll">Развернуть все</BaseButton>
+        <BaseButton @click="collapseAll">Свернуть все</BaseButton>
+        <BaseButton @click="refreshNotes">Обновить</BaseButton>
         <span v-if="isLoading" class="loading-status">Загрузка...</span>
       </div>
     </div>
@@ -56,9 +56,13 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import BaseButton from '@/components/atoms/BaseButton.vue'
 
 export default {
   name: 'HomeView',
+  components: {
+    BaseButton
+  },
 
   data() {
     return {

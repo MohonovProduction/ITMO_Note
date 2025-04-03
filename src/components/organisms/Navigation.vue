@@ -16,51 +16,67 @@
 nav {
   position: sticky;
   top: 0;
-
   z-index: 99;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  background-color: #4d6bfe; /* Акцентный цвет */
-  padding: 1rem;
+  background-color: var(--color-primary);
+  padding: var(--spacing-4);
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
 }
 
 /* Стили для ссылок */
 nav a {
-  color: #ffffff; /* Белый цвет текста */
+  color: var(--color-white);
   text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin: 0 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin: 0 var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius);
+  transition: all var(--transition-normal);
 }
 
 /* Стили для активной ссылки */
 nav a.router-link-exact-active {
-  background-color: #3a5bff; /* Более тёмный оттенок для активной ссылки */
-  color: #ffffff;
+  background-color: var(--color-primary-hover);
+  color: var(--color-white);
 }
 
 /* Стили для ссылок при наведении */
 nav a:hover {
-  background-color: #3a5bff; /* Более тёмный оттенок при наведении */
-  color: #ffffff;
+  background-color: var(--color-primary-hover);
+  color: var(--color-white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .version {
   display: block;
   width: 100%;
-  background-color: #4d6bfe; /* Акцентный цвет */
+  background-color: var(--color-primary);
   text-align: left;
-  color: #ffffff;
-  font-size: 1.2rem;
-  font-weight: 400;
-  padding: 0.5rem 1rem;
+  color: var(--color-white);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  padding: var(--spacing-2) var(--spacing-4);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  nav {
+    padding: var(--spacing-3);
+  }
+
+  nav a {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+
+  .version {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-2) var(--spacing-3);
+  }
 }
 </style>

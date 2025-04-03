@@ -25,7 +25,7 @@
               accept=".md,.markdown,.txt"
               style="display: none"
           >
-          <button @click="triggerFileInput" class="select-button">Выбрать файлы</button>
+          <BaseButton @click="triggerFileInput" variant="outline" class="select-button">Выбрать файлы</BaseButton>
         </div>
       </div>
 
@@ -95,12 +95,14 @@
 import Notification from '@/components/atoms/Notification.vue';
 import notesApi from '@/api/notes';
 import axios from "axios";
+import BaseButton from '@/components/atoms/BaseButton.vue'
 
 export default {
 
   name: 'GeneratorView',
   components: {
     Notification,
+    BaseButton
   },
   data() {
     return {

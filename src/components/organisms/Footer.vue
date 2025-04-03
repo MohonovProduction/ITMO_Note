@@ -42,10 +42,10 @@ export default {
 
 <style scoped>
 .site-footer {
-  background-color: #f5f7fa;
-  padding: 2rem 1rem;
-  margin-top: 3rem;
-  border-top: 1px solid var(--color-border);
+  background-color: var(--color-gray-50);
+  padding: var(--spacing-8) var(--spacing-4);
+  margin-top: var(--spacing-12);
+  border-top: 1px solid var(--color-gray-200);
 }
 
 .footer-content {
@@ -53,34 +53,35 @@ export default {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--spacing-8);
 }
 
 .footer-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: var(--spacing-8);
   justify-content: flex-start;
 }
 
 .links-column {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--spacing-3);
   min-width: 200px;
 }
 
 .links-column h4 {
-  margin: 0 0 0.5rem 0;
-  color: var(--color-text);
-  font-size: 1.1rem;
+  margin: 0 0 var(--spacing-2) 0;
+  color: var(--color-gray-800);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
 .links-column a {
-  color: #555;
+  color: var(--color-gray-600);
   text-decoration: none;
-  transition: color 0.2s;
-  font-size: 0.9rem;
+  transition: color var(--transition-fast);
+  font-size: var(--font-size-sm);
 }
 
 .links-column a:hover {
@@ -92,19 +93,19 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: var(--spacing-2);
   text-align: center;
 }
 
 .university-info {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
 }
 
 .university-info a {
   color: var(--color-primary);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .university-info a:hover {
@@ -112,15 +113,15 @@ export default {
 }
 
 .copyright {
-  font-size: 0.85rem;
-  color: #777;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
   .footer-links {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--spacing-6);
   }
 
   .links-column {
@@ -130,11 +131,11 @@ export default {
 
 @media (max-width: 480px) {
   .site-footer {
-    padding: 1.5rem 1rem;
+    padding: var(--spacing-6) var(--spacing-4);
   }
 
   .footer-content {
-    gap: 1.5rem;
+    gap: var(--spacing-6);
   }
 }
 </style>

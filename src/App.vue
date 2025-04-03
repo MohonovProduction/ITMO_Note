@@ -47,82 +47,82 @@ export default {
 </script>
 
 <style>
+@import '@/assets/styles/variables.css';
+
+/* Подключение шрифта Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
 html {
   scroll-behavior: smooth;
 }
 
-/* Переменные для цветов и шрифтов */
-:root {
-  --font-family: 'Roboto', sans-serif;
-  --font-size-base: 16px;
-  --line-height-base: 1.6;
-
-  --color-primary: #4d6bfe; /* Акцентный цвет */
-  --color-text: #333333; /* Основной цвет текста */
-  --color-background: #ffffff; /* Цвет фона */
-  --color-border: #e0e0e0; /* Цвет границ */
-  --color-link: var(--color-primary); /* Цвет ссылок */
-  --color-link-hover: #3a5bff; /* Цвет ссылок при наведении */
-}
-
 /* Базовые стили */
 body {
-  font-family: var(--font-family);
+  font-family: var(--font-family-base);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
-  color: var(--color-text);
-  background-color: var(--color-background);
+  color: var(--color-gray-800);
+  background-color: var(--color-white);
   margin: 0;
   padding: 0;
-}
-
-/* Центрирование содержимого на широких экранах */
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  line-height: var(--line-height-heading);
+  margin-top: 0;
+  margin-bottom: var(--spacing-4);
+}
+
 h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
   color: var(--color-primary);
 }
 
 h2 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-top: 1.25rem;
-  margin-bottom: 0.75rem;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  margin-top: var(--spacing-5);
+  margin-bottom: var(--spacing-3);
   color: var(--color-primary);
 }
 
 h3 {
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-top: var(--spacing-4);
+  margin-bottom: var(--spacing-2);
   color: var(--color-primary);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-3);
+  margin-bottom: var(--spacing-2);
 }
 
 /* Параграфы */
 p {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
+  margin-top: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
 }
 
 /* Списки */
 ul {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
-  padding-left: 1.5rem;
+  margin-top: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  padding-left: var(--spacing-6);
 }
 
 li {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-2);
 }
 
 /* Изображения */
@@ -130,66 +130,73 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
-  margin: 1rem auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: var(--spacing-4) auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 /* Ссылки */
 a {
-  color: var(--color-link);
+  color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color var(--transition-normal);
 }
 
 a:hover {
-  color: var(--color-link-hover);
+  color: var(--color-primary-hover);
   text-decoration: underline;
+}
+
+/* Центрирование содержимого на широких экранах */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-5);
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
   .container {
-    padding: 15px;
+    padding: var(--spacing-4);
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
   }
 
   h2 {
-    font-size: 1.75rem;
+    font-size: var(--font-size-xl);
   }
 
   h3 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-lg);
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 10px;
+    padding: var(--spacing-3);
   }
 
   h1 {
-    font-size: 1.75rem;
+    font-size: var(--font-size-xl);
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-lg);
   }
 
   h3 {
-    font-size: 1.25rem;
+    font-size: var(--font-size-base);
   }
 }
 
 /* Стили для анимации */
 .m-fade-enter-active {
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity var(--transition-normal);
 }
 .m-fade-leave-active {
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity var(--transition-normal);
 }
 
 .m-fade-enter-from,

@@ -23,13 +23,21 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-
-  background-color: #4d6bfe;
-
+  background-color: var(--color-primary);
   z-index: 9999;
-
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: opacity var(--transition-normal);
+}
+
+.loader.fade-enter-active,
+.loader.fade-leave-active {
+  transition: opacity var(--transition-normal);
+}
+
+.loader.fade-enter-from,
+.loader.fade-leave-to {
+  opacity: 0;
 }
 </style>
