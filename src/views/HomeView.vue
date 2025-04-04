@@ -88,7 +88,7 @@ export default {
 
     async refreshNotes() {
       try {
-        await this.fetchAllNotes()
+        await this.refreshNotes()
         if (this.groupedNotes.length > 0 && this.openCategories.length === 0) {
           this.openCategories = [0]
         }
