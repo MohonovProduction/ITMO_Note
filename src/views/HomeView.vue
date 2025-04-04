@@ -88,12 +88,12 @@ export default {
 
     async refreshNotes() {
       try {
-        await this.refreshNotes()
+        await this.fetchAllNotes();
         if (this.groupedNotes.length > 0 && this.openCategories.length === 0) {
-          this.openCategories = [0]
+          this.openCategories = [0];
         }
       } catch (error) {
-        console.error('Ошибка обновления:', error)
+        console.error('Ошибка обновления:', error);
       }
     },
 
