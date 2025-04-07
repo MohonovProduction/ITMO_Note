@@ -1,5 +1,5 @@
 <template>
-  <div class="note-container">
+  <div class="note-container" :class="{ 'is-editing': isEditing }">
     <template v-if="isLoading">
       <StateView
         title="Загрузка конспекта"
@@ -22,9 +22,26 @@
         <div class="note-meta">
           <span class="category-badge">{{ note.category }}</span>
           <span class="date">Обновлено: {{ formattedDate }}</span>
+          <button class="edit-button" @click="toggleEditing">
+            <span class="button-icon">{{ isEditing ? '✓' : '✎' }}</span>
+            {{ isEditing ? 'Сохранить' : 'Редактировать' }}
+          </button>
         </div>
       </div>
-      <div class="markdown-content" v-html="compiledMarkdown"></div>
+      
+      <div class="note-content">
+        <div class="editor-column" :class="{ 'is-active': isEditing }">
+          <textarea
+            v-model="markdownContent"
+            class="markdown-editor"
+            placeholder="Введите текст в формате Markdown..."
+            @input="handleContentChange"
+          ></textarea>
+        </div>
+        <div class="preview-column">
+          <div class="markdown-content" v-html="compiledMarkdown"></div>
+        </div>
+      </div>
     </template>
     <template v-else>
       <StateView
@@ -41,6 +58,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { marked } from 'marked'
 import axios from "axios"
 import StateView from '@/components/molecules/StateView.vue'
+import debounce from 'lodash/debounce'
 
 export default {
   name: 'NoteView',
@@ -58,7 +76,9 @@ export default {
     return {
       markdownContent: '',
       markedInstance: marked,
-      error: null
+      error: null,
+      isEditing: false,
+      hasUnsavedChanges: false
     }
   },
 
@@ -71,14 +91,7 @@ export default {
 
     compiledMarkdown() {
       if (!this.markdownContent) return ''
-
-      // Crunch: Egor otdavay normy failes
-      const regex = /```markdown/g;
-      const text = this.markdownContent.replace(regex, '')
-      console.log('text', text)
-      // Crunch off
-
-      return this.markedInstance.parse(text)
+      return this.markedInstance.parse(this.markdownContent)
     },
 
     formattedDate() {
@@ -98,10 +111,11 @@ export default {
 
   created() {
     this.initMarked()
+    this.saveDraft = debounce(this._saveDraft, 500)
   },
 
   methods: {
-    ...mapActions('notes', ['fetchNoteById']),
+    ...mapActions('notes', ['fetchNoteById', 'updateNote']),
 
     initMarked() {
       this.markedInstance.setOptions({
@@ -109,7 +123,7 @@ export default {
         breaks: true,
         gfm: true,
         highlight(code) {
-          return code // Можно добавить highlight.js
+          return code
         }
       })
     },
@@ -120,6 +134,7 @@ export default {
 
         if (this.note?.file) {
           await this.loadMarkdownContent()
+          this.checkForDraft()
         }
       } catch (error) {
         console.error('Error loading note:', error)
@@ -132,15 +147,11 @@ export default {
 
     async loadMarkdownContent() {
       try {
-        console.log('Loading markdown from:', this.note.file);
-
         const response = await axios.get(process.env.VUE_APP_ROOT_URL + this.note.file, {
-          responseType: 'text', // Указываем, что ожидаем текстовый ответ
-          transformResponse: [data => data], // Отключаем автоматическое преобразование JSON
-          validateStatus: status => status === 200 // Только статус 200 считается успешным
+          responseType: 'text',
+          transformResponse: [data => data],
+          validateStatus: status => status === 200
         });
-
-        console.log(response)
 
         this.markdownContent = response.data;
       } catch (error) {
@@ -150,6 +161,43 @@ export default {
           message: error.response?.statusText || error.message || 'Произошла ошибка при загрузке содержимого заметки'
         }
       }
+    },
+
+    checkForDraft() {
+      const draft = localStorage.getItem(`draftNote_${this.id}`)
+      if (draft) {
+        if (confirm('Найден черновик. Восстановить его?')) {
+          this.markdownContent = draft
+          this.hasUnsavedChanges = true
+        }
+      }
+    },
+
+    handleContentChange() {
+      this.hasUnsavedChanges = true
+      this.saveDraft()
+    },
+
+    _saveDraft() {
+      localStorage.setItem(`draftNote_${this.id}`, this.markdownContent)
+    },
+
+    async toggleEditing() {
+      if (this.isEditing) {
+        try {
+          await this.updateNote({
+            id: this.id,
+            content: this.markdownContent
+          })
+          localStorage.removeItem(`draftNote_${this.id}`)
+          this.hasUnsavedChanges = false
+        } catch (error) {
+          console.error('Error saving note:', error)
+          alert('Ошибка при сохранении заметки')
+          return
+        }
+      }
+      this.isEditing = !this.isEditing
     }
   }
 }
@@ -157,9 +205,14 @@ export default {
 
 <style scoped>
 .note-container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.note-container.is-editing {
+  max-width: 100%;
 }
 
 .note-header {
@@ -196,6 +249,65 @@ export default {
   padding: 0.2rem 0.6rem;
   border-radius: 12px;
   font-weight: 500;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color, #1976d2);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+  background-color: var(--primary-color-dark, #1565c0);
+}
+
+.button-icon {
+  font-size: 1.2rem;
+}
+
+.note-content {
+  display: flex;
+  gap: 2rem;
+  min-height: 500px;
+}
+
+.editor-column {
+  flex: 0 0 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.editor-column.is-active {
+  flex: 0 0 50%;
+  transform: scaleX(1);
+}
+
+.preview-column {
+  flex: 1;
+  min-width: 0;
+}
+
+.markdown-editor {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  padding: 1rem;
+  border: 1px solid var(--border-color, #eaeaea);
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: none;
+  background-color: var(--editor-bg, #f8f9fa);
 }
 
 .markdown-content {
@@ -263,16 +375,13 @@ export default {
     gap: 0.5rem;
   }
 
-  .markdown-content :deep(h1) {
-    font-size: 1.75rem;
+  .note-content {
+    flex-direction: column;
   }
 
-  .markdown-content :deep(h2) {
-    font-size: 1.5rem;
-  }
-
-  .markdown-content :deep(h3) {
-    font-size: 1.25rem;
+  .editor-column.is-active {
+    flex: 0 0 auto;
+    width: 100%;
   }
 }
 </style>
