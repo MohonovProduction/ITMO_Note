@@ -7,15 +7,20 @@
         <BaseButton @click="expandAll">Развернуть все</BaseButton>
         <BaseButton @click="collapseAll">Свернуть все</BaseButton>
         <BaseButton @click="refreshNotes">Обновить</BaseButton>
-        <span v-if="isLoading" class="loading-status">Загрузка...</span>
+        <span v-if="loading" class="loading-status">Загрузка...</span>
       </div>
     </div>
+
+    <CategoryFilter
+      v-if="categories.length"
+      @category-change="handleCategorySelect"
+    />
 
     <div v-if="error" class="error-message">
       Ошибка загрузки данных: {{ error }}
     </div>
 
-    <template v-if="!isLoading && !error">
+    <template v-if="!loading && !error">
       <div class="categories-list">
         <CategoryCard
           v-for="(category, index) in groupedNotes"
@@ -28,7 +33,7 @@
       </div>
     </template>
 
-    <div v-if="!isLoading && !groupedNotes.length" class="empty-state">
+    <div v-if="!loading && !groupedNotes.length" class="empty-state">
       Нет доступных конспектов
       <BaseButton @click="refreshNotes">Попробовать снова</BaseButton>
     </div>
@@ -39,56 +44,56 @@
 import { mapState, mapGetters, mapActions } from 'vuex'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import CategoryCard from '@/components/molecules/CategoryCard.vue'
+import CategoryFilter from '@/components/molecules/CategoryFilter.vue'
 
 export default {
   name: 'HomeView',
   components: {
     BaseButton,
-    CategoryCard
+    CategoryCard,
+    CategoryFilter
   },
 
   data() {
     return {
-      openCategories: []
+      openCategories: [],
+      isAuthModalOpen: false
     }
   },
 
   computed: {
-    ...mapState('notes', ['error']),
-    ...mapGetters('notes', ['isLoading', 'allNotes', 'getCategories']),
+    ...mapState('notes', ['error', 'loading']),
+    ...mapGetters('notes', ['publicNotes', 'categories']),
+    ...mapGetters('auth', ['isAuthenticated']),
 
     groupedNotes() {
-      const categoriesMap = {}
-      const categoriesOrder = []
+      const categoriesMap = {};
+      const categoriesOrder = [];
 
-      try {
-        this.allNotes.forEach(note => {
-          const categoryName = note.category || 'Без категории'
+      this.publicNotes.forEach(note => {
+        const categoryName = note.category || 'Без категории';
 
-          if (!categoriesMap[categoryName]) {
-            categoriesMap[categoryName] = []
-            categoriesOrder.push(categoryName)
-          }
+        if (!categoriesMap[categoryName]) {
+          categoriesMap[categoryName] = [];
+          categoriesOrder.push(categoryName);
+        }
 
-          categoriesMap[categoryName].push(note)
-        })
-      } catch (error) {
-        console.error(error)
-      }
+        categoriesMap[categoryName].push(note);
+      });
 
       return categoriesOrder.map(name => ({
         name,
         notes: categoriesMap[name].sort((a, b) => new Date(b.date) - new Date(a.date))
-      }))
+      }));
     }
   },
 
   methods: {
-    ...mapActions('notes', ['fetchAllNotes']),
+    ...mapActions('notes', ['fetchPublicNotes', 'searchNotesByCategory', 'fetchCategories']),
 
     async refreshNotes() {
       try {
-        await this.fetchAllNotes();
+        await this.fetchPublicNotes();
         if (this.groupedNotes.length > 0 && this.openCategories.length === 0) {
           this.openCategories = [0];
         }
@@ -119,11 +124,26 @@ export default {
 
     handleNoteClick(note) {
       this.$router.push({ name: 'note', params: { id: note.id } })
+    },
+
+    async handleCategorySelect(category) {
+      if (category) {
+        await this.searchNotesByCategory(category);
+      } else {
+        await this.fetchPublicNotes();
+      }
+    },
+    
+    handleAuthSuccess() {
+      this.isAuthModalOpen = false;
     }
   },
 
   async created() {
-    await this.refreshNotes()
+    await Promise.all([
+      this.fetchPublicNotes(),
+      this.fetchCategories()
+    ]);
   },
 
   watch: {

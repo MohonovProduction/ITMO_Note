@@ -1,43 +1,57 @@
-import api from './index'
+import api from './axios'
 
-export default {
-    getAll() {
-        return api.get('/notes')
-    },
-    getById(id) {
-        return api.get(`/notes/${id}`)
-    },
-    create({ title, description, category, userId, text }) {
-        return api.post('/notes', JSON.stringify(text), {
+export const notesApi = {
+    // Получить все публичные заметки
+    getPublicNotes: () => api.get('/notes'),
+
+    // Создать новую заметку
+    createNote: (data) => {
+        const { title, description, category, userId, isPublic, text } = data;
+        return api.post('/notes', { text }, {
             params: {
                 title,
                 description,
                 category,
-                userId
+                userId,
+                isPublic
             }
-        })
+        });
     },
-    update(id, noteData) {
-        return api.put(`/notes/${id}`, noteData)
+
+    // Получить приватные заметки пользователя
+    getPrivateNotes: () => api.get('/notes/private'),
+
+    // Получить заметку по ID
+    getNoteById: (id) => api.get(`/notes/${id}`),
+
+    // Обновить заметку
+    updateNote: (id, data) => {
+        const { title, description, category, ...rest } = data;
+        return api.put(`/notes/${id}`, rest, {
+            params: {
+                title,
+                description,
+                category
+            }
+        });
     },
-    delete(id) {
-        return api.delete(`/notes/${id}`)
-    },
-    search(params) {
-        return api.get('/notes/search', { params })
-    },
-    format(text, prompt) {
-        return api.post('/notes/format', { text, prompt })
-    },
-    authTelegram(userData) {
-        return api.post('/users/auth/telegram', userData)
-    },
-    async getCategories() {
-        const response = await this.getAll();
-        const categories = new Set(response.map(note => note.category));
-        return Array.from(categories).map(category => ({
-            value: category,
-            label: category.charAt(0).toUpperCase() + category.slice(1)
-        }));
-    }
+
+    // Удалить заметку
+    deleteNote: (id) => api.delete(`/notes/${id}`),
+
+    // Поиск заметок по категории
+    searchNotesByCategory: (category) => api.get('/notes/search', {
+        params: { category }
+    }),
+
+    // Форматирование текста заметки
+    formatNote: (data) => api.post('/notes/format', data),
+
+    // Получить все категории
+    getCategories: () => api.get('/notes/categories'),
+
+    // Создать новую категорию
+    createCategory: (name) => api.post('/notes/category', null, {
+        params: { name }
+    })
 }

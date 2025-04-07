@@ -11,10 +11,11 @@ marked.setOptions({
     gfm: true
 })
 
-const initApp = async () => {
+// Инициализация приложения
+async function initApp() {
     try {
-        // Загрузка начальных данных
-        await store.dispatch('notes/fetchAllNotes')
+        // Загружаем публичные заметки при старте
+        await store.dispatch('notes/fetchPublicNotes')
 
         const app = createApp(App)
 
@@ -26,9 +27,10 @@ const initApp = async () => {
         app.use(router)
 
         app.mount('#app')
+        console.log('App initialized successfully')
+        console.log('API Base URL:', process.env.VUE_APP_API_BASE_URL)
     } catch (error) {
-        console.error('Application initialization failed:', error)
-        // Показать fallback UI
+        console.error('Error initializing app:', error)
     }
 }
 

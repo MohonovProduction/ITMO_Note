@@ -5,7 +5,7 @@
 
     <!-- Telegram авторизация -->
     <AuthModal
-      :is-open="!isAuthenticated"
+      :is-open="isAuthModalOpen"
       @close="handleAuthClose"
       @success="handleAuthSuccess"
     />
@@ -82,6 +82,7 @@ import SelectField from '@/components/atoms/SelectField.vue'
 import TextAreaField from '@/components/atoms/TextAreaField.vue'
 import notesApi from '@/api/notes'
 import AuthModal from '@/components/molecules/AuthModal.vue'
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'GeneratorView',
@@ -97,7 +98,7 @@ export default {
   },
   data() {
     return {
-      isAuthenticated: false,
+      isAuthModalOpen: false,
       isSubmitting: false,
       prompt: '',
       content: '',
@@ -105,8 +106,15 @@ export default {
       description: '',
       category: '',
       categoryOptions: [],
-      isLoadingCategories: false
+      isLoadingCategories: false,
+      generatedText: '',
+      isGenerating: false
     };
+  },
+  computed: {
+    ...mapState('notes', ['loading']),
+    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapGetters('notes', ['categories'])
   },
   created() {
     this.checkAuth();
@@ -129,10 +137,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions('notes', ['createNote', 'formatNote', 'fetchCategories']),
+    
     checkAuth() {
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
-      this.isAuthenticated = !!(token && user);
+      this.isAuthModalOpen = !(token && user);
       if (this.isAuthenticated) {
         this.loadCategories();
       }
@@ -164,16 +174,15 @@ export default {
       // Логика перенесена в AuthModal
     },
     async loadCategories() {
-      this.isLoadingCategories = true;
       try {
-        const categories = await notesApi.getCategories();
-        this.categoryOptions = [
-          { value: 'custom', label: 'Другая категория...' },
-          ...categories,
-        ];
+        this.isLoadingCategories = true;
+        await this.fetchCategories();
+        this.categoryOptions = this.categories.map(category => ({
+          value: category.name,
+          label: category.name
+        }));
       } catch (error) {
-        console.error('Ошибка при загрузке категорий:', error);
-        this.$refs.notification.addNotification('Ошибка при загрузке категорий', 'error');
+        console.error('Ошибка загрузки категорий:', error);
       } finally {
         this.isLoadingCategories = false;
       }
@@ -188,7 +197,10 @@ export default {
       }
 
       try {
-        const response = await notesApi.format(this.content, this.prompt);
+        const response = await this.formatNote({
+          text: this.content,
+          prompt: this.prompt
+        });
         this.content = response;
         console.log(response);
         this.$refs.notification.addNotification('Текст успешно отформатирован', 'success');
@@ -218,7 +230,7 @@ export default {
           text: this.content
         };
         
-        await notesApi.create(noteData);
+        await this.createNote(noteData);
         this.$refs.notification.addNotification('Текст успешно сохранен', 'success');
         this.clearForm();
       } catch (error) {
@@ -233,15 +245,59 @@ export default {
       this.content = '';
       this.title = '';
       this.description = '';
-      this.category = 'design';
+      this.category = '';
       this.clearStorage();
     },
     handleAuthClose() {
-      this.$router.push('/')
+      this.isAuthModalOpen = false;
     },
     handleAuthSuccess() {
-      this.isAuthenticated = true;
+      this.isAuthModalOpen = false;
       this.loadCategories();
+    },
+    async handleGenerate() {
+      if (!this.isAuthenticated) {
+        this.isAuthModalOpen = true;
+        return;
+      }
+      
+      this.isSubmitting = true;
+      try {
+        const response = await this.formatNote({
+          text: this.content,
+          prompt: this.prompt
+        });
+        this.content = response;
+      } catch (error) {
+        console.error('Ошибка при генерации текста:', error);
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+    async handleSave() {
+      if (!this.isAuthenticated) {
+        this.isAuthModalOpen = true;
+        return;
+      }
+      
+      this.isSubmitting = true;
+      try {
+        const noteData = {
+          title: 'Сгенерированная заметка',
+          description: 'Заметка, созданная с помощью генератора',
+          category: this.category,
+          userId: 0,
+          isPublic: false,
+          text: this.content
+        };
+        
+        await this.createNote(noteData);
+        this.clearForm();
+      } catch (error) {
+        console.error('Ошибка при сохранении заметки:', error);
+      } finally {
+        this.isSubmitting = false;
+      }
     }
   }
 };

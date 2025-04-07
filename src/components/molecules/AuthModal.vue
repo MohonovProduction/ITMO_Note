@@ -21,7 +21,7 @@
 
 <script>
 import { telegramLoginTemp } from "vue3-telegram-login";
-import notesApi from '@/api/notes';
+import { mapActions } from 'vuex';
 
 export default {
   components: {
@@ -35,31 +35,33 @@ export default {
   },
   emits: ['close', 'success'],
   methods: {
+    ...mapActions('auth', ['loginWithTelegram']),
+    
     closeModal() {
-      this.$emit('close')
+      this.$emit('close');
     },
+    
     transformTelegramUser(user) {
       return {
         id: user.id,
-        FirstName: user.first_name,
-        LastName: user.last_name,
+        firstName: user.first_name,
+        lastName: user.last_name,
         username: user.username,
         authDate: user.auth_date,
         hash: user.hash
       };
     },
+    
     async handleTelegramCallback(user) {
       try {
         const transformedUser = this.transformTelegramUser(user);
-        const response = await notesApi.authTelegram(transformedUser);
-        const token = response.token;
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(transformedUser));
+        await this.loginWithTelegram(transformedUser);
         this.$emit('success', transformedUser);
       } catch (error) {
         console.error('Ошибка авторизации:', error);
       }
     },
+    
     telegramLoadedCallbackFunc() {
       if (process.env.VUE_APP_BYPASS_AUTH === 'false') {
         const devUser = {
@@ -69,11 +71,11 @@ export default {
           "username": "mohonovproduction",
           "auth_date": 1743683646,
           "hash": "0e7efe11ac8c39035e77bf50716003d269aa03c35911f41fc42e9b0cae15c1f6"
-        }
+        };
         console.log('You in dev mode:', devUser);
         this.handleTelegramCallback(devUser);
       }
-      console.log('Telegram widget loaded')
+      console.log('Telegram widget loaded');
     }
   }
 }

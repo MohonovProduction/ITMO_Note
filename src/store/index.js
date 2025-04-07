@@ -1,15 +1,17 @@
 // store/index.js
-import { createStore } from 'vuex'
-import notesModule from './modules/notes'
-import createPersistedState from 'vuex-persistedstate' // для сохранения состояния
+import { createStore } from 'vuex';
+import notes from './modules/notes';
+import auth from './modules/auth';
+import createPersistedState from 'vuex-persistedstate';
 
 export default createStore({
   modules: {
-    notes: notesModule
+    notes,
+    auth
   },
   plugins: [
     createPersistedState({
-      paths: ['notes.notes'] // сохраняем только список заметок
+      paths: ['notes.notes']
     })
-  ]
-})
+  ],
+});

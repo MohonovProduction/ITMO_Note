@@ -4,14 +4,14 @@
       <StateView
         title="Загрузка конспекта"
         message="Пожалуйста, подождите..."
-        animation-src="./loader_2.riv"
+        animation-src="/loader_2.riv"
       />
     </template>
     <template v-else-if="error">
       <StateView
         :title="error.title"
         :message="error.message"
-        animation-src="./loader_2.riv"
+        animation-src="/loader_2.riv"
       />
     </template>
     <template v-else-if="note">
@@ -23,6 +23,7 @@
           <span class="category-badge">{{ note.category }}</span>
           <span class="date">Обновлено: {{ formattedDate }}</span>
           <BaseButton
+            v-if="isAuthenticated"
             :variant="isEditing ? 'primary' : 'outline'"
             size="medium"
             class="edit-button"
@@ -31,6 +32,9 @@
             <span class="button-icon">{{ isEditing ? '✓' : '✎' }}</span>
             {{ isEditing ? 'Сохранить' : 'Редактировать' }}
           </BaseButton>
+          <span v-else class="auth-message">
+            <router-link to="/generator" class="auth-link">Авторизуйтесь</router-link> для редактирования
+          </span>
         </div>
       </div>
       
@@ -52,7 +56,7 @@
       <StateView
         title="Конспект не найден"
         message="К сожалению, запрашиваемый конспект не существует или был удален"
-        animation-src="./loader_2.riv"
+        animation-src="/loader_2.riv"
       />
     </template>
 
@@ -101,24 +105,36 @@
         </div>
       </div>
     </Modal>
+
+    <AuthModal
+      :isOpen="showAuthModal"
+      @success="handleAuthSuccess"
+      @close="handleAuthClose"
+    >
+      <div class="auth-modal-content">
+        <p>Для сохранения заметки необходимо авторизоваться.</p>
+      </div>
+    </AuthModal>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import { marked } from 'marked'
 import axios from "axios"
 import StateView from '@/components/molecules/StateView.vue'
 import Modal from '@/components/molecules/Modal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import debounce from 'lodash/debounce'
+import AuthModal from '@/components/molecules/AuthModal.vue'
 
 export default {
   name: 'NoteView',
   components: {
     StateView,
     Modal,
-    BaseButton
+    BaseButton,
+    AuthModal
   },
   props: {
     id: {
@@ -137,12 +153,22 @@ export default {
       showErrorModal: false,
       errorMessage: '',
       showDraftModal: false,
-      draftContent: ''
+      draftContent: '',
+      showAuthModal: false,
+      isAuthModalOpen: false,
+      editedNote: {
+        title: '',
+        description: '',
+        category: '',
+        text: ''
+      }
     }
   },
 
   computed: {
-    ...mapGetters('notes', ['currentNote', 'isLoading']),
+    ...mapState('notes', ['loading']),
+    ...mapGetters('notes', ['currentNote', 'categories']),
+    ...mapGetters('auth', ['isAuthenticated']),
 
     note() {
       return this.currentNote
@@ -171,10 +197,17 @@ export default {
   created() {
     this.initMarked()
     this.saveDraft = debounce(this._saveDraft, 500)
+    this.checkAuth()
+    this.fetchNoteData()
   },
 
   methods: {
-    ...mapActions('notes', ['fetchNoteById', 'updateNote']),
+    ...mapActions('notes', [
+      'fetchNoteById',
+      'updateNote',
+      'deleteNote',
+      'formatNote'
+    ]),
 
     initMarked() {
       this.markedInstance.setOptions({
@@ -240,11 +273,16 @@ export default {
     },
 
     async toggleEditing() {
+      if (!this.isAuthenticated) {
+        this.showAuthModal = true
+        return
+      }
+
       if (this.isEditing) {
         try {
           await this.updateNote({
             id: this.id,
-            content: this.markdownContent
+            data: this.editedNote
           })
           localStorage.removeItem(`draftNote_${this.id}`)
           this.hasUnsavedChanges = false
@@ -268,6 +306,75 @@ export default {
       this.hasUnsavedChanges = true
       this.showDraftModal = false
       this.draftContent = ''
+    },
+
+    checkAuth() {
+      const token = localStorage.getItem('token')
+      const user = localStorage.getItem('user')
+      this.isAuthenticated = !!(token && user)
+    },
+
+    handleAuthSuccess() {
+      this.showAuthModal = false
+      this.startEditing()
+    },
+
+    handleAuthClose() {
+      this.showAuthModal = false
+    },
+
+    async handleUpdate() {
+      try {
+        await this.updateNote({
+          id: this.note.id,
+          data: this.editedNote
+        });
+        this.isEditing = false;
+      } catch (error) {
+        console.error('Ошибка при обновлении заметки:', error);
+      }
+    },
+    
+    async handleDelete() {
+      if (confirm('Вы уверены, что хотите удалить эту заметку?')) {
+        try {
+          await this.deleteNote(this.note.id);
+          this.$router.push('/');
+        } catch (error) {
+          console.error('Ошибка при удалении заметки:', error);
+        }
+      }
+    },
+    
+    async handleFormat() {
+      try {
+        const formattedText = await this.formatNote({
+          text: this.editedNote.text,
+          prompt: 'Отформатируй текст'
+        });
+        this.editedNote.text = formattedText;
+      } catch (error) {
+        console.error('Ошибка при форматировании текста:', error);
+      }
+    },
+    
+    startEditing() {
+      if (!this.isAuthenticated) {
+        this.showAuthModal = true;
+        return;
+      }
+      
+      this.editedNote = {
+        title: this.note.title,
+        description: this.note.description,
+        category: this.note.category,
+        text: this.note.text
+      };
+      this.isEditing = true;
+    },
+    
+    cancelEditing() {
+      this.isEditing = false;
     }
   }
 }
@@ -501,5 +608,25 @@ export default {
 
 .draft-modal-button--restore:hover {
   background-color: var(--primary-color-dark, #1565c0);
+}
+
+.auth-modal-content {
+  text-align: center;
+  padding: var(--spacing-4);
+}
+
+.auth-message {
+  color: var(--text-secondary, #666);
+  font-size: 0.9rem;
+}
+
+.auth-link {
+  color: var(--primary-color, #1976d2);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
 }
 </style>
