@@ -22,10 +22,15 @@
         <div class="note-meta">
           <span class="category-badge">{{ note.category }}</span>
           <span class="date">Обновлено: {{ formattedDate }}</span>
-          <button class="edit-button" @click="toggleEditing">
+          <BaseButton
+            :variant="isEditing ? 'primary' : 'outline'"
+            size="medium"
+            class="edit-button"
+            @click="toggleEditing"
+          >
             <span class="button-icon">{{ isEditing ? '✓' : '✎' }}</span>
             {{ isEditing ? 'Сохранить' : 'Редактировать' }}
-          </button>
+          </BaseButton>
         </div>
       </div>
       
@@ -50,6 +55,52 @@
         animation-src="./loader_2.riv"
       />
     </template>
+
+    <Modal
+      :show="showErrorModal"
+      title="Ошибка сохранения"
+      @close="showErrorModal = false"
+    >
+      <div class="error-modal-content">
+        <p>{{ errorMessage }}</p>
+        <BaseButton
+          variant="primary"
+          size="medium"
+          class="error-modal-button"
+          @click="showErrorModal = false"
+        >
+          Закрыть
+        </BaseButton>
+      </div>
+    </Modal>
+
+    <Modal
+      :show="showDraftModal"
+      title="Восстановить черновик?"
+      @close="handleDraftModalClose"
+    >
+      <div class="draft-modal-content">
+        <p>Найден черновик этой заметки. Хотите восстановить его?</p>
+        <div class="draft-modal-buttons">
+          <BaseButton
+            variant="secondary"
+            size="medium"
+            class="draft-modal-button"
+            @click="handleDraftModalClose"
+          >
+            Отмена
+          </BaseButton>
+          <BaseButton
+            variant="primary"
+            size="medium"
+            class="draft-modal-button"
+            @click="handleDraftRestore"
+          >
+            Восстановить
+          </BaseButton>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -58,12 +109,16 @@ import { mapGetters, mapActions } from 'vuex'
 import { marked } from 'marked'
 import axios from "axios"
 import StateView from '@/components/molecules/StateView.vue'
+import Modal from '@/components/molecules/Modal.vue'
+import BaseButton from '@/components/atoms/BaseButton.vue'
 import debounce from 'lodash/debounce'
 
 export default {
   name: 'NoteView',
   components: {
-    StateView
+    StateView,
+    Modal,
+    BaseButton
   },
   props: {
     id: {
@@ -78,7 +133,11 @@ export default {
       markedInstance: marked,
       error: null,
       isEditing: false,
-      hasUnsavedChanges: false
+      hasUnsavedChanges: false,
+      showErrorModal: false,
+      errorMessage: '',
+      showDraftModal: false,
+      draftContent: ''
     }
   },
 
@@ -166,10 +225,8 @@ export default {
     checkForDraft() {
       const draft = localStorage.getItem(`draftNote_${this.id}`)
       if (draft) {
-        if (confirm('Найден черновик. Восстановить его?')) {
-          this.markdownContent = draft
-          this.hasUnsavedChanges = true
-        }
+        this.draftContent = draft
+        this.showDraftModal = true
       }
     },
 
@@ -193,11 +250,24 @@ export default {
           this.hasUnsavedChanges = false
         } catch (error) {
           console.error('Error saving note:', error)
-          alert('Ошибка при сохранении заметки')
+          this.errorMessage = error.response?.data?.message || error.message || 'Произошла ошибка при сохранении заметки'
+          this.showErrorModal = true
           return
         }
       }
       this.isEditing = !this.isEditing
+    },
+
+    handleDraftModalClose() {
+      this.showDraftModal = false
+      this.draftContent = ''
+    },
+
+    handleDraftRestore() {
+      this.markdownContent = this.draftContent
+      this.hasUnsavedChanges = true
+      this.showDraftModal = false
+      this.draftContent = ''
     }
   }
 }
@@ -254,22 +324,11 @@ export default {
 .edit-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color, #1976d2);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.edit-button:hover {
-  background-color: var(--primary-color-dark, #1565c0);
+  gap: var(--spacing-2);
 }
 
 .button-icon {
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
 }
 
 .note-content {
@@ -383,5 +442,64 @@ export default {
     flex: 0 0 auto;
     width: 100%;
   }
+}
+
+.error-modal-content {
+  text-align: center;
+  padding: var(--spacing-4);
+}
+
+.error-modal-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color, #1976d2);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.error-modal-button:hover {
+  background-color: var(--primary-color-dark, #1565c0);
+}
+
+.draft-modal-content {
+  text-align: center;
+  padding: var(--spacing-4);
+}
+
+.draft-modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-6);
+}
+
+.draft-modal-button {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.draft-modal-button--cancel {
+  background-color: var(--cancel-button-bg, #f5f5f5);
+  color: var(--cancel-button-color, #666);
+}
+
+.draft-modal-button--cancel:hover {
+  background-color: var(--cancel-button-hover-bg, #e0e0e0);
+}
+
+.draft-modal-button--restore {
+  background-color: var(--primary-color, #1976d2);
+  color: white;
+}
+
+.draft-modal-button--restore:hover {
+  background-color: var(--primary-color-dark, #1565c0);
 }
 </style>
