@@ -57,6 +57,22 @@ export default {
             } finally {
                 commit('SET_LOADING', false)
             }
+        },
+
+        async updateNote({ commit }, noteData) {
+            commit('SET_LOADING', true)
+            try {
+                const updatedNote = await notesApi.update(noteData.id, noteData)
+                commit('SET_CURRENT_NOTE', updatedNote)
+                // Обновляем список заметок
+                const notes = await notesApi.getAll()
+                commit('SET_NOTES', notes)
+            } catch (error) {
+                commit('SET_ERROR', error.message)
+                throw error
+            } finally {
+                commit('SET_LOADING', false)
+            }
         }
     }
 }

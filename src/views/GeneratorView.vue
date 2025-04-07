@@ -4,19 +4,14 @@
     <h1>Запись конпсекта</h1>
 
     <!-- Telegram авторизация -->
-    <div class="auth-section" v-if="!isAuthenticated">
-      <h2>Предъявите читательский билет</h2>
-      <p>Чтобы добавлять конспекты необходимо авторизоваться через Telegram</p>
-      <telegramLoginTemp
-        mode="callback"
-        telegram-login="itmo_note_bot"
-        @loaded='telegramLoadedCallbackFunc'
-        @callback="yourCallbackFunction"
-      />
-    </div>
+    <AuthModal
+      :is-open="!isAuthenticated"
+      @close="handleAuthClose"
+      @success="handleAuthSuccess"
+    />
 
     <!-- Основной контент -->
-    <div v-else class="content-section">
+    <div v-if="isAuthenticated" class="content-section">
 
       <!-- Секция с метаданными -->
       <div class="metadata-section">
@@ -85,8 +80,8 @@ import ClearButton from '@/components/atoms/ClearButton.vue'
 import TextField from '@/components/atoms/TextField.vue'
 import SelectField from '@/components/atoms/SelectField.vue'
 import TextAreaField from '@/components/atoms/TextAreaField.vue'
-import { telegramLoginTemp } from "vue3-telegram-login";
 import notesApi from '@/api/notes'
+import AuthModal from '@/components/molecules/AuthModal.vue'
 
 export default {
   name: 'GeneratorView',
@@ -98,20 +93,23 @@ export default {
     TextField,
     SelectField,
     TextAreaField,
-    telegramLoginTemp
+    AuthModal
   },
   data() {
     return {
-      isAuthenticated: process.env.VUE_APP_BYPASS_AUTH === 'true',
+      isAuthenticated: false,
       isSubmitting: false,
-      prompt: this.loadFromStorage('prompt') || '',
-      content: this.loadFromStorage('content') || '',
-      title: this.loadFromStorage('title') || '',
-      description: this.loadFromStorage('description') || '',
-      category: this.loadFromStorage('category') || 'design',
+      prompt: '',
+      content: '',
+      title: '',
+      description: '',
+      category: '',
       categoryOptions: [],
       isLoadingCategories: false
     };
+  },
+  created() {
+    this.checkAuth();
   },
   watch: {
     prompt(newValue) {
@@ -130,13 +128,15 @@ export default {
       this.saveToStorage('category', newValue);
     }
   },
-  async created() {
-    if (this.isAuthenticated) {
-      console.log('Loading categories');
-      
-    }
-  },
   methods: {
+    checkAuth() {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      this.isAuthenticated = !!(token && user);
+      if (this.isAuthenticated) {
+        this.loadCategories();
+      }
+    },
     saveToStorage(key, value) {
       localStorage.setItem(`generator_${key}`, value);
     },
@@ -161,20 +161,7 @@ export default {
       };
     },
     telegramLoadedCallbackFunc(user) {
-      if (process.env.VUE_APP_BYPASS_AUTH === 'false') {
-        this.isAuthenticated = true;
-        this.$refs.notification.addNotification('Режим разработки: авторизация пропущена', 'success');
-        const user = {
-          "id": 656626574,
-          "firstName": "Mihail",
-          "lastName": "Mohónov",
-          "username": "mohonovproduction",
-          "authDate": 1743683646,
-          "hash": "0e7efe11ac8c39035e77bf50716003d269aa03c35911f41fc42e9b0cae15c1f6"
-        }
-        console.log('You in dev mode:', user);
-        this.yourCallbackFunction(user);
-      }
+      // Логика перенесена в AuthModal
     },
     async loadCategories() {
       this.isLoadingCategories = true;
@@ -192,20 +179,7 @@ export default {
       }
     },
     async yourCallbackFunction(user) {
-      console.log('Telegram auth callback:', user);
-      try {
-        const transformedUser = this.transformTelegramUser(user);
-        const response = await notesApi.authTelegram(transformedUser);
-        const token = response.token;
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(transformedUser));
-        this.isAuthenticated = true;
-        await this.loadCategories();
-        this.$refs.notification.addNotification('Успешная авторизация', 'success');
-      } catch (error) {
-        console.error('Ошибка авторизации:', error);
-        this.$refs.notification.addNotification('Ошибка авторизации', 'error');
-      }
+      // Логика перенесена в AuthModal
     },
     async formatText() {
       if (!this.content.trim()) {
@@ -261,6 +235,13 @@ export default {
       this.description = '';
       this.category = 'design';
       this.clearStorage();
+    },
+    handleAuthClose() {
+      this.$router.push('/')
+    },
+    handleAuthSuccess() {
+      this.isAuthenticated = true;
+      this.loadCategories();
     }
   }
 };
