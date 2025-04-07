@@ -77,6 +77,7 @@ const actions = {
         try {
             commit('SET_LOADING', true);
             const response = await notesApi.getNoteById(id);
+            console.log('response', response)
             commit('SET_CURRENT_NOTE', response);
         } catch (error) {
             commit('SET_ERROR', error.message);

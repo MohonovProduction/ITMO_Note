@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getMarkdownFile } from './files'
 
 const api = axios.create({
     baseURL: process.env.VUE_APP_API_BASE_URL,
@@ -106,4 +107,10 @@ export const authApi = {
     isAuthenticated: () => {
         return !!localStorage.getItem('token');
     }
+};
+
+// Экспортируем API для работы с файлами
+export const filesApi = {
+    // Получить файл в формате markdown
+    getMarkdownFile
 };

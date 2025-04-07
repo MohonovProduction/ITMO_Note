@@ -38,12 +38,12 @@ const actions = {
     try {
       commit('SET_LOADING', true);
       const response = await authApi.authTelegram(userData);
-      const { token } = response.data;
+      const { token } = response;
       
       commit('SET_TOKEN', token);
       authApi.setToken(token);
       
-      return response.data;
+      return response;
     } catch (error) {
       commit('SET_ERROR', error.message);
       throw error;

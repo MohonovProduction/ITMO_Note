@@ -208,6 +208,9 @@ export default {
       'deleteNote',
       'formatNote'
     ]),
+    ...mapActions('files', [
+      'fetchMarkdownFile'
+    ]),
 
     initMarked() {
       this.markedInstance.setOptions({
@@ -222,9 +225,13 @@ export default {
 
     async fetchNoteData() {
       try {
-        await this.fetchNoteById(this.id)
+        await this.fetchNoteById(this.$route.params.id)
+        console.log(this.$route.params.id)
+        console.log(this.currentNote)
 
-        if (this.note?.file) {
+        await this.fetchMarkdownFile(this.currentNote.file)
+
+        if (this.currentNote?.file) {
           await this.loadMarkdownContent()
           this.checkForDraft()
         }
