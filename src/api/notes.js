@@ -26,8 +26,9 @@ export const notesApi = {
 
     // Обновить заметку
     updateNote: (id, data) => {
-        const { title, description, category, ...rest } = data;
-        return api.put(`/notes/${id}`, rest, {
+        console.log(data)
+        const { title, description, category, text } = data;
+        return api.put(`/notes/${id}`, text, {
             params: {
                 title,
                 description,

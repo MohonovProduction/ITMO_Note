@@ -59,7 +59,30 @@
           </span>
         </div>
       </div>
-      
+
+      <!-- Секция редактирования метаданных -->
+      <div class="metadata-section" :class="{ 'is-active': isEditing }">
+        <TextField
+          id="title"
+          label="Заголовок:"
+          v-model="editedNote.title"
+          placeholder="Введите заголовок"
+        />
+        <TextField
+          id="description"
+          label="Описание:"
+          v-model="editedNote.description"
+          placeholder="Введите описание"
+        />
+        <SelectField
+          id="category"
+          label="Категория:"
+          v-model="editedNote.category"
+          :options="categoryOptions"
+          :is-loading="isLoadingCategories"
+        />
+      </div>
+
       <div class="note-content">
         <div class="editor-column" :class="{ 'is-active': isEditing }">
           <textarea
@@ -154,6 +177,8 @@ import BaseButton from '@/components/atoms/BaseButton.vue'
 import debounce from 'lodash/debounce'
 import SubmitButton from '@/components/atoms/SubmitButton.vue'
 import ClearButton from '@/components/atoms/ClearButton.vue'
+import TextField from '@/components/atoms/TextField.vue'
+import SelectField from '@/components/atoms/SelectField.vue'
 
 export default {
   name: 'NoteView',
@@ -162,7 +187,9 @@ export default {
     Modal,
     BaseButton,
     SubmitButton,
-    ClearButton
+    ClearButton,
+    TextField,
+    SelectField
   },
   props: {
     id: {
@@ -188,7 +215,9 @@ export default {
         category: '',
         text: ''
       },
-      isSubmitting: false
+      isSubmitting: false,
+      categoryOptions: [],
+      isLoadingCategories: false
     }
   },
 
@@ -271,6 +300,18 @@ export default {
           this.markdownContent = fileContent
           this.checkForDraft()
         }
+
+        this.editedNote = {
+          title: this.currentNote.title || '',
+          description: this.currentNote.description || '',
+          category: this.currentNote.category || '',
+          text: this.currentNote.text || ''
+        }
+
+        this.categoryOptions = this.categories.map(category => ({
+          value: category.id,
+          label: category.name
+        }))
       } catch (error) {
         console.error('Error fetching note data:', error)
         this.error = {
@@ -673,5 +714,34 @@ export default {
   justify-content: flex-end;
   gap: var(--spacing-4);
   margin-top: var(--spacing-6);
+}
+
+.metadata-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  border: 1px solid var(--border-color, #eaeaea);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  transform-origin: top;
+  transform: scaleY(0);
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.metadata-section.is-active {
+  transform: scaleY(1);
+  height: auto;
+  opacity: 1;
+  margin-bottom: var(--spacing-6);
+}
+
+@media (max-width: 768px) {
+  .metadata-section {
+    padding: var(--spacing-3);
+  }
 }
 </style>
