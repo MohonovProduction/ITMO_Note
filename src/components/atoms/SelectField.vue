@@ -6,7 +6,7 @@
         <select
           :id="id"
           :value="modelValue"
-          class="select-field"
+          :class="['select-field', { 'input-error': error }]"
           @change="handleSelectChange"
           :disabled="isLoading"
         >
@@ -25,7 +25,7 @@
           <input
             v-if="showCustomInput"
             type="text"
-            class="custom-input"
+            :class="['custom-input', { 'input-error': error }]"
             :value="customValue"
             @input="handleCustomInput"
             placeholder="Введите свою категорию"
@@ -34,6 +34,9 @@
         </transition>
       </div>
     </div>
+    <transition name="error">
+      <span v-if="error" class="input-error-message">{{ error }}</span>
+    </transition>
   </div>
 </template>
 
@@ -67,6 +70,10 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    },
+    error: {
+      type: String,
+      default: ''
     }
   },
   data() {

@@ -7,11 +7,14 @@
         :type="type"
         :value="modelValue"
         :placeholder="placeholder"
-        class="input-field"
+        :class="['input-field', { 'input-error': error }]"
         @input="$emit('update:modelValue', $event.target.value)"
       />
       <slot name="button"></slot>
     </div>
+    <transition name="error">
+      <span v-if="error" class="input-error-message">{{ error }}</span>
+    </transition>
   </div>
 </template>
 
@@ -38,6 +41,10 @@ export default {
     type: {
       type: String,
       default: 'text'
+    },
+    error: {
+      type: String,
+      default: ''
     }
   },
   emits: ['update:modelValue']

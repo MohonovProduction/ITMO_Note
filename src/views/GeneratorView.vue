@@ -12,6 +12,7 @@
           label="Заголовок:"
           v-model="title"
           placeholder="Введите заголовок"
+          :error="errors.title"
         >
           <template #button>
             <BaseButton @click="handleTitleMagic" icon="wand_stars" />
@@ -22,6 +23,7 @@
           label="Описание:"
           v-model="description"
           placeholder="Введите описание"
+          :error="errors.description"
         >
           <template #button>
             <BaseButton @click="handleDescriptionMagic" icon="wand_stars" />
@@ -33,6 +35,7 @@
           v-model="category"
           :options="categoryOptions"
           :is-loading="isLoadingCategories"
+          :error="errors.category"
         />
         <div class="checkbox-field">
           <input
@@ -47,10 +50,11 @@
       <!-- Секция с промптом -->
       <div class="prompt-section">
         <TextAreaField
-            id="prompt"
-            label="Промпт:"
-            v-model="prompt"
-            placeholder="Введите промпт для форматирования текста"
+          id="prompt"
+          label="Промпт:"
+          v-model="prompt"
+          placeholder="Введите промпт для форматирования текста"
+          :error="errors.prompt"
         />
         <BaseButton @click="formatText" class="format-button" icon="wand_stars">
           Форматировать
@@ -64,6 +68,7 @@
           label="Текст:"
           v-model="content"
           placeholder="Введите или вставьте текст для форматирования"
+          :error="errors.content"
         />
       </div>
 
@@ -113,7 +118,14 @@ export default {
       categoryOptions: [],
       isLoadingCategories: false,
       generatedText: '',
-      isGenerating: false
+      isGenerating: false,
+      errors: {
+        title: '',
+        description: '',
+        category: '',
+        content: '',
+        prompt: ''
+      }
     };
   },
   computed: {
@@ -127,18 +139,33 @@ export default {
   watch: {
     prompt(newValue) {
       this.saveToStorage();
+      if (this.errors.prompt) {
+        this.errors.prompt = '';
+      }
     },
     content(newValue) {
       this.saveToStorage();
+      if (this.errors.content) {
+        this.errors.content = '';
+      }
     },
     title(newValue) {
       this.saveToStorage();
+      if (this.errors.title) {
+        this.errors.title = '';
+      }
     },
     description(newValue) {
       this.saveToStorage();
+      if (this.errors.description) {
+        this.errors.description = '';
+      }
     },
     category(newValue) {
       this.saveToStorage();
+      if (this.errors.category) {
+        this.errors.category = '';
+      }
     },
     isPublic(newValue) {
       this.saveToStorage();
@@ -190,8 +217,13 @@ export default {
       }
     },
     async formatText() {
+      if (!this.prompt.trim()) {
+        this.errors.prompt = 'Промпт обязателен';
+        return;
+      }
+
       if (!this.content.trim()) {
-        this.addNotification({ message: 'Пожалуйста, введите текст', type: 'error' });
+        this.errors.content = 'Текст обязателен';
         return;
       }
 
@@ -201,16 +233,47 @@ export default {
           prompt: this.prompt
         });
         this.content = response;
-        console.log(response);
         this.addNotification({ message: 'Текст успешно отформатирован', type: 'success' });
       } catch (error) {
         console.error('Ошибка при форматировании:', error);
         this.addNotification({ message: 'Ошибка при форматировании', type: 'error' });
       }
     },
+    validateForm() {
+      this.errors = {
+        title: '',
+        description: '',
+        category: '',
+        content: '',
+        prompt: ''
+      };
+
+      let isValid = true;
+
+      if (!this.title.trim()) {
+        this.errors.title = 'Заголовок обязателен';
+        isValid = false;
+      }
+
+      if (!this.description.trim()) {
+        this.errors.description = 'Описание обязательно';
+        isValid = false;
+      }
+
+      if (!this.category) {
+        this.errors.category = 'Категория обязательна';
+        isValid = false;
+      }
+
+      if (!this.content.trim()) {
+        this.errors.content = 'Текст обязателен';
+        isValid = false;
+      }
+
+      return isValid;
+    },
     async saveContent() {
-      if (!this.content || !this.content.trim()) {
-        this.addNotification({ message: 'Пожалуйста, введите текст', type: 'error' });
+      if (!this.validateForm()) {
         return;
       }
 
@@ -222,9 +285,9 @@ export default {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         const noteData = {
-          title: this.title?.trim() || 'Безымянный',
-          description: this.description?.trim() || 'Без описания',
-          category: String(this.category || 'Безымянная'),
+          title: this.title.trim(),
+          description: this.description.trim(),
+          category: String(this.category),
           userId: user.id,
           isPublic: Boolean(this.isPublic),
           text: String(this.content.trim())

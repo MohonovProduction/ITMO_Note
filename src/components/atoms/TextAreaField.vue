@@ -5,9 +5,12 @@
       :id="id"
       :value="modelValue"
       :placeholder="placeholder"
-      class="textarea-field"
+      :class="['textarea-field', { 'input-error': error }]"
       @input="$emit('update:modelValue', $event.target.value)"
     ></textarea>
+    <transition name="error">
+      <span v-if="error" class="input-error-message">{{ error }}</span>
+    </transition>
   </div>
 </template>
 
@@ -28,6 +31,10 @@ export default {
       default: ''
     },
     placeholder: {
+      type: String,
+      default: ''
+    },
+    error: {
       type: String,
       default: ''
     }
