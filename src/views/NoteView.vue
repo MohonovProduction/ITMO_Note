@@ -55,7 +55,7 @@
             </template>
           </template>
           <span v-else class="auth-message">
-            <a href="#" class="auth-link" @click.prevent="showAuthModal = true">Авторизуйтесь</a> для редактирования
+            <a href="#" class="auth-link" @click.prevent="this.openAuthModal()">Авторизуйтесь</a> для редактирования
           </span>
         </div>
       </div>
@@ -118,24 +118,6 @@
         animation-src="/loader_2.riv"
       />
     </template>
-
-    <Modal
-      :show="showErrorModal"
-      title="Ошибка сохранения"
-      @close="showErrorModal = false"
-    >
-      <div class="error-modal-content">
-        <p>{{ errorMessage }}</p>
-        <BaseButton
-          variant="primary"
-          size="medium"
-          class="error-modal-button"
-          @click="showErrorModal = false"
-        >
-          Закрыть
-        </BaseButton>
-      </div>
-    </Modal>
 
     <Modal
       :show="showDraftModal"
@@ -205,8 +187,6 @@ export default {
       error: null,
       isEditing: false,
       hasUnsavedChanges: false,
-      showErrorModal: false,
-      errorMessage: '',
       showDraftModal: false,
       draftContent: '',
       editedNote: {
@@ -269,6 +249,11 @@ export default {
     ]),
     ...mapActions('files', [
       'fetchMarkdownFile'
+    ]),
+    ...mapActions('ui', [
+      'addNotification',
+      'openAuthModal',
+      'closeAuthModal'
     ]),
 
     initMarked() {
@@ -340,7 +325,7 @@ export default {
 
     async toggleEditing(shouldSave = true) {
       if (!this.isAuthenticated) {
-        this.showAuthModal = true
+        this.openAuthModal()
         return
       }
 
@@ -352,10 +337,13 @@ export default {
           })
           localStorage.removeItem(`draftNote_${this.id}`)
           this.hasUnsavedChanges = false
+          this.addNotification({ message: 'Заметка успешно сохранена', type: 'success' })
         } catch (error) {
           console.error('Error saving note:', error)
-          this.errorMessage = error.response?.data?.message || error.message || 'Произошла ошибка при сохранении заметки'
-          this.showErrorModal = true
+          this.addNotification({ 
+            message: error.response?.data?.message || error.message || 'Произошла ошибка при сохранении заметки', 
+            type: 'error' 
+          })
           return
         }
       }
@@ -381,12 +369,12 @@ export default {
     },
 
     handleAuthSuccess() {
-      this.showAuthModal = false
+      this.closeAuthModal()
       this.startEditing()
     },
 
     handleAuthClose() {
-      this.showAuthModal = false
+      this.closeAuthModal()
     },
 
     async handleUpdate() {
@@ -426,8 +414,8 @@ export default {
     
     startEditing() {
       if (!this.isAuthenticated) {
-        this.showAuthModal = true;
-        return;
+        this.openAuthModal()
+        return
       }
       
       this.editedNote = {
@@ -435,8 +423,8 @@ export default {
         description: this.note.description,
         category: this.note.category,
         text: this.note.text
-      };
-      this.isEditing = true;
+      }
+      this.isEditing = true
     },
     
     cancelEditing() {
@@ -453,10 +441,13 @@ export default {
         this.isEditing = false;
         this.hasUnsavedChanges = false;
         localStorage.removeItem(`draftNote_${this.id}`);
+        this.addNotification({ message: 'Заметка успешно сохранена', type: 'success' })
       } catch (error) {
         console.error('Ошибка при сохранении заметки:', error);
-        this.errorMessage = error.response?.data?.message || error.message || 'Произошла ошибка при сохранении заметки';
-        this.showErrorModal = true;
+        this.addNotification({ 
+          message: error.response?.data?.message || error.message || 'Произошла ошибка при сохранении заметки', 
+          type: 'error' 
+        })
       } finally {
         this.isSubmitting = false;
       }
