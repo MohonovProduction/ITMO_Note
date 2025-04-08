@@ -12,13 +12,21 @@
           label="Заголовок:"
           v-model="title"
           placeholder="Введите заголовок"
-        />
+        >
+          <template #button>
+            <BaseButton @click="handleTitleMagic" icon="wand_stars" />
+          </template>
+        </TextField>
         <TextField
           id="description"
           label="Описание:"
           v-model="description"
           placeholder="Введите описание"
-        />
+        >
+          <template #button>
+            <BaseButton @click="handleDescriptionMagic" icon="wand_stars" />
+          </template>
+        </TextField>
         <SelectField
           id="category"
           label="Категория:"
@@ -44,7 +52,7 @@
             v-model="prompt"
             placeholder="Введите промпт для форматирования текста"
         />
-        <BaseButton @click="formatText" class="format-button" icon="wand_shine">
+        <BaseButton @click="formatText" class="format-button" icon="wand_stars">
           Форматировать
         </BaseButton>
       </div>
@@ -286,6 +294,50 @@ export default {
         console.error('Ошибка при сохранении заметки:', error);
       } finally {
         this.isSubmitting = false;
+      }
+    },
+    handleTitleMagic() {
+      if (!this.content) {
+        this.addNotification({ message: 'В тексте должен быть заголовок перового уровня', type: 'error' });
+        return;
+      }
+
+      const h1Match = this.content.match(/^#\s+(.+)$/m);
+      
+      if (h1Match && h1Match[1]) {
+        this.title = h1Match[1].trim();
+        this.addNotification({ message: 'Заголовок успешно извлечен', type: 'success' });
+      } else {
+        this.addNotification({ message: 'Заголовок первого уровня не найден', type: 'warning' });
+      }
+    },
+    handleDescriptionMagic() {
+      if (!this.content) {
+        this.addNotification({ message: 'В поле Текст нет текста', type: 'error' });
+        return;
+      }
+
+      // Удаляем заголовки (строки, начинающиеся с #)
+      let textWithoutHeaders = this.content.replace(/^#+\s+.+$/gm, '');
+      
+      // Удаляем markdown форматирование
+      textWithoutHeaders = textWithoutHeaders
+        .replace(/\*\*(.*?)\*\*/g, '$1') // жирный текст
+        .replace(/\*(.*?)\*/g, '$1')     // курсив
+        .replace(/`(.*?)`/g, '$1')       // код
+        .replace(/\[(.*?)\]\(.*?\)/g, '$1') // ссылки
+        .replace(/^\s*[-*+]\s+/gm, '')   // маркированные списки
+        .replace(/^\s*\d+\.\s+/gm, '')   // нумерованные списки
+        .trim();
+
+      if (textWithoutHeaders) {
+        // Берем первые 100 символов и добавляем многоточие, если текст был обрезан
+        this.description = textWithoutHeaders.length > 100 
+          ? textWithoutHeaders.substring(0, 100) + '...'
+          : textWithoutHeaders;
+        this.addNotification({ message: 'Описание успешно извлечено', type: 'success' });
+      } else {
+        this.addNotification({ message: 'Не удалось извлечь описание', type: 'warning' });
       }
     }
   }
