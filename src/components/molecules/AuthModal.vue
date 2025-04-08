@@ -31,14 +31,19 @@ export default {
     isOpen: {
       type: Boolean,
       required: true
+    },
+    props: {
+      type: Object,
+      default: () => ({})
     }
   },
   emits: ['close', 'success'],
   methods: {
     ...mapActions('auth', ['loginWithTelegram']),
+    ...mapActions('ui', ['closeAuthModal']),
     
     closeModal() {
-      this.$emit('close');
+      this.closeAuthModal();
     },
     
     transformTelegramUser(user) {

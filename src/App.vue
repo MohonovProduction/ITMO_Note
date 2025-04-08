@@ -14,6 +14,18 @@
   <transition name="m-fade">
     <Loader v-if="loader" />
   </transition>
+
+  <!-- Глобальные компоненты -->
+  <Teleport to="body">
+    <AuthModal
+      :is-open="isAuthModalOpen"
+      :props="authModalProps"
+      @close="closeAuthModal"
+      @success="handleAuthSuccess"
+    />
+  </Teleport>
+
+  <NotificationContainer />
 </template>
 
 <script>
@@ -21,6 +33,9 @@ import Navigation from "@/components/organisms/Navigation.vue";
 import Breadcrumbs from "@/components/atoms/Breadcrumbs.vue";
 import Loader from "@/components/atoms/Loader.vue";
 import Footer from "@/components/molecules/Footer.vue";
+import AuthModal from "@/components/molecules/AuthModal.vue";
+import NotificationContainer from "@/components/atoms/NotificationContainer.vue";
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'App',
@@ -28,7 +43,25 @@ export default {
     Loader,
     Navigation,
     Breadcrumbs,
-    Footer
+    Footer,
+    AuthModal,
+    NotificationContainer
+  },
+  computed: {
+    ...mapState('ui', ['authModal']),
+    isAuthModalOpen() {
+      return this.authModal?.isOpen || false;
+    },
+    authModalProps() {
+      return this.authModal?.props || {};
+    }
+  },
+  methods: {
+    ...mapActions('ui', ['closeAuthModal']),
+    handleAuthSuccess(user) {
+      this.closeAuthModal();
+      // Дополнительная логика после успешной авторизации
+    }
   },
   created () {
     console.log("App created");
@@ -39,9 +72,6 @@ export default {
     return {
       loader: true,
     }
-  },
-  methods: {
-
   }
 }
 </script>

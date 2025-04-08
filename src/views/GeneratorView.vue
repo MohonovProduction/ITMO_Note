@@ -3,13 +3,6 @@
     <Notification ref="notification" />
     <h1>Запись конпсекта</h1>
 
-    <!-- Telegram авторизация -->
-    <AuthModal
-      :is-open="isAuthModalOpen"
-      @close="handleAuthClose"
-      @success="handleAuthSuccess"
-    />
-
     <!-- Основной контент -->
     <div v-if="isAuthenticated" class="content-section">
 
@@ -89,7 +82,6 @@ import TextField from '@/components/atoms/TextField.vue'
 import SelectField from '@/components/atoms/SelectField.vue'
 import TextAreaField from '@/components/atoms/TextAreaField.vue'
 import notesApi from '@/api/notes'
-import AuthModal from '@/components/molecules/AuthModal.vue'
 import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -101,12 +93,10 @@ export default {
     ClearButton,
     TextField,
     SelectField,
-    TextAreaField,
-    AuthModal
+    TextAreaField
   },
   data() {
     return {
-      isAuthModalOpen: false,
       isSubmitting: false,
       prompt: '',
       content: '',
@@ -150,12 +140,14 @@ export default {
   },
   methods: {
     ...mapActions('notes', ['createNote', 'formatNote', 'fetchCategories']),
+    ...mapActions('ui', ['openAuthModal', 'closeAuthModal']),
     
     checkAuth() {
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
-      this.isAuthModalOpen = !(token && user);
-      if (this.isAuthenticated) {
+      if (!(token && user)) {
+        this.openAuthModal();
+      } else if (this.isAuthenticated) {
         this.loadCategories();
       }
     },
@@ -173,19 +165,6 @@ export default {
       localStorage.removeItem('generator_category');
       localStorage.removeItem('generator_isPublic');
     },
-    transformTelegramUser(user) {
-      return {
-        id: user.id,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        username: user.username,
-        authDate: user.auth_date,
-        hash: user.hash
-      };
-    },
-    telegramLoadedCallbackFunc(user) {
-      // Логика перенесена в AuthModal
-    },
     async loadCategories() {
       try {
         this.isLoadingCategories = true;
@@ -199,9 +178,6 @@ export default {
       } finally {
         this.isLoadingCategories = false;
       }
-    },
-    async yourCallbackFunction(user) {
-      // Логика перенесена в AuthModal
     },
     async formatText() {
       if (!this.content.trim()) {
@@ -243,7 +219,6 @@ export default {
           isPublic: Boolean(this.isPublic),
           text: String(this.content.trim())
         };
-        console.log(this.content)
 
         await this.createNote(noteData);
         this.$refs.notification.addNotification('Текст успешно сохранен', 'success');
@@ -265,15 +240,15 @@ export default {
       this.clearStorage();
     },
     handleAuthClose() {
-      this.isAuthModalOpen = false;
+      this.closeAuthModal();
     },
     handleAuthSuccess() {
-      this.isAuthModalOpen = false;
+      this.closeAuthModal();
       this.loadCategories();
     },
     async handleGenerate() {
       if (!this.isAuthenticated) {
-        this.isAuthModalOpen = true;
+        this.openAuthModal();
         return;
       }
       
@@ -292,7 +267,7 @@ export default {
     },
     async handleSave() {
       if (!this.isAuthenticated) {
-        this.isAuthModalOpen = true;
+        this.openAuthModal();
         return;
       }
       
