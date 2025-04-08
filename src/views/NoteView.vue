@@ -170,6 +170,10 @@ export default {
     ...mapGetters('notes', ['currentNote', 'categories']),
     ...mapGetters('auth', ['isAuthenticated']),
 
+    isLoading() {
+      return this.loading
+    },
+
     note() {
       return this.currentNote
     },
@@ -197,7 +201,6 @@ export default {
   created() {
     this.initMarked()
     this.saveDraft = debounce(this._saveDraft, 500)
-    this.checkAuth()
     this.fetchNoteData()
   },
 
@@ -225,39 +228,27 @@ export default {
 
     async fetchNoteData() {
       try {
-        await this.fetchNoteById(this.$route.params.id)
-        console.log(this.$route.params.id)
-        console.log(this.note)
-
-        await this.fetchMarkdownFile(this.currentNote.file)
+        await this.fetchNoteById(this.id)
+        
+        if (!this.currentNote) {
+          this.error = {
+            title: 'Конспект не найден',
+            message: 'Запрашиваемый конспект не существует или был удален'
+          }
+          return
+        }
 
         if (this.currentNote?.file) {
-          await this.loadMarkdownContent()
+          const fileContent = await this.fetchMarkdownFile(this.currentNote.file)
+          console.log('fileContent', fileContent)
+          this.markdownContent = fileContent
           this.checkForDraft()
         }
       } catch (error) {
-        console.error('Error loading note:', error)
+        console.error('Error fetching note data:', error)
         this.error = {
           title: 'Ошибка загрузки заметки',
           message: error.response?.data?.message || error.message || 'Произошла ошибка при загрузке заметки'
-        }
-      }
-    },
-
-    async loadMarkdownContent() {
-      try {
-        const response = await axios.get(process.env.VUE_APP_ROOT_URL + this.note.file, {
-          responseType: 'text',
-          transformResponse: [data => data],
-          validateStatus: status => status === 200
-        });
-
-        this.markdownContent = response.data;
-      } catch (error) {
-        console.error('Markdown load error:', error);
-        this.error = {
-          title: 'Ошибка загрузки содержимого',
-          message: error.response?.statusText || error.message || 'Произошла ошибка при загрузке содержимого заметки'
         }
       }
     },
@@ -316,9 +307,7 @@ export default {
     },
 
     checkAuth() {
-      const token = localStorage.getItem('token')
-      const user = localStorage.getItem('user')
-      this.isAuthenticated = !!(token && user)
+      return this.isAuthenticated
     },
 
     handleAuthSuccess() {

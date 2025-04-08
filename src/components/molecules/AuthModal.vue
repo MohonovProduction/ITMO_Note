@@ -40,7 +40,7 @@ export default {
   emits: ['close', 'success'],
   methods: {
     ...mapActions('auth', ['loginWithTelegram']),
-    ...mapActions('ui', ['closeAuthModal']),
+    ...mapActions('ui', ['closeAuthModal', 'addNotification']),
     
     closeModal() {
       this.closeAuthModal();
@@ -62,8 +62,16 @@ export default {
         const transformedUser = this.transformTelegramUser(user);
         await this.loginWithTelegram(transformedUser);
         this.$emit('success', transformedUser);
+        this.addNotification({
+          message: 'Успешная авторизация!',
+          type: 'success'
+        });
       } catch (error) {
         console.error('Ошибка авторизации:', error);
+        this.addNotification({
+          message: 'Ошибка авторизации. Пожалуйста, попробуйте снова.',
+          type: 'error'
+        });
       }
     },
     
