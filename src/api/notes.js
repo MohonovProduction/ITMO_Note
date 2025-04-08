@@ -7,7 +7,7 @@ export const notesApi = {
     // Создать новую заметку
     createNote: (data) => {
         const { title, description, category, userId, isPublic, text } = data;
-        return api.post('/notes', { text }, {
+        return api.post('/notes', text, {
             params: {
                 title,
                 description,

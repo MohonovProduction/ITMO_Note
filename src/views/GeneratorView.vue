@@ -223,7 +223,7 @@ export default {
       }
     },
     async saveContent() {
-      if (!this.content.trim()) {
+      if (!this.content || !this.content.trim()) {
         this.$refs.notification.addNotification('Пожалуйста, введите текст', 'error');
         return;
       }
@@ -236,14 +236,15 @@ export default {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         const noteData = {
-          title: this.title || 'Без названия',
-          description: this.description || 'Без описания',
-          category: this.category || 'Без категории',
+          title: this.title?.trim() || 'Безымянный',
+          description: this.description?.trim() || 'Без описания',
+          category: String(this.category || 'Безымянная'),
           userId: user.id,
-          isPublic: this.isPublic,
-          text: this.content
+          isPublic: Boolean(this.isPublic),
+          text: String(this.content.trim())
         };
-        
+        console.log(this.content)
+
         await this.createNote(noteData);
         this.$refs.notification.addNotification('Текст успешно сохранен', 'success');
         this.clearForm();

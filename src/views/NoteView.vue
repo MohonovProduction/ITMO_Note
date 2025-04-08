@@ -227,7 +227,7 @@ export default {
       try {
         await this.fetchNoteById(this.$route.params.id)
         console.log(this.$route.params.id)
-        console.log(this.currentNote)
+        console.log(this.note)
 
         await this.fetchMarkdownFile(this.currentNote.file)
 
