@@ -1,6 +1,5 @@
 <template>
   <div class="generator-container">
-    <Notification ref="notification" />
     <h1>Запись конпсекта</h1>
 
     <!-- Основной контент -->
@@ -74,7 +73,6 @@
 </template>
 
 <script>
-import Notification from '@/components/atoms/Notification.vue';
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import SubmitButton from '@/components/atoms/SubmitButton.vue'
 import ClearButton from '@/components/atoms/ClearButton.vue'
@@ -87,7 +85,6 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 export default {
   name: 'GeneratorView',
   components: {
-    Notification,
     BaseButton,
     SubmitButton,
     ClearButton,
@@ -140,7 +137,7 @@ export default {
   },
   methods: {
     ...mapActions('notes', ['createNote', 'formatNote', 'fetchCategories']),
-    ...mapActions('ui', ['openAuthModal', 'closeAuthModal']),
+    ...mapActions('ui', ['openAuthModal', 'closeAuthModal', 'addNotification']),
     
     checkAuth() {
       const token = localStorage.getItem('token');
@@ -181,7 +178,7 @@ export default {
     },
     async formatText() {
       if (!this.content.trim()) {
-        this.$refs.notification.addNotification('Пожалуйста, введите текст', 'error');
+        this.addNotification({ message: 'Пожалуйста, введите текст', type: 'error' });
         return;
       }
 
@@ -192,15 +189,15 @@ export default {
         });
         this.content = response;
         console.log(response);
-        this.$refs.notification.addNotification('Текст успешно отформатирован', 'success');
+        this.addNotification({ message: 'Текст успешно отформатирован', type: 'success' });
       } catch (error) {
         console.error('Ошибка при форматировании:', error);
-        this.$refs.notification.addNotification('Ошибка при форматировании', 'error');
+        this.addNotification({ message: 'Ошибка при форматировании', type: 'error' });
       }
     },
     async saveContent() {
       if (!this.content || !this.content.trim()) {
-        this.$refs.notification.addNotification('Пожалуйста, введите текст', 'error');
+        this.addNotification({ message: 'Пожалуйста, введите текст', type: 'error' });
         return;
       }
 
@@ -221,11 +218,11 @@ export default {
         };
 
         await this.createNote(noteData);
-        this.$refs.notification.addNotification('Текст успешно сохранен', 'success');
+        this.addNotification({ message: 'Текст успешно сохранен', type: 'success' });
         this.clearForm();
       } catch (error) {
         console.error('Ошибка при сохранении:', error);
-        this.$refs.notification.addNotification('Ошибка при сохранении', 'error');
+        this.addNotification({ message: 'Ошибка при сохранении', type: 'error' });
       } finally {
         this.isSubmitting = false;
       }

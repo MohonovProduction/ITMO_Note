@@ -16,6 +16,9 @@ const mutations = {
   },
   REMOVE_NOTIFICATION(state, id) {
     state.notifications = state.notifications.filter(n => n.id !== id);
+  },
+  CLEAR_NOTIFICATIONS(state) {
+    state.notifications = [];
   }
 };
 
@@ -38,6 +41,9 @@ const actions = {
   },
   removeNotification({ commit }, id) {
     commit('REMOVE_NOTIFICATION', id);
+  },
+  clearNotifications({ commit }) {
+    commit('CLEAR_NOTIFICATIONS');
   }
 };
 

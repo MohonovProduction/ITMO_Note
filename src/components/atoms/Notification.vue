@@ -1,72 +1,53 @@
 <script>
 export default {
   name: 'Notification',
+  props: {
+    message: {
+      type: String,
+      required: true
+    },
+    type: {
+      type: String,
+      default: 'success'
+    },
+    id: {
+      type: [String, Number],
+      required: true
+    }
+  },
   data() {
     return {
-      notifications: [], // Список уведомлений
+      isVisible: true
     };
   },
-  methods: {
-    // Добавление уведомления
-    addNotification(message, type = 'success', timeout = 3000) {
-      const id = Date.now(); // Уникальный ID для уведомления
-      this.notifications.push({ id, message, type });
-
-      // Автоматическое удаление уведомления через заданное время
-      this.delay(timeout).then(() => this.removeNotificationById(id));
-    },
-
-    // Удаление уведомления по индексу
-    removeNotification(index) {
-      this.notifications.splice(index, 1);
-    },
-
-    // Удаление уведомления по ID
-    removeNotificationById(id) {
-      this.notifications = this.notifications.filter(
-          (notification) => notification.id !== id
-      );
-    },
-
-    delay(ms) {
-      return new Promise((resolve) => {
-        const start = Date.now();
-        const check = () => {
-          if (Date.now() - start >= ms) {
-            resolve();
-          } else {
-            requestAnimationFrame(check);
-          }
-        };
-        requestAnimationFrame(check);
-      });
-    },
+  mounted() {
+    // Автоматическое закрытие через 3 секунды
+    setTimeout(() => {
+      this.close();
+    }, 3000);
   },
+  methods: {
+    close() {
+      this.isVisible = false;
+      this.$emit('close', this.id);
+    }
+  }
 };
 </script>
 
 <template>
-  <div class="notification-container">
+  <transition name="slide-fade">
     <div
-        v-for="(notification, index) in notifications"
-        :key="notification.id"
-        :class="['notification', `notification-${notification.type}`]"
+      v-if="isVisible"
+      :class="['notification', `notification-${type}`]"
     >
-      <span>{{ notification.message }}</span>
-      <button @click="removeNotification(index)" class="close-button">×</button>
+      <span>{{ message }}</span>
+      <button @click="close" class="close-button">×</button>
     </div>
-  </div>
+  </transition>
 </template>
 
 <style scoped>
-.notification-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-}
-
 .notification {
   display: flex;
   align-items: center;
@@ -76,7 +57,6 @@ export default {
   border-radius: 4px;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  animation: slideIn 0.3s ease;
 }
 
 .notification-success {
@@ -100,14 +80,17 @@ export default {
   opacity: 0.8;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(20px);
+  opacity: 0;
 }
 </style>

@@ -5,7 +5,8 @@
       :key="notification.id"
       :message="notification.message"
       :type="notification.type"
-      @close="removeNotification(notification.id)"
+      :id="notification.id"
+      @close="removeNotification"
     />
   </div>
 </template>

@@ -25,7 +25,9 @@
     />
   </Teleport>
 
-  <NotificationContainer />
+  <Teleport to="body">
+    <NotificationContainer />
+  </Teleport>
 </template>
 
 <script>
@@ -63,7 +65,7 @@ export default {
       // Дополнительная логика после успешной авторизации
     }
   },
-  created () {
+  created() {
     console.log("App created");
     console.log(process.env.VUE_APP_API_BASE_URL);
     setTimeout(() => this.loader = false, 2000)
