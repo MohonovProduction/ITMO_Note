@@ -9,11 +9,12 @@ export const filesApi = {
   getMarkdownFile: async (filePath) => {
     try {
       const response = await api.get(`${process.env.VUE_APP_ROOT_URL}${filePath}`, {
-        headers: {
-          'Accept': 'text/markdown'
-        }
+        // headers: {
+        //   'Accept': 'text/markdown'
+        // }
       });
-      return response.data;
+      console.log('response', response)
+      return response;
     } catch (error) {
       console.error('Ошибка при получении файла:', error);
       throw error;

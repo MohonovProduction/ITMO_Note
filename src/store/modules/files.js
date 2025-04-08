@@ -1,4 +1,4 @@
-import { filesApi } from '../../api';
+import { filesApi } from '../../api/files';
 
 const state = {
     currentFile: null,
