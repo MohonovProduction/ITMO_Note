@@ -36,15 +36,13 @@ export default {
 </script>
 
 <template>
-  <transition name="slide-fade">
-    <div
-      v-if="isVisible"
-      :class="['notification', `notification-${type}`]"
-    >
-      <span>{{ message }}</span>
-      <button @click="close" class="close-button">×</button>
-    </div>
-  </transition>
+  <div
+    v-if="isVisible"
+    :class="['notification', `notification-${type}`]"
+  >
+    <span>{{ message }}</span>
+    <button @click="close" class="close-button">×</button>
+  </div>
 </template>
 
 <style scoped>
@@ -74,23 +72,11 @@ export default {
   font-size: 1.2rem;
   cursor: pointer;
   margin-left: 1rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
 .close-button:hover {
-  opacity: 0.8;
-}
-
-.slide-fade-enter-active {
-  transition: all 0.3s ease;
-}
-
-.slide-fade-leave-active {
-  transition: all 0.3s ease;
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateY(20px);
-  opacity: 0;
+  opacity: 1;
 }
 </style>
