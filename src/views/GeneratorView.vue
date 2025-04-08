@@ -34,6 +34,14 @@
           :options="categoryOptions"
           :is-loading="isLoadingCategories"
         />
+        <div class="checkbox-field">
+          <input
+            type="checkbox"
+            id="isPublic"
+            v-model="isPublic"
+          />
+          <label for="isPublic">Сделать публичным</label>
+        </div>
       </div>
 
       <!-- Секция с промптом -->
@@ -105,6 +113,7 @@ export default {
       title: '',
       description: '',
       category: '',
+      isPublic: false,
       categoryOptions: [],
       isLoadingCategories: false,
       generatedText: '',
@@ -134,6 +143,9 @@ export default {
     },
     category(newValue) {
       this.saveToStorage('category', newValue);
+    },
+    isPublic(newValue) {
+      this.saveToStorage('isPublic', newValue);
     }
   },
   methods: {
@@ -159,6 +171,7 @@ export default {
       localStorage.removeItem('generator_title');
       localStorage.removeItem('generator_description');
       localStorage.removeItem('generator_category');
+      localStorage.removeItem('generator_isPublic');
     },
     transformTelegramUser(user) {
       return {
@@ -216,7 +229,7 @@ export default {
       }
 
       if (this.isSubmitting) {
-        return; // Предотвращаем повторную отправку
+        return;
       }
 
       this.isSubmitting = true;
@@ -227,6 +240,7 @@ export default {
           description: this.description || 'Без описания',
           category: this.category || 'Без категории',
           userId: user.id,
+          isPublic: this.isPublic,
           text: this.content
         };
         
@@ -246,6 +260,7 @@ export default {
       this.title = '';
       this.description = '';
       this.category = '';
+      this.isPublic = false;
       this.clearStorage();
     },
     handleAuthClose() {
@@ -428,6 +443,25 @@ label {
   border-color: var(--color-primary);
   outline: none;
   box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.checkbox-field label {
+  cursor: pointer;
+  user-select: none;
 }
 
 @media (max-width: 768px) {
