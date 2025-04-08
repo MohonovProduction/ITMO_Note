@@ -1,6 +1,15 @@
 <template>
   <div class="note-card" @click="$emit('click')">
-    <h3>{{ note.title }}</h3>
+    <div class="note-header">
+      <h3>{{ note.title }}</h3>
+      <BaseButton 
+        class="delete-button" 
+        @click.stop="handleDelete"
+        :disabled="isDeleting"
+      >
+        <span class="material-symbols-outlined">delete</span>
+      </BaseButton>
+    </div>
     <p class="description">{{ note.description }}</p>
     <div class="meta">
       <span class="date">{{ formatDate(note.date) }}</span>
@@ -10,21 +19,46 @@
 </template>
 
 <script>
+import BaseButton from '@/components/atoms/BaseButton.vue'
+import { mapActions } from 'vuex'
+
 export default {
   name: 'NoteCard',
+  components: {
+    BaseButton
+  },
   props: {
     note: {
       type: Object,
       required: true
     }
   },
+  data() {
+    return {
+      isDeleting: false
+    }
+  },
   methods: {
+    ...mapActions('notes', ['deleteNote']),
     formatDate(dateString) {
       return new Date(dateString).toLocaleDateString('ru-RU', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       })
+    },
+    async handleDelete() {
+      if (this.isDeleting) return;
+      
+      try {
+        this.isDeleting = true;
+        await this.deleteNote(this.note.id);
+        this.$emit('deleted', this.note.id);
+      } catch (error) {
+        console.error('Ошибка при удалении заметки:', error);
+      } finally {
+        this.isDeleting = false;
+      }
     }
   }
 }
@@ -84,6 +118,34 @@ export default {
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-full);
   font-weight: var(--font-weight-medium);
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.delete-button {
+  padding: var(--spacing-1) !important;
+  min-width: auto !important;
+  color: var(--color-gray-500) !important;
+  background: transparent !important;
+}
+
+.delete-button:hover {
+  color: var(--color-error) !important;
+}
+
+.delete-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.material-symbols-outlined {
+  font-size: var(--font-size-xl);
+  line-height: 1;
 }
 
 @media (max-width: 480px) {
