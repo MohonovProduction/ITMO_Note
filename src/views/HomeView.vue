@@ -4,16 +4,13 @@
       <h1>Список конспектов</h1>
 
       <div class="controls">
-        <BaseButton @click="expandAll">
-          <span class="material-symbols-outlined">expand_more</span>
+        <BaseButton @click="expandAll" icon="expand_more">
           Развернуть все
         </BaseButton>
-        <BaseButton @click="collapseAll">
-          <span class="material-symbols-outlined">expand_less</span>
+        <BaseButton @click="collapseAll" icon="expand_less">
           Свернуть все
         </BaseButton>
-        <BaseButton @click="refreshNotes">
-          <span class="material-symbols-outlined">refresh</span>
+        <BaseButton @click="refreshNotes" icon="refresh">
           Обновить
         </BaseButton>
         <span v-if="loading" class="loading-status">Загрузка...</span>
@@ -44,7 +41,7 @@
 
     <div v-if="!loading && !groupedNotes.length" class="empty-state">
       Нет доступных конспектов
-      <BaseButton @click="refreshNotes">Попробовать снова</BaseButton>
+      <BaseButton @click="refreshNotes" icon="refresh">Попробовать снова</BaseButton>
     </div>
   </div>
 </template>

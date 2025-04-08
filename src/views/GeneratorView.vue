@@ -44,7 +44,7 @@
             v-model="prompt"
             placeholder="Введите промпт для форматирования текста"
         />
-        <BaseButton @click="formatText" class="format-button">
+        <BaseButton @click="formatText" class="format-button" icon="wand_shine">
           Форматировать
         </BaseButton>
       </div>
@@ -64,9 +64,10 @@
         <SubmitButton 
           :is-submitting="isSubmitting"
           text="Сохранить"
+          icon="save"
           @click="saveContent"
         />
-        <ClearButton @click="clearForm" />
+        <ClearButton @click="clearForm" icon="delete" />
       </div>
     </div>
   </div>

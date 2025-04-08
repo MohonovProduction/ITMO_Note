@@ -2,9 +2,10 @@
   <button
     class="submit-button"
     :class="{ 'is-submitting': isSubmitting }"
-    :disabled="isSubmitting"
+    :disabled="isSubmitting || disabled"
     @click="handleClick"
   >
+    <span v-if="icon" class="material-symbols-outlined submit-button__icon">{{ icon }}</span>
     {{ text }}
   </button>
 </template>
@@ -20,11 +21,19 @@ export default {
     isSubmitting: {
       type: Boolean,
       default: false
+    },
+    icon: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
     handleClick(event) {
-      if (!this.isSubmitting) {
+      if (!this.isSubmitting && !this.disabled) {
         this.$emit('click', event);
       }
     }
@@ -45,6 +54,10 @@ export default {
   cursor: pointer;
   transition: all var(--transition-normal);
   box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .submit-button:hover:not(:disabled) {
@@ -54,12 +67,18 @@ export default {
 }
 
 .submit-button:disabled {
-  background-color: var(--color-gray-300);
+  opacity: 0.6;
   cursor: not-allowed;
+  background-color: var(--color-gray-300);
   box-shadow: none;
 }
 
 .is-submitting {
   opacity: 0.7;
+}
+
+.submit-button__icon {
+  font-size: 1.2rem;
+  line-height: 1;
 }
 </style> 

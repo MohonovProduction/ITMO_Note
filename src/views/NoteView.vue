@@ -22,18 +22,40 @@
         <div class="note-meta">
           <span class="category-badge">{{ note.category }}</span>
           <span class="date">Обновлено: {{ formattedDate }}</span>
-          <BaseButton
-            v-if="isAuthenticated"
-            :variant="isEditing ? 'primary' : 'outline'"
-            size="medium"
-            class="edit-button"
-            @click="toggleEditing"
-          >
-            <span class="button-icon">{{ isEditing ? '✓' : '✎' }}</span>
-            {{ isEditing ? 'Сохранить' : 'Редактировать' }}
-          </BaseButton>
+          <template v-if="isAuthenticated">
+            <BaseButton
+              v-if="!isEditing"
+              variant="outline"
+              size="medium"
+              icon="edit"
+              :disabled="!isAuthenticated"
+              @click="toggleEditing"
+            >
+              Редактировать
+            </BaseButton>
+            <template v-else>
+              <BaseButton
+                variant="primary"
+                size="medium"
+                icon="save"
+                :disabled="!isAuthenticated"
+                @click="toggleEditing"
+              >
+                Сохранить
+              </BaseButton>
+              <BaseButton
+                variant="outline"
+                size="medium"
+                icon="undo"
+                :disabled="!isAuthenticated"
+                @click="clearForm"
+              >
+                Отменить
+              </BaseButton>
+            </template>
+          </template>
           <span v-else class="auth-message">
-            <router-link to="/generator" class="auth-link">Авторизуйтесь</router-link> для редактирования
+            <a href="#" class="auth-link" @click.prevent="showAuthModal = true">Авторизуйтесь</a> для редактирования
           </span>
         </div>
       </div>
@@ -50,6 +72,20 @@
         <div class="preview-column">
           <div class="markdown-content" v-html="compiledMarkdown"></div>
         </div>
+      </div>
+
+      <div v-if="isEditing" class="button-group">
+        <SubmitButton 
+          :is-submitting="isSubmitting"
+          text="Сохранить"
+          icon="save"
+          @click="saveNote"
+        />
+        <ClearButton 
+          @click="clearForm" 
+          icon="undo" 
+          text="Отменить изменения"
+        />
       </div>
     </template>
     <template v-else>
@@ -105,16 +141,6 @@
         </div>
       </div>
     </Modal>
-
-    <AuthModal
-      :isOpen="showAuthModal"
-      @success="handleAuthSuccess"
-      @close="handleAuthClose"
-    >
-      <div class="auth-modal-content">
-        <p>Для сохранения заметки необходимо авторизоваться.</p>
-      </div>
-    </AuthModal>
   </div>
 </template>
 
@@ -126,7 +152,8 @@ import StateView from '@/components/molecules/StateView.vue'
 import Modal from '@/components/molecules/Modal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import debounce from 'lodash/debounce'
-import AuthModal from '@/components/molecules/AuthModal.vue'
+import SubmitButton from '@/components/atoms/SubmitButton.vue'
+import ClearButton from '@/components/atoms/ClearButton.vue'
 
 export default {
   name: 'NoteView',
@@ -134,7 +161,8 @@ export default {
     StateView,
     Modal,
     BaseButton,
-    AuthModal
+    SubmitButton,
+    ClearButton
   },
   props: {
     id: {
@@ -154,14 +182,13 @@ export default {
       errorMessage: '',
       showDraftModal: false,
       draftContent: '',
-      showAuthModal: false,
-      isAuthModalOpen: false,
       editedNote: {
         title: '',
         description: '',
         category: '',
         text: ''
-      }
+      },
+      isSubmitting: false
     }
   },
 
@@ -270,13 +297,13 @@ export default {
       localStorage.setItem(`draftNote_${this.id}`, this.markdownContent)
     },
 
-    async toggleEditing() {
+    async toggleEditing(shouldSave = true) {
       if (!this.isAuthenticated) {
         this.showAuthModal = true
         return
       }
 
-      if (this.isEditing) {
+      if (this.isEditing && shouldSave) {
         try {
           await this.updateNote({
             id: this.id,
@@ -304,6 +331,8 @@ export default {
       this.hasUnsavedChanges = true
       this.showDraftModal = false
       this.draftContent = ''
+
+      this.toggleEditing(false)
     },
 
     checkAuth() {
@@ -371,6 +400,44 @@ export default {
     
     cancelEditing() {
       this.isEditing = false;
+    },
+
+    async saveNote() {
+      this.isSubmitting = true
+      try {
+        await this.updateNote({
+          id: this.note.id,
+          data: this.editedNote
+        });
+        this.isEditing = false;
+        this.hasUnsavedChanges = false;
+        localStorage.removeItem(`draftNote_${this.id}`);
+      } catch (error) {
+        console.error('Ошибка при сохранении заметки:', error);
+        this.errorMessage = error.response?.data?.message || error.message || 'Произошла ошибка при сохранении заметки';
+        this.showErrorModal = true;
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+
+    async clearForm() {
+      this.isEditing = false;
+      this.hasUnsavedChanges = false;
+      
+      if (this.note?.file) {
+        const fileContent = await this.fetchMarkdownFile(this.note.file);
+        this.markdownContent = fileContent;
+      } else {
+        this.markdownContent = '';
+      }
+      
+      this.editedNote = {
+        title: this.note?.title || '',
+        description: this.note?.description || '',
+        category: this.note?.category || '',
+        text: this.note?.text || ''
+      };
     }
   }
 }
@@ -411,23 +478,34 @@ export default {
 .note-meta {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 0.9rem;
-  color: var(--text-secondary, #666);
+  gap: var(--spacing-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
 }
 
 .category-badge {
-  background-color: var(--category-bg, #e3f2fd);
-  color: var(--category-color, #1976d2);
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  font-weight: 500;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
+}
+
+.date {
+  color: var(--color-gray-500);
 }
 
 .edit-button {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
+}
+
+.cancel-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-left: var(--spacing-2);
 }
 
 .button-icon {
@@ -554,17 +632,6 @@ export default {
 
 .error-modal-button {
   margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color, #1976d2);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.error-modal-button:hover {
-  background-color: var(--primary-color-dark, #1565c0);
 }
 
 .draft-modal-content {
@@ -579,50 +646,32 @@ export default {
   margin-top: var(--spacing-6);
 }
 
-.draft-modal-button {
-  padding: 0.5rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-weight: 500;
-}
-
-.draft-modal-button--cancel {
-  background-color: var(--cancel-button-bg, #f5f5f5);
-  color: var(--cancel-button-color, #666);
-}
-
-.draft-modal-button--cancel:hover {
-  background-color: var(--cancel-button-hover-bg, #e0e0e0);
-}
-
-.draft-modal-button--restore {
-  background-color: var(--primary-color, #1976d2);
-  color: white;
-}
-
-.draft-modal-button--restore:hover {
-  background-color: var(--primary-color-dark, #1565c0);
-}
-
 .auth-modal-content {
   text-align: center;
   padding: var(--spacing-4);
 }
 
 .auth-message {
-  color: var(--text-secondary, #666);
-  font-size: 0.9rem;
+  color: var(--color-gray-600);
+  font-size: var(--font-size-sm);
 }
 
 .auth-link {
-  color: var(--primary-color, #1976d2);
+  color: var(--color-primary);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-normal);
 }
 
 .auth-link:hover {
+  color: var(--color-primary-hover);
   text-decoration: underline;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-6);
 }
 </style>

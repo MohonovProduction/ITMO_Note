@@ -24,6 +24,15 @@ const props = defineProps({
     type: String,
     default: 'button',
     validator: (value) => ['button', 'submit', 'reset'].includes(value)
+  },
+  icon: {
+    type: String,
+    default: ''
+  },
+  iconPosition: {
+    type: String,
+    default: 'left',
+    validator: (value) => ['left', 'right'].includes(value)
   }
 })
 
@@ -34,7 +43,8 @@ const buttonClasses = computed(() => ({
   [`base-button--${props.variant}`]: true,
   [`base-button--${props.size}`]: true,
   'base-button--disabled': props.disabled,
-  'base-button--full-width': props.fullWidth
+  'base-button--full-width': props.fullWidth,
+  [`base-button--icon-${props.iconPosition}`]: props.icon
 }))
 
 const handleClick = (event) => {
@@ -51,6 +61,7 @@ const handleClick = (event) => {
     :disabled="disabled"
     @click="handleClick"
   >
+    <span v-if="icon" class="base-button__icon material-symbols-outlined">{{ icon }}</span>
     <slot></slot>
   </button>
 </template>
@@ -66,6 +77,7 @@ const handleClick = (event) => {
   font-weight: var(--font-weight-medium);
   transition: all var(--transition-normal);
   white-space: nowrap;
+  gap: 0.5rem;
 }
 
 .base-button--disabled {
@@ -75,6 +87,19 @@ const handleClick = (event) => {
 
 .base-button--full-width {
   width: 100%;
+}
+
+.base-button__icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.base-button--icon-left {
+  flex-direction: row;
+}
+
+.base-button--icon-right {
+  flex-direction: row-reverse;
 }
 
 /* Варианты */

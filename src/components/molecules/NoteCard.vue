@@ -6,9 +6,8 @@
         class="delete-button" 
         @click.stop="handleDelete"
         :disabled="isDeleting"
-      >
-        <span class="material-symbols-outlined">delete</span>
-      </BaseButton>
+        icon="delete"
+      />
     </div>
     <p class="description">{{ note.description }}</p>
     <div class="meta">
