@@ -4,9 +4,18 @@
       <h1>Список конспектов</h1>
 
       <div class="controls">
-        <BaseButton @click="expandAll">Развернуть все</BaseButton>
-        <BaseButton @click="collapseAll">Свернуть все</BaseButton>
-        <BaseButton @click="refreshNotes">Обновить</BaseButton>
+        <BaseButton @click="expandAll">
+          <span class="material-symbols-outlined">expand_more</span>
+          Развернуть все
+        </BaseButton>
+        <BaseButton @click="collapseAll">
+          <span class="material-symbols-outlined">expand_less</span>
+          Свернуть все
+        </BaseButton>
+        <BaseButton @click="refreshNotes">
+          <span class="material-symbols-outlined">refresh</span>
+          Обновить
+        </BaseButton>
         <span v-if="loading" class="loading-status">Загрузка...</span>
       </div>
     </div>
@@ -189,12 +198,19 @@ export default {
   transition: all 0.2s;
   font-size: 0.9rem;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .controls button:hover {
   background-color: var(--color-link-hover);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.controls button .material-symbols-outlined {
+  font-size: 1.2rem;
 }
 
 .loading-status {

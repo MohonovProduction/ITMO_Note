@@ -4,7 +4,7 @@
       <h2>{{ category.name || 'Без категории' }}</h2>
       <div class="header-right">
         <span class="note-count">{{ category.notes.length }}</span>
-        <span class="toggle-icon">{{ isOpen ? '▼' : '▶' }}</span>
+        <span class="material-symbols-outlined toggle-icon">{{ isOpen ? 'expand_more' : 'chevron_right' }}</span>
       </div>
     </div>
 
