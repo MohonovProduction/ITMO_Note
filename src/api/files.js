@@ -8,12 +8,7 @@ import api from './axios';
 export const filesApi = {
   getMarkdownFile: async (filePath) => {
     try {
-      const response = await api.get(`${process.env.VUE_APP_ROOT_URL}${filePath}`, {
-        // headers: {
-        //   'Accept': 'text/markdown'
-        // }
-      });
-      console.log('response', response)
+      const response = await api.get(`${process.env.VUE_APP_ROOT_URL}${filePath}`, {});
       return response;
     } catch (error) {
       console.error('Ошибка при получении файла:', error);

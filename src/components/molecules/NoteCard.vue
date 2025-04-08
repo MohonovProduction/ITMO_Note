@@ -40,6 +40,7 @@ export default {
   },
   methods: {
     ...mapActions('notes', ['deleteNote']),
+    ...mapActions('ui', ['addNotification', 'openAuthModal']),
     formatDate(dateString) {
       return new Date(dateString).toLocaleDateString('ru-RU', {
         day: 'numeric',
@@ -53,9 +54,23 @@ export default {
       try {
         this.isDeleting = true;
         await this.deleteNote(this.note.id);
-        this.$emit('deleted', this.note.id);
+        this.addNotification({
+          message: 'Заметка успешно удалена',
+          type: 'success'
+        });
       } catch (error) {
-        console.error('Ошибка при удалении заметки:', error);
+        if (error.response?.status === 401) {
+          this.openAuthModal();
+          this.addNotification({
+            message: 'Для удаления заметки необходимо авторизоваться',
+            type: 'error'
+          });
+        } else {
+          this.addNotification({
+            message: 'Ошибка при удалении заметки',
+            type: 'error'
+          });
+        }
       } finally {
         this.isDeleting = false;
       }
