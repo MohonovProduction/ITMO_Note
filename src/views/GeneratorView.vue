@@ -104,12 +104,12 @@ export default {
   data() {
     return {
       isSubmitting: false,
-      prompt: '',
-      content: '',
-      title: '',
-      description: '',
-      category: '',
-      isPublic: false,
+      prompt: this.loadFromStorage()?.prompt || '',
+      content: this.loadFromStorage()?.content || '',
+      title: this.loadFromStorage()?.title || '',
+      description: this.loadFromStorage()?.description || '',
+      category: this.loadFromStorage()?.category || '',
+      isPublic: this.loadFromStorage()?.isPublic || false,
       categoryOptions: [],
       isLoadingCategories: false,
       generatedText: '',
@@ -126,22 +126,22 @@ export default {
   },
   watch: {
     prompt(newValue) {
-      this.saveToStorage('prompt', newValue);
+      this.saveToStorage();
     },
     content(newValue) {
-      this.saveToStorage('content', newValue);
+      this.saveToStorage();
     },
     title(newValue) {
-      this.saveToStorage('title', newValue);
+      this.saveToStorage();
     },
     description(newValue) {
-      this.saveToStorage('description', newValue);
+      this.saveToStorage();
     },
     category(newValue) {
-      this.saveToStorage('category', newValue);
+      this.saveToStorage();
     },
     isPublic(newValue) {
-      this.saveToStorage('isPublic', newValue);
+      this.saveToStorage();
     }
   },
   methods: {
@@ -157,19 +157,23 @@ export default {
         this.loadCategories();
       }
     },
-    saveToStorage(key, value) {
-      localStorage.setItem(`generator_${key}`, value);
+    saveToStorage() {
+      const data = {
+        prompt: this.prompt,
+        content: this.content,
+        title: this.title,
+        description: this.description,
+        category: this.category,
+        isPublic: this.isPublic
+      };
+      localStorage.setItem('generator_data', JSON.stringify(data));
     },
-    loadFromStorage(key) {
-      return localStorage.getItem(`generator_${key}`);
+    loadFromStorage() {
+      const data = localStorage.getItem('generator_data');
+      return data ? JSON.parse(data) : null;
     },
     clearStorage() {
-      localStorage.removeItem('generator_prompt');
-      localStorage.removeItem('generator_content');
-      localStorage.removeItem('generator_title');
-      localStorage.removeItem('generator_description');
-      localStorage.removeItem('generator_category');
-      localStorage.removeItem('generator_isPublic');
+      localStorage.removeItem('generator_data');
     },
     async loadCategories() {
       try {

@@ -21,15 +21,17 @@
           </option>
           <option value="custom">Другая категория...</option>
         </select>
-        <input
-          v-if="showCustomInput"
-          type="text"
-          class="custom-input"
-          :value="customValue"
-          @input="handleCustomInput"
-          placeholder="Введите свою категорию"
-          @blur="handleBlur"
-        />
+        <transition name="slide-fade">
+          <input
+            v-if="showCustomInput"
+            type="text"
+            class="custom-input"
+            :value="customValue"
+            @input="handleCustomInput"
+            placeholder="Введите свою категорию"
+            @blur="handleBlur"
+          />
+        </transition>
       </div>
     </div>
   </div>
@@ -129,12 +131,14 @@ export default {
 
 .fields-row {
   display: flex;
+  flex-direction: column;
   gap: var(--spacing-2);
-  align-items: center;
+  align-items: stretch;
+  width: 100%;
 }
 
 .select-field {
-  flex: 1;
+  width: 100%;
   padding: var(--spacing-3);
   border: 1px solid var(--color-gray-300);
   border-radius: var(--radius-md);
@@ -151,7 +155,7 @@ export default {
 }
 
 .custom-input {
-  flex: 1;
+  width: 100%;
   padding: var(--spacing-3);
   border: 1px solid var(--color-gray-300);
   border-radius: var(--radius-md);
@@ -168,5 +172,30 @@ export default {
 label {
   font-weight: var(--font-weight-medium);
   color: var(--color-gray-700);
+}
+
+/* Анимации для transition */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (min-width: 768px) {
+  .fields-row {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 </style> 
