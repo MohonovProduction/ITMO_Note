@@ -152,7 +152,6 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { marked } from 'marked'
-import axios from "axios"
 import StateView from '@/components/molecules/StateView.vue'
 import Modal from '@/components/molecules/Modal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'

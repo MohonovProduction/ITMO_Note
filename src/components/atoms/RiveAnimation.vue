@@ -40,7 +40,7 @@ export default {
       if (canvas.value) {
         // Инициализация Rive
         riveInstance = new Rive({
-          src: props.src, // Путь к .riv файлу
+          src: process.env.NODE_ENV === 'production' ? `/ITMO_Note/${props.src}` : props.src, // Путь к .riv файлу
           canvas: canvas.value,
           autoplay: props.autoplay, // Исправлено: используем props вместо this
           stateMachines: props.stateMachines, // Исправлено: используем props вместо this
