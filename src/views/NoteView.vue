@@ -9,7 +9,7 @@
     </template>
     <template v-else-if="error">
       <StateView
-        :title="error.title"
+        :title="error.title"Я
         :message="error.message"
         animation-src="/assets/animations/loader_2.riv"
       />
