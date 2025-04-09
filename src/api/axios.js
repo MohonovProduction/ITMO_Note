@@ -38,6 +38,7 @@ api.interceptors.response.use(
                         })
                         .catch(() => {
                             localStorage.removeItem('token');
+                            localStorage.removeItem('user');
                             return Promise.reject(error);
                         });
                 } catch (e) {

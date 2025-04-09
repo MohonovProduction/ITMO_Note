@@ -13,7 +13,7 @@ export default {
   <StateView
     title="Страница не найдена"
     message="Мы пока сами не знаем, то ли мы что-то забыли, то ли так и должно быть"
-    animation-src="./loader_2.riv"
+    animation-src="/assets/animations/loader_2.riv"
   />
 </template>
 

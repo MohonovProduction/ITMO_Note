@@ -5,14 +5,7 @@
       <div class="footer-section">
         <h3>ITMO Notes</h3>
         <p>Платформа для создания и хранения учебных конспектов</p>
-        <div class="social-links">
-          <a href="https://t.me/mohonovschannel" target="_blank" class="social-link telegram">
-            <i class="fab fa-telegram"></i>
-          </a>
-          <a href="https://github.com/MohonovProduction/ITMO_Note" target="_blank" class="social-link github">
-            <i class="fab fa-github"></i>
-          </a>
-        </div>
+        
       </div>
 
       <!-- Навигация -->
@@ -25,11 +18,26 @@
         </nav>
       </div>
 
+      <!-- Репозитории -->
+      <div class="footer-section">
+        <h3>Репозитории</h3>
+        <div class="repositories">
+          <a href="https://github.com/MohonovProduction/ITMO_Note" target="_blank" class="repository-link">
+            <i class="fab fa-github"></i>
+            <span>Frontend</span>
+          </a>
+          <a href="https://github.com/Tor4narek/ItmoNoteApi" target="_blank" class="repository-link">
+            <i class="fab fa-github"></i>
+            <span>Backend</span>
+          </a>
+        </div>
+      </div>
+
       <!-- Авторы -->
       <div class="footer-section">
         <h3>Авторы</h3>
         <div class="authors">
-          <a href="https://t.me/mohonovschannel" target="_blank" class="author">
+          <a href="https://t.me/mohonovproduction" target="_blank" class="author">
             <img src="@/assets/images/mohonov.jpg" alt="Михаил Мохонов" class="author-avatar">
             <div class="author-info">
               <h4>Михаил Мохонов</h4>
@@ -220,6 +228,34 @@ export default {
 
 .footer-links a:hover {
   color: var(--color-gray-100);
+}
+
+.repositories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.repository-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  color: var(--color-gray-400);
+  text-decoration: none;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-gray-800);
+  transition: all var(--transition-normal);
+}
+
+.repository-link:hover {
+  color: var(--color-gray-100);
+  background-color: var(--color-gray-700);
+  transform: translateY(-2px);
+}
+
+.repository-link i {
+  font-size: var(--font-size-lg);
 }
 
 @media (max-width: 768px) {

@@ -22,6 +22,7 @@
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "file-loader": "^6.2.0",
     "raw-loader": "^4.0.2",
     "vue-loader": "^17.4.2",
     "vue-markdown-loader": "^2.5.0",

@@ -28,6 +28,10 @@
   <Teleport to="body">
     <NotificationContainer />
   </Teleport>
+
+  <Teleport to="body">
+    <SlideOutMenu />
+  </Teleport>
 </template>
 
 <script>
@@ -37,6 +41,7 @@ import Loader from "@/components/atoms/Loader.vue";
 import Footer from "@/components/molecules/Footer.vue";
 import AuthModal from "@/components/molecules/AuthModal.vue";
 import NotificationContainer from "@/components/atoms/NotificationContainer.vue";
+import SlideOutMenu from "@/components/organisms/SlideOutMenu.vue";
 import { mapState, mapActions } from 'vuex';
 
 export default {
@@ -47,7 +52,8 @@ export default {
     Breadcrumbs,
     Footer,
     AuthModal,
-    NotificationContainer
+    NotificationContainer,
+    SlideOutMenu
   },
   computed: {
     ...mapState('ui', ['authModal']),

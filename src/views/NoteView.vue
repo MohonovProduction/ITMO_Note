@@ -4,14 +4,14 @@
       <StateView
         title="Загрузка конспекта"
         message="Пожалуйста, подождите..."
-        animation-src="/loader_2.riv"
+        animation-src="/assets/animations/loader_2.riv"
       />
     </template>
     <template v-else-if="error">
       <StateView
         :title="error.title"
         :message="error.message"
-        animation-src="/loader_2.riv"
+        animation-src="/assets/animations/loader_2.riv"
       />
     </template>
     <template v-else-if="note">
@@ -115,7 +115,7 @@
       <StateView
         title="Конспект не найден"
         message="К сожалению, запрашиваемый конспект не существует или был удален"
-        animation-src="/loader_2.riv"
+        animation-src="/assets/animations/loader_2.riv"
       />
     </template>
 

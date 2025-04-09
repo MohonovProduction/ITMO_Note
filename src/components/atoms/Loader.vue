@@ -13,7 +13,7 @@ export default {
 <template>
   <div class="loader">
     <RiveAnimation
-        src="./loader.riv"
+        src="/assets/animations/loader.riv"
         :width="205"
         :height="205"
         :autoplay="true"

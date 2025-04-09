@@ -3,7 +3,6 @@
 </script>
 
 <template>
-  <span class="version">Beta β</span>
   <nav>
     <router-link to="/">Архив</router-link>
     <router-link to="/generator">Записать</router-link>

@@ -3,6 +3,9 @@ const state = {
     isOpen: false,
     props: {}
   },
+  slideOutMenu: {
+    isOpen: false
+  },
   notifications: []
 };
 
@@ -10,6 +13,9 @@ const mutations = {
   SET_AUTH_MODAL_STATE(state, { isOpen, props = {} }) {
     state.authModal.isOpen = isOpen;
     state.authModal.props = props;
+  },
+  SET_SLIDE_OUT_MENU_STATE(state, isOpen) {
+    state.slideOutMenu.isOpen = isOpen;
   },
   ADD_NOTIFICATION(state, notification) {
     state.notifications.push(notification);
@@ -28,6 +34,15 @@ const actions = {
   },
   closeAuthModal({ commit }) {
     commit('SET_AUTH_MODAL_STATE', { isOpen: false });
+  },
+  openSlideOutMenu({ commit }) {
+    commit('SET_SLIDE_OUT_MENU_STATE', true);
+  },
+  closeSlideOutMenu({ commit }) {
+    commit('SET_SLIDE_OUT_MENU_STATE', false);
+  },
+  toggleSlideOutMenu({ commit, state }) {
+    commit('SET_SLIDE_OUT_MENU_STATE', !state.slideOutMenu.isOpen);
   },
   addNotification({ commit }, { message, type = 'success', timeout = 3000 }) {
     const id = Date.now().toString();
@@ -50,6 +65,7 @@ const actions = {
 const getters = {
   isAuthModalOpen: state => state.authModal.isOpen,
   authModalProps: state => state.authModal.props,
+  isSlideOutMenuOpen: state => state.slideOutMenu.isOpen,
   notifications: state => state.notifications
 };
 

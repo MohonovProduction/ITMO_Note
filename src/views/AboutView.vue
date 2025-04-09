@@ -33,22 +33,30 @@
         <h2>Основные возможности</h2>
         <div class="features-grid">
           <div class="feature-card">
-            <div class="feature-icon">📝</div>
+            <div class="feature-icon">
+              <span class="material-symbols-outlined">wand_stars</span>
+            </div>
             <h3>Умное форматирование</h3>
             <p>Автоматическое форматирование текста с помощью AI для лучшей читаемости</p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon">🔐</div>
+            <div class="feature-icon">
+              <span class="material-symbols-outlined">security</span>
+            </div>
             <h3>Telegram авторизация</h3>
             <p>Безопасный вход через Telegram без необходимости запоминать пароль</p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon">📱</div>
+            <div class="feature-icon">
+              <span class="material-symbols-outlined">devices</span>
+            </div>
             <h3>Адаптивный дизайн</h3>
             <p>Оптимизированный интерфейс для всех устройств</p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon">⚡</div>
+            <div class="feature-icon">
+              <span class="material-symbols-outlined">bolt</span>
+            </div>
             <h3>Быстрая работа</h3>
             <p>Оптимизированная производительность и мгновенное сохранение</p>
           </div>
@@ -66,7 +74,7 @@
               <li>Vue Router - маршрутизация</li>
               <li>Vuex - управление состоянием</li>
               <li>Vue 3 Composition API</li>
-              <li>TypeScript</li>
+              <li>Rive Animations</li>
             </ul>
           </div>
           <div class="tech-card">
@@ -76,12 +84,13 @@
               <li>Flexbox & Grid</li>
               <li>Responsive Design</li>
               <li>Custom Components</li>
+              <li>Transitions & Animations</li>
             </ul>
           </div>
           <div class="tech-card">
             <h3>Интеграции</h3>
             <ul>
-              <li>Telegram Auth Widget</li>
+              <li>Telegram Auth API</li>
               <li>Marked.js</li>
               <li>Rive Animations</li>
               <li>GitHub API</li>
@@ -123,6 +132,33 @@
         </div>
       </section>
 
+      <!-- Репозитории -->
+      <section class="repositories">
+        <h2>Репозитории проекта</h2>
+        <div class="repositories-grid">
+          <div class="repository-card">
+            <div class="repository-icon">
+              <span class="material-symbols-outlined">code</span>
+            </div>
+            <h3>Frontend</h3>
+            <p class="repository-description">Клиентская часть приложения на Vue.js 3</p>
+            <a href="https://github.com/MohonovProduction/ITMO_Note" target="_blank" class="github-link">
+              <i class="fab fa-github"></i> Перейти в репозиторий
+            </a>
+          </div>
+          <div class="repository-card">
+            <div class="repository-icon">
+              <span class="material-symbols-outlined">settings</span>
+            </div>
+            <h3>Backend</h3>
+            <p class="repository-description">Серверная часть приложения</p>
+            <a href="https://github.com/Tor4narek/ItmoNoteApi" target="_blank" class="github-link">
+              <i class="fab fa-github"></i> Перейти в репозиторий
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Лицензия -->
       <section class="license">
         <h2>Лицензия</h2>
@@ -134,7 +170,7 @@
 
 <style scoped>
 .about {
-  padding: var(--spacing-6);
+  padding: var(--spacing-8);
   background-color: var(--color-background);
   min-height: 100vh;
 }
@@ -146,13 +182,18 @@
 
 .header {
   text-align: center;
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-12);
 }
 
 h1 {
   font-size: var(--font-size-4xl);
   color: var(--color-primary);
   margin-bottom: var(--spacing-4);
+}
+
+
+h2 {
+  text-align: center;
 }
 
 .subtitle {
@@ -163,7 +204,7 @@ h1 {
 .description {
   text-align: center;
   max-width: 800px;
-  margin: 0 auto var(--spacing-8);
+  margin: 0 auto var(--spacing-12);
   font-size: var(--font-size-lg);
   line-height: 1.6;
   color: var(--color-gray-700);
@@ -171,11 +212,11 @@ h1 {
 
 .github-section {
   text-align: center;
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-12);
 }
 
 .features {
-  margin-bottom: var(--spacing-8);
+  margin-bottom: var(--spacing-12);
 }
 
 .features-grid {
@@ -189,17 +230,18 @@ h1 {
   background: var(--color-white);
   padding: var(--spacing-6);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  transition: transform var(--transition-normal);
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
+  border: 1px solid var(--color-gray-200);
 }
 
 .feature-icon {
   font-size: 2.5rem;
   margin-bottom: var(--spacing-4);
+  color: var(--color-primary);
+}
+
+.feature-icon .material-symbols-outlined {
+  font-size: 2.5rem;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 .tech-grid {
@@ -207,13 +249,14 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--spacing-6);
   margin-top: var(--spacing-6);
+  margin-bottom: var(--spacing-12);
 }
 
 .tech-card {
   background: var(--color-white);
   padding: var(--spacing-6);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-gray-200);
 }
 
 .tech-card h3 {
@@ -244,14 +287,14 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--spacing-6);
   margin-top: var(--spacing-6);
+  margin-bottom: var(--spacing-12);
 }
 
 .author-card {
   background: var(--color-white);
   padding: var(--spacing-6);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  text-align: center;
+  border: 1px solid var(--color-gray-200);
 }
 
 .author-avatar {
@@ -289,18 +332,91 @@ h1 {
   color: white;
 }
 
+.repositories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-6);
+}
+
+.repository-card {
+  background: var(--color-white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+}
+
+.repository-card h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.repository-card .github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  background-color: var(--color-gray-800);
+  color: white;
+}
+
+.repository-card .github-link:hover {
+  background-color: var(--color-gray-900);
+  transform: scale(1.05);
+}
+
+.repository-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-4);
+  color: var(--color-primary);
+}
+
+.repository-icon .material-symbols-outlined {
+  font-size: 2.5rem;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.repository-description {
+  color: var(--color-gray-600);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-base);
+}
+
 .license {
   text-align: center;
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-12);
   padding: var(--spacing-6);
   background: var(--color-white);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-gray-200);
 }
 
 @media (max-width: 768px) {
   .about {
-    padding: var(--spacing-4);
+    padding: var(--spacing-6);
+  }
+  
+  .header {
+    margin-bottom: var(--spacing-8);
+  }
+  
+  .description {
+    margin-bottom: var(--spacing-8);
+  }
+  
+  .github-section {
+    margin-bottom: var(--spacing-12);
+  }
+  
+  .features {
+    margin-bottom: var(--spacing-12);
+  }
+  
+  .license {
+    margin-top: var(--spacing-8);
   }
 
   h1 {
@@ -311,13 +427,13 @@ h1 {
     font-size: var(--font-size-lg);
   }
 
-  .description {
-    font-size: var(--font-size-base);
-  }
-
   .features-grid,
   .tech-grid,
   .authors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .repositories-grid {
     grid-template-columns: 1fr;
   }
 }
