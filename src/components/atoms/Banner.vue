@@ -43,7 +43,7 @@
   background: linear-gradient(
       to right,
       rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 100%,
+      rgba(255, 255, 255, 0.1) 100%
   );
   pointer-events: none;
   animation: shine 3s ease-in-out infinite;
