@@ -7,7 +7,7 @@
     <h1 class="info-banner__title">Третья неделя без работающего бэка!</h1>
     <i class="info-banner__author">
       <span class="material-symbols-outlined info-banner__icon">person</span>
-      Михаил Мохонов, бэк
+      Михаил Мохонов, фронт
     </i>
 
     <p class="info-banner__text">
@@ -43,8 +43,7 @@
   background: linear-gradient(
       to right,
       rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0) 50%,
-      rgba(255, 255, 255, 0.1) 100%
+      rgba(255, 255, 255, 0) 100%,
   );
   pointer-events: none;
   animation: shine 3s ease-in-out infinite;
