@@ -1,6 +1,9 @@
 <template>
   <div class="notes-list">
+    <Banner />
+
     <div class="header-container">
+
       <h1>Список конспектов</h1>
 
       <div class="controls">
@@ -51,13 +54,15 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import CategoryCard from '@/components/molecules/CategoryCard.vue'
 import CategoryFilter from '@/components/molecules/CategoryFilter.vue'
+import Banner from '@/components/atoms/Banner.vue';
 
 export default {
   name: 'HomeView',
   components: {
     BaseButton,
     CategoryCard,
-    CategoryFilter
+    CategoryFilter,
+    Banner
   },
 
   data() {
