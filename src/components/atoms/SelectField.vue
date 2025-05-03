@@ -2,37 +2,51 @@
   <div class="input-group">
     <label :for="id">{{ label }}</label>
     <div class="select-container">
-      <div class="fields-row">
-        <select
-          :id="id"
-          :value="modelValue"
-          :class="['select-field', { 'input-error': error }]"
-          @change="handleSelectChange"
-          :disabled="isLoading"
-        >
-          <option v-if="isLoading" value="" disabled>Загрузка категорий...</option>
-          <option
-            v-else
-            v-for="option in options"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-          <option value="custom">Другая категория...</option>
-        </select>
-        <transition name="slide-fade">
-          <input
-            v-if="showCustomInput"
-            type="text"
-            :class="['custom-input', { 'input-error': error }]"
-            :value="customValue"
-            @input="handleCustomInput"
-            placeholder="Введите свою категорию"
-            @blur="handleBlur"
-          />
-        </transition>
+      <div class="select-field" :class="{ 'is-open': isOpen, 'input-error': error }" @click="toggleDropdown">
+        <div class="selected-value">
+          <template v-if="selectedOption">
+            <span class="chip">{{ selectedOption.label }}</span>
+          </template>
+          <template v-else>
+            <span class="placeholder">{{ placeholder }}</span>
+          </template>
+        </div>
+        <span class="material-symbols-outlined dropdown-icon">
+          {{ isOpen ? 'expand_less' : 'expand_more' }}
+        </span>
       </div>
+      
+      <transition name="dropdown">
+        <div v-if="isOpen" class="dropdown-content">
+          <div class="options-list">
+            <div
+              v-for="option in options"
+              :key="option.value"
+              class="option"
+              :class="{ 'is-selected': modelValue === option.value }"
+              @click="selectOption(option)"
+            >
+              {{ option.label }}
+              <span v-if="modelValue === option.value" class="material-symbols-outlined check-icon">check</span>
+            </div>
+            <div class="custom-option" @click="showCustomInput = true">
+              <span class="material-symbols-outlined">add</span>
+              Добавить свою категорию
+            </div>
+          </div>
+        </div>
+      </transition>
+
+      <transition name="slide-fade">
+        <TextField
+          v-if="showCustomInput"
+          id="custom-category"
+          label="Новая категория"
+          v-model="customValue"
+          @blur="handleCustomInputBlur"
+          placeholder="Введите название категории"
+        />
+      </transition>
     </div>
     <transition name="error">
       <span v-if="error" class="input-error-message">{{ error }}</span>
@@ -41,8 +55,13 @@
 </template>
 
 <script>
+import TextField from './TextField.vue'
+
 export default {
   name: 'SelectField',
+  components: {
+    TextField
+  },
   props: {
     id: {
       type: String,
@@ -67,6 +86,10 @@ export default {
         )
       }
     },
+    placeholder: {
+      type: String,
+      default: 'Выберите категорию'
+    },
     isLoading: {
       type: Boolean,
       default: false
@@ -78,48 +101,45 @@ export default {
   },
   data() {
     return {
+      isOpen: false,
       showCustomInput: false,
       customValue: ''
     }
   },
-  watch: {
-    modelValue(newValue) {
-      if (newValue === 'custom') {
-        this.showCustomInput = true
-      } else if (this.options.some(option => option.value === newValue)) {
-        this.showCustomInput = false
-        this.customValue = ''
-      } else {
-        // Если значение не найдено в списке опций, значит это пользовательская категория
-        this.showCustomInput = true
-        this.customValue = newValue
-      }
+  computed: {
+    selectedOption() {
+      return this.options.find(option => option.value === this.modelValue)
     }
   },
   methods: {
-    handleSelectChange(event) {
-      const value = event.target.value
-      if (value === 'custom') {
-        this.showCustomInput = true
-      } else {
-        this.showCustomInput = false
-        this.customValue = ''
-        this.$emit('update:modelValue', value)
-      }
+    toggleDropdown() {
+      this.isOpen = !this.isOpen
     },
-    handleCustomInput(event) {
-      this.customValue = event.target.value
+    selectOption(option) {
+      this.$emit('update:modelValue', option.value)
+      this.isOpen = false
     },
-    handleBlur() {
+    handleCustomInputBlur() {
       if (this.customValue.trim()) {
-        this.$emit('update:modelValue', this.customValue)
-      } else {
-        this.showCustomInput = false
-        this.$emit('update:modelValue', '')
+        const newOption = {
+          value: this.customValue.toLowerCase().replace(/\s+/g, '-'),
+          label: this.customValue
+        }
+        this.$emit('update:modelValue', newOption.value)
+        this.$emit('add-option', newOption)
       }
+      this.showCustomInput = false
+      this.customValue = ''
     }
   },
-  emits: ['update:modelValue']
+  mounted() {
+    document.addEventListener('click', (e) => {
+      if (!this.$el.contains(e.target)) {
+        this.isOpen = false
+      }
+    })
+  },
+  emits: ['update:modelValue', 'add-option']
 }
 </script>
 
@@ -128,60 +148,132 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
+  position: relative;
 }
 
 .select-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-}
-
-.fields-row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-  align-items: stretch;
-  width: 100%;
+  position: relative;
 }
 
 .select-field {
-  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: var(--spacing-3);
   border: 1px solid var(--color-gray-300);
   border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
   background-color: white;
   cursor: pointer;
   transition: all var(--transition-normal);
+  min-height: 44px;
 }
 
-.select-field:focus {
+.select-field:hover {
   border-color: var(--color-primary);
-  outline: none;
+}
+
+.select-field.is-open {
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
-.custom-input {
-  width: 100%;
-  padding: var(--spacing-3);
-  border: 1px solid var(--color-gray-300);
+.selected-value {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex: 1;
+}
+
+.placeholder {
+  color: var(--color-gray-400);
+}
+
+.chip {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  display: inline-flex;
+  align-items: center;
+}
+
+.dropdown-icon {
+  color: var(--color-gray-400);
+  transition: transform var(--transition-normal);
+}
+
+.is-open .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--spacing-2);
+  background: white;
   border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-.custom-input:focus {
-  border-color: var(--color-primary);
-  outline: none;
-  box-shadow: 0 0 0 2px var(--color-primary-light);
+.options-list {
+  display: flex;
+  flex-direction: column;
 }
 
-label {
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gray-700);
+.option {
+  padding: var(--spacing-3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color var(--transition-normal);
 }
 
-/* Анимации для transition */
+.option:hover {
+  background-color: var(--color-gray-100);
+}
+
+.option.is-selected {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.check-icon {
+  color: var(--color-primary);
+}
+
+.custom-option {
+  padding: var(--spacing-3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-primary);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.custom-option:hover {
+  background-color: var(--color-gray-100);
+}
+
+/* Анимации */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.3s ease;
@@ -193,16 +285,16 @@ label {
   opacity: 0;
 }
 
-.slide-fade-enter-to,
-.slide-fade-leave-from {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-@media (min-width: 768px) {
-  .fields-row {
-    flex-direction: row;
-    align-items: center;
+@media (max-width: 768px) {
+  .dropdown-content {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    max-height: 50vh;
   }
 }
 </style> 
