@@ -1,5 +1,5 @@
 <template>
-  <Navigation />
+<!--  <Navigation />-->
 
   <Breadcrumbs />
 
@@ -29,9 +29,17 @@
     <NotificationContainer />
   </Teleport>
 
-  <Teleport to="body">
-    <SlideOutMenu />
-  </Teleport>
+  <section>
+    <Teleport to="body">
+      <SlideOutMenu />
+    </Teleport>
+
+    <Teleport to="body">
+      <SlideOutGenerator />
+    </Teleport>
+
+    <FloatActionButton />
+  </section>
 </template>
 
 <script>
@@ -43,10 +51,14 @@ import AuthModal from "@/components/molecules/AuthModal.vue";
 import NotificationContainer from "@/components/atoms/NotificationContainer.vue";
 import SlideOutMenu from "@/components/organisms/SlideOutMenu.vue";
 import { mapState, mapActions } from 'vuex';
+import SlideOutGenerator from "@/components/organisms/SlideOutGenerator.vue";
+import FloatActionButton from "@/components/atoms/FloatActionButton.vue";
 
 export default {
   name: 'App',
   components: {
+    FloatActionButton,
+    SlideOutGenerator,
     Loader,
     Navigation,
     Breadcrumbs,
@@ -65,10 +77,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions('ui', ['closeAuthModal']),
+    ...mapActions('ui', ['closeAuthModal', 'openSlideOutGenerator']),
     handleAuthSuccess(user) {
       this.closeAuthModal();
       // Дополнительная логика после успешной авторизации
+    },
+    openGenerator() {
+      this.openSlideOutGenerator();
     }
   },
   created() {

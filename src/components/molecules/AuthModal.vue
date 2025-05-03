@@ -4,7 +4,11 @@
     <div class="auth-modal__content">
       <div class="auth-modal__header">
         <h2>Авторизация</h2>
-        <button class="auth-modal__close" @click="closeModal">×</button>
+        <button class="auth-modal__close" @click="closeModal">
+          <span class="material-symbols-outlined">
+            close
+          </span>
+        </button>
       </div>
       <div class="auth-modal__body">
         <p>Для продолжения необходимо авторизоваться через Telegram</p>

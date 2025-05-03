@@ -1,34 +1,59 @@
 <template>
-  <transition name="slide-fade">
-    <div v-if="isOpen" class="slide-out-menu-wrapper">
-      <div class="backdrop" @click="closeMenu"></div>
-      <div class="slide-out-menu">
-        <button class="close-button" @click="closeMenu">
-          <i class="fas fa-times"></i>
-        </button>
-        <nav class="menu-nav">
-          <router-link to="/" class="nav-link" @click="closeMenu">Архив</router-link>
-          <router-link to="/generator" class="nav-link" @click="closeMenu">Записать</router-link>
-          <router-link to="/about" class="nav-link" @click="closeMenu">Стенд</router-link>
-          <!-- Добавьте другие ссылки при необходимости -->
-        </nav>
-      </div>
+<!--  <transition name="slide-fade">-->
+  <div v-if="true" class="slide-out-menu">
+    <div class="menu-header">
+      <h2>Меню</h2>
+      <button class="close-button" @click="closeMenu">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
-  </transition>
+
+    <nav class="menu-nav">
+      <router-link to="/" class="nav-link" @click="closeMenu">
+        <span class="material-symbols-outlined">archive</span>
+        Архив
+      </router-link>
+      <router-link to="/personal" class="nav-link" @click="closeMenu">
+        <span class="material-symbols-outlined">person</span>
+        Личное
+      </router-link>
+      <router-link to="/stand" class="nav-link" @click="closeMenu">
+        <span class="material-symbols-outlined">dashboard</span>
+        Стенд
+      </router-link>
+      <router-link to="/teams" class="nav-link" @click="closeMenu">
+        <span class="material-symbols-outlined">groups</span>
+        Команды
+      </router-link>
+    </nav>
+
+    <div class="auth-section">
+      <div v-if="isAuthenticated" class="user-info">
+        <div class="user-name">Иванов Иван</div>
+        <div class="user-telegram">@ivanov</div>
+      </div>
+      <button v-else class="auth-button" @click="openAuthModal">
+        <span class="material-symbols-outlined">login</span>
+        Войти
+      </button>
+    </div>
+  </div>
+<!--  </transition>-->
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'SlideOutMenu',
   computed: {
     ...mapState('ui', {
       isOpen: 'isSlideOutMenuOpen'
-    })
+    }),
+    ...mapGetters('auth', ['isAuthenticated'])
   },
   methods: {
-    ...mapActions('ui', ['closeSlideOutMenu']),
+    ...mapActions('ui', ['closeSlideOutMenu', 'openAuthModal']),
     closeMenu() {
       this.closeSlideOutMenu();
     }
@@ -37,125 +62,119 @@ export default {
 </script>
 
 <style scoped>
-.slide-out-menu-wrapper {
+.slide-out-menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000; /* Выше чем у Navigation */
-}
-
-.backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  transition: opacity var(--transition-slow);
-}
-
-.slide-out-menu {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 280px; /* Или другая ширина по дизайну */
-  height: 100%;
-  background-color: var(--color-background);
+  width: 300px;
+  height: 100vh;
+  background-color: var(--color-white);
   box-shadow: var(--shadow-lg);
-  padding: var(--spacing-8) var(--spacing-6);
   display: flex;
   flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform var(--transition-slow) ease-in-out;
+  z-index: 1000;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.menu-header h2 {
+  font-size: var(--font-size-xl);
+  color: var(--color-gray-800);
+  margin: 0;
 }
 
 .close-button {
-  position: absolute;
-  top: var(--spacing-4);
-  right: var(--spacing-4);
   background: none;
   border: none;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xl);
+  color: var(--color-gray-600);
   cursor: pointer;
   padding: var(--spacing-2);
   transition: color var(--transition-normal);
 }
 
 .close-button:hover {
-  color: var(--color-text-primary);
+  color: var(--color-gray-800);
 }
 
 .menu-nav {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
-  margin-top: var(--spacing-8); /* Отступ от верха/кнопки */
+  padding: var(--spacing-4);
+  gap: var(--spacing-2);
 }
 
 .nav-link {
-  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  color: var(--color-gray-700);
   text-decoration: none;
-  font-size: var(--font-size-lg);
-  padding: var(--spacing-3) 0;
-  transition: color var(--transition-normal), transform var(--transition-normal);
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out, color var(--transition-normal);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
 }
 
 .nav-link:hover {
+  background-color: var(--color-gray-100);
   color: var(--color-primary);
-  transform: translateX(5px);
 }
 
-.nav-link.router-link-exact-active {
+.nav-link.router-link-active {
+  background-color: var(--color-primary-light);
   color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
 }
 
-/* Анимации появления/исчезновения */
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: opacity var(--transition-slow);
+.auth-section {
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-gray-200);
 }
 
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  opacity: 0;
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
 }
 
-.slide-fade-enter-active .slide-out-menu,
-.slide-fade-leave-active .slide-out-menu {
-  transition: transform var(--transition-slow) ease-in-out;
+.user-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-800);
 }
 
-.slide-fade-enter-from .slide-out-menu,
-.slide-fade-leave-to .slide-out-menu {
-  transform: translateX(-100%);
+.user-telegram {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
 }
 
-.slide-fade-enter-to .slide-out-menu {
-  transform: translateX(0);
+.auth-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
 }
 
-/* Анимация для ссылок при открытии меню */
-.slide-fade-enter-active .nav-link {
-  opacity: 1;
-  transform: translateX(0);
+.auth-button:hover {
+  background-color: var(--color-primary-hover);
 }
-
-/* Задержка для анимации ссылок */
-.slide-fade-enter-active .nav-link:nth-child(1) { transition-delay: 0.1s; }
-.slide-fade-enter-active .nav-link:nth-child(2) { transition-delay: 0.15s; }
-.slide-fade-enter-active .nav-link:nth-child(3) { transition-delay: 0.2s; }
-/* Добавьте задержки для других ссылок */
 
 @media (max-width: 480px) {
   .slide-out-menu {
-    width: 85%; /* Шире на маленьких экранах */
+    width: 85%;
   }
 }
 </style> 

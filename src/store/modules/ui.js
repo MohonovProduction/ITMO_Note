@@ -6,6 +6,9 @@ const state = {
   slideOutMenu: {
     isOpen: false
   },
+  slideOutGenerator: {
+    isOpen: false
+  },
   notifications: []
 };
 
@@ -16,6 +19,9 @@ const mutations = {
   },
   SET_SLIDE_OUT_MENU_STATE(state, isOpen) {
     state.slideOutMenu.isOpen = isOpen;
+  },
+  SET_SLIDE_OUT_GENERATOR_STATE(state, isOpen) {
+    state.slideOutGenerator.isOpen = isOpen;
   },
   ADD_NOTIFICATION(state, notification) {
     state.notifications.push(notification);
@@ -44,6 +50,15 @@ const actions = {
   toggleSlideOutMenu({ commit, state }) {
     commit('SET_SLIDE_OUT_MENU_STATE', !state.slideOutMenu.isOpen);
   },
+  openSlideOutGenerator({ commit }) {
+    commit('SET_SLIDE_OUT_GENERATOR_STATE', true);
+  },
+  closeSlideOutGenerator({ commit }) {
+    commit('SET_SLIDE_OUT_GENERATOR_STATE', false);
+  },
+  toggleSlideOutGenerator({ commit, state }) {
+    commit('SET_SLIDE_OUT_GENERATOR_STATE', !state.slideOutGenerator.isOpen);
+  },
   addNotification({ commit }, { message, type = 'success', timeout = 3000 }) {
     const id = Date.now().toString();
     commit('ADD_NOTIFICATION', { id, message, type });
@@ -66,6 +81,7 @@ const getters = {
   isAuthModalOpen: state => state.authModal.isOpen,
   authModalProps: state => state.authModal.props,
   isSlideOutMenuOpen: state => state.slideOutMenu.isOpen,
+  isSlideOutGeneratorOpen: state => state.slideOutGenerator.isOpen,
   notifications: state => state.notifications
 };
 
