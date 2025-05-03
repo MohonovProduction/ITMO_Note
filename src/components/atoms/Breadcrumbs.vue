@@ -66,42 +66,55 @@ export default {
 .breadcrumbs {
   display: flex;
   align-items: center;
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-4);
+  background-color: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: var(--spacing-4);
 }
 
 .burger-button {
   background: none;
   border: none;
-  padding: 0.5rem;
-  margin-right: 1rem;
+  padding: var(--spacing-2);
+  margin-right: var(--spacing-4);
   cursor: pointer;
-  color: #4d6bfe;
-  transition: color 0.3s ease;
+  color: var(--color-primary);
+  transition: all 0.2s ease-in-out;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .burger-button:hover {
-  color: #3a5bff;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+.burger-button:active {
+  transform: scale(0.95);
 }
 
 .breadcrumb {
-  color: #4d6bfe;
+  color: var(--color-primary);
   text-decoration: none;
-  font-size: 0.9rem;
-  transition: color 0.3s ease;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all 0.2s ease-in-out;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius);
 }
 
 .breadcrumb:hover {
-  color: #3a5bff;
-  text-decoration: underline;
+  color: var(--color-primary-hover);
+  background-color: var(--color-primary-light);
 }
 
 .breadcrumb::after {
   content: '›';
-  margin: 0 0.5rem;
-  color: #999;
+  margin: 0 var(--spacing-2);
+  color: var(--color-gray-400);
 }
 
 .breadcrumb:last-child::after {
@@ -110,7 +123,19 @@ export default {
 }
 
 .breadcrumb:last-child {
-  color: #333;
+  color: var(--color-gray-700);
   pointer-events: none;
+  background-color: transparent;
+}
+
+/* Анимация для transition-group */
+.m-fade-enter-active,
+.m-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.m-fade-enter-from,
+.m-fade-leave-to {
+  opacity: 0;
 }
 </style>

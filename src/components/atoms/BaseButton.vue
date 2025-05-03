@@ -5,7 +5,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'secondary', 'outline', 'danger', 'clear'].includes(value)
+    validator: (value) => ['primary', 'secondary', 'outline', 'danger', 'clear', 'text'].includes(value)
   },
   size: {
     type: String,
@@ -37,6 +37,10 @@ const props = defineProps({
   loading: {
     type: Boolean,
     default: false
+  },
+  iconOnly: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -49,7 +53,8 @@ const buttonClasses = computed(() => ({
   'base-button--disabled': props.disabled,
   'base-button--full-width': props.fullWidth,
   [`base-button--icon-${props.iconPosition}`]: props.icon,
-  'base-button--loading': props.loading
+  'base-button--loading': props.loading,
+  'base-button--icon-only': props.iconOnly
 }))
 
 const contentClasses = computed(() => ({
@@ -79,7 +84,7 @@ const handleClick = (event) => {
   >
     <span class="base-button__loader"></span>
     <span :class="iconClasses" v-if="icon">{{ icon }}</span>
-    <span :class="contentClasses"><slot></slot></span>
+    <span :class="contentClasses" v-if="!iconOnly"><slot></slot></span>
   </button>
 </template>
 
@@ -95,11 +100,14 @@ const handleClick = (event) => {
   transition: all var(--transition-normal);
   white-space: nowrap;
   gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .base-button--disabled {
-  opacity: 0.6;
+  opacity: 0.38;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 .base-button--full-width {
@@ -109,6 +117,9 @@ const handleClick = (event) => {
 .base-button__icon {
   font-size: 1.2rem;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .base-button--icon-left {
@@ -123,12 +134,17 @@ const handleClick = (event) => {
 .base-button--primary {
   background-color: var(--color-primary);
   color: var(--color-white);
+  box-shadow: var(--shadow-sm);
 }
 
 .base-button--primary:hover:not(.base-button--disabled) {
   background-color: var(--color-primary-hover);
-  transform: translateY(-1px);
   box-shadow: var(--shadow);
+}
+
+.base-button--primary:active:not(.base-button--disabled) {
+  background-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-sm);
 }
 
 .base-button--secondary {
@@ -138,21 +154,26 @@ const handleClick = (event) => {
 
 .base-button--secondary:hover:not(.base-button--disabled) {
   background-color: var(--color-gray-200);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
+}
+
+.base-button--secondary:active:not(.base-button--disabled) {
+  background-color: var(--color-gray-300);
 }
 
 .base-button--outline {
   background-color: transparent;
-  border: 2px solid var(--color-primary);
+  border: 1px solid var(--color-primary);
   color: var(--color-primary);
 }
 
 .base-button--outline:hover:not(.base-button--disabled) {
+  background-color: var(--color-primary-light);
+}
+
+.base-button--outline:active:not(.base-button--disabled) {
   background-color: var(--color-primary);
   color: var(--color-white);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
 }
 
 .base-button--danger {
@@ -162,37 +183,64 @@ const handleClick = (event) => {
 
 .base-button--danger:hover:not(.base-button--disabled) {
   background-color: var(--color-danger-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
 }
 
-.base-button--clear {
-  background-color: var(--color-gray-100);
-  color: var(--color-gray-700);
-  border: 1px solid var(--color-gray-300);
-  min-width: 200px;
+.base-button--danger:active:not(.base-button--disabled) {
+  background-color: var(--color-danger-hover);
+  box-shadow: none;
 }
 
-.base-button--clear:hover:not(.base-button--disabled) {
-  background-color: var(--color-gray-200);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+.base-button--text {
+  background-color: transparent;
+  color: var(--color-primary);
+  padding: var(--spacing-2);
+}
+
+.base-button--text:hover:not(.base-button--disabled) {
+  background-color: var(--color-primary-light);
+}
+
+.base-button--text:active:not(.base-button--disabled) {
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 /* Размеры */
 .base-button--small {
   padding: var(--spacing-2) var(--spacing-3);
   font-size: var(--font-size-sm);
+  min-height: 32px;
 }
 
 .base-button--medium {
   padding: var(--spacing-2) var(--spacing-4);
   font-size: var(--font-size-base);
+  min-height: 40px;
 }
 
 .base-button--large {
   padding: var(--spacing-3) var(--spacing-6);
   font-size: var(--font-size-lg);
+  min-height: 48px;
+}
+
+/* Кнопка только с иконкой */
+.base-button--icon-only {
+  padding: var(--spacing-2);
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: var(--radius-full);
+}
+
+.base-button--icon-only.base-button--small {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.base-button--icon-only.base-button--large {
+  min-width: 48px;
+  min-height: 48px;
 }
 
 /* Адаптивность */
@@ -200,12 +248,6 @@ const handleClick = (event) => {
   .base-button--medium {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--font-size-sm);
-  }
-}
-
-@media (max-width: 480px) {
-  .base-button--clear {
-    min-width: 160px;
   }
 }
 

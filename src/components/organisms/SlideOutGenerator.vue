@@ -355,7 +355,7 @@ export default {
             :error="errors.title"
         >
           <template #button>
-            <BaseButton @click="handleTitleMagic" icon="wand_stars" />
+            <BaseButton @click="handleTitleMagic" icon="wand_stars" iconOnly />
           </template>
         </TextField>
         <TextField
@@ -366,7 +366,7 @@ export default {
             :error="errors.description"
         >
           <template #button>
-            <BaseButton @click="handleDescriptionMagic" icon="wand_stars" />
+            <BaseButton @click="handleDescriptionMagic" icon="wand_stars" iconOnly />
           </template>
         </TextField>
         <SelectField
@@ -396,9 +396,7 @@ export default {
             placeholder="Введите промпт для форматирования текста"
             :error="errors.prompt"
         />
-        <BaseButton @click="formatText" class="format-button" icon="wand_stars">
-          Форматировать
-        </BaseButton>
+        <BaseButton @click="formatText" class="format-button" icon="wand_stars" iconOnly />
       </div>
 
       <!-- Секция с текстом -->

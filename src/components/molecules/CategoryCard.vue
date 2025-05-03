@@ -4,25 +4,30 @@
       <h2>{{ category.name || 'Без категории' }}</h2>
       <div class="header-right">
         <span class="note-count">{{ category.notes.length }}</span>
-        <span class="material-symbols-outlined toggle-icon">{{ isOpen ? 'expand_more' : 'chevron_right' }}</span>
+        <span class="material-symbols-outlined toggle-icon" :class="{ 'is-open': isOpen }">expand_more</span>
       </div>
     </div>
 
-    <transition name="slide">
-      <div v-if="isOpen" class="notes-grid">
+    <div 
+      :style="{ height: contentHeight }"
+      style="transition: height var(--transition-normal);"
+      ref="contentRef"
+    >
+      <div class="notes-grid">
         <NoteCard
-          v-for="note in category.notes"
-          :key="note.id"
-          :note="note"
-          @click="$emit('note-click', note)"
-        />
+        v-for="note in category.notes"
+        :key="note.id"
+        :note="note"
+        @click="$emit('note-click', note)"
+      />
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
 <script>
 import NoteCard from '@/components/molecules/NoteCard.vue'
+import { ref, computed, watch } from 'vue'
 
 export default {
   name: 'CategoryCard',
@@ -38,6 +43,19 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  setup(props) {
+    const contentRef = ref(null)
+    
+    const contentHeight = computed(() => {
+      if (!props.isOpen) return '0px'
+      return contentRef.value ? `${contentRef.value.scrollHeight}px` : 'auto'
+    })
+
+    return {
+      contentRef,
+      contentHeight
+    }
   }
 }
 </script>
@@ -50,10 +68,12 @@ export default {
   overflow: hidden;
   transition: all var(--transition-normal);
   margin-bottom: var(--spacing-4);
+  border: 1px solid var(--color-gray-200);
 }
 
 .category-card:hover {
   box-shadow: var(--shadow-md);
+  border-color: var(--color-gray-300);
 }
 
 .category-header {
@@ -63,7 +83,8 @@ export default {
   padding: var(--spacing-4) var(--spacing-5);
   background-color: var(--color-gray-50);
   cursor: pointer;
-  transition: background-color var(--transition-normal);
+  transition: all var(--transition-normal);
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .category-header:hover {
@@ -75,6 +96,7 @@ export default {
   font-size: var(--font-size-xl);
   color: var(--color-gray-800);
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.025em;
 }
 
 .header-right {
@@ -84,17 +106,25 @@ export default {
 }
 
 .note-count {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  padding: var(--spacing-1) var(--spacing-3);
   border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-gray-200);
 }
 
 .toggle-icon {
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
+  font-size: var(--font-size-xl);
+  color: var(--color-gray-600);
+  transition: transform var(--transition-normal);
+  transform: rotate(0deg);
+  cursor: pointer;
+}
+
+.toggle-icon.is-open {
+  transform: rotate(-180deg);
 }
 
 .notes-grid {
@@ -102,19 +132,21 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-4);
   padding: var(--spacing-4);
+  overflow: hidden;
+  background-color: var(--color-white);
 }
 
 /* Анимации */
-.slide-enter-active {
-  transition: all var(--transition-normal) ease-out;
-}
-
+.slide-enter-active,
 .slide-leave-active {
-  transition: all var(--transition-normal) ease-in;
+  transition: all var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 1000px;
+  overflow: hidden;
 }
 
 .slide-enter-from,
 .slide-leave-to {
+  max-height: 0;
   opacity: 0;
   transform: translateY(-10px);
 }

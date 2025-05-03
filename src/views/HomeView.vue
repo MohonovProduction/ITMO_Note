@@ -7,15 +7,9 @@
       <h1>Список конспектов</h1>
 
       <div class="controls">
-        <BaseButton @click="expandAll" icon="expand_more">
-          Развернуть все
-        </BaseButton>
-        <BaseButton @click="collapseAll" icon="expand_less">
-          Свернуть все
-        </BaseButton>
-        <BaseButton @click="refreshNotes" icon="refresh" :loading="loading">
-          Обновить
-        </BaseButton>
+        <BaseButton @click="expandAll" icon="expand_more" iconOnly />
+        <BaseButton @click="collapseAll" icon="expand_less" iconOnly />
+        <BaseButton @click="refreshNotes" icon="refresh" :loading="loading" iconOnly />
       
       </div>
     </div>

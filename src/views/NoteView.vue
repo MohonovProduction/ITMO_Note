@@ -30,9 +30,8 @@
               icon="edit"
               :disabled="!isAuthenticated"
               @click="toggleEditing"
-            >
-              Редактировать
-            </BaseButton>
+              iconOnly
+            />
             <template v-else>
               <BaseButton
                 variant="primary"
@@ -40,18 +39,16 @@
                 icon="save"
                 :disabled="!isAuthenticated"
                 @click="toggleEditing"
-              >
-                Сохранить
-              </BaseButton>
+                iconOnly
+              />
               <BaseButton
                 variant="outline"
                 size="medium"
                 icon="undo"
                 :disabled="!isAuthenticated"
                 @click="clearForm"
-              >
-                Отменить
-              </BaseButton>
+                iconOnly
+              />
             </template>
           </template>
           <span v-else class="auth-message">

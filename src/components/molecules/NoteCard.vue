@@ -3,10 +3,12 @@
     <div class="note-header">
       <h3>{{ note.title }}</h3>
       <BaseButton 
-        class="delete-button" 
+        variant="secondary"
+        size="small"
         @click.stop="handleDelete"
         :disabled="isDeleting"
         icon="delete"
+        iconOnly
       />
     </div>
     <p class="description">{{ note.description }}</p>
@@ -137,20 +139,11 @@ export default {
 .note-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
   margin-bottom: var(--spacing-2);
 }
 
-.delete-button {
-  padding: var(--spacing-1) !important;
-  min-width: auto !important;
-  color: var(--color-gray-500) !important;
-  background: transparent !important;
-}
 
-.delete-button:hover {
-  color: var(--color-error) !important;
-}
 
 .delete-button:disabled {
   opacity: 0.5;
