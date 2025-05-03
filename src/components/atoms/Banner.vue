@@ -1,36 +1,49 @@
 <script>
-
+export default {
+  name: 'Banner'
+}
 </script>
 
 <template>
   <section class="info-banner">
-    <h1 class="info-banner__title">Третья неделя без работающего бэка!</h1>
-    <i class="info-banner__author">
-      <span class="material-symbols-outlined info-banner__icon">person</span>
-      Михаил Мохонов, фронт
-    </i>
+    <div class="info-banner__content">
+      <h1 class="info-banner__title">Третья неделя без работающего бэка!</h1>
+      
+      <div class="info-banner__author">
+        <span class="material-symbols-outlined info-banner__icon">person</span>
+        <span>Михаил Мохонов, фронт</span>
+      </div>
 
-    <p class="info-banner__text">
-      Можете писать issues
-      <a href="https://github.com/Tor4narek/ItmoNoteApi/issues" class="info-banner__link">сюда</a>,
-      пусть он апупеет
-    </p>
+      <p class="info-banner__text">
+        Можете писать issues
+        <a href="https://github.com/Tor4narek/ItmoNoteApi/issues" class="info-banner__link">сюда</a>,
+        пусть он апупеет
+      </p>
+
+      <div class="info-banner__social">
+        <a href="https://t.me/mohonovproduction" class="info-banner__social-link" target="_blank" rel="noopener noreferrer">
+          <i class="fab fa-telegram"></i>
+        </a>
+        <a href="https://github.com/mohonovproduction" class="info-banner__social-link" target="_blank" rel="noopener noreferrer">
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+    </div>
   </section>
 </template>
 
 <style>
 .info-banner {
   position: relative;
-  padding: var(--spacing-6);
+  padding: var(--spacing-8);
   border-radius: var(--radius-lg);
   color: var(--color-white);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
-
-  /* Анимированный градиентный фон */
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark), #6d28d9);
-  background-size: 300% 300%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background-size: 200% 200%;
   animation: gradientAnimation 8s ease infinite;
+  transition: transform var(--transition-fast);
 }
 
 .info-banner::before {
@@ -41,9 +54,10 @@
   right: 0;
   bottom: 0;
   background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 100%
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
   );
   pointer-events: none;
   animation: shine 3s ease-in-out infinite;
@@ -70,49 +84,68 @@
   }
 }
 
-.info-banner__title {
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-heading);
-  margin-bottom: var(--spacing-3);
+.info-banner__content {
   position: relative;
   z-index: 1;
+  max-width: 600px;
+}
+
+.info-banner__title {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-heading);
+  margin-bottom: var(--spacing-4);
   color: var(--color-white);
 }
 
 .info-banner__author {
   display: inline-flex;
   align-items: center;
-  font-style: normal;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   margin-bottom: var(--spacing-4);
-  color: var(--color-gray-200);
-  position: relative;
-  z-index: 1;
+  color: var(--color-gray-100);
+  background: rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius-full);
 }
 
 .info-banner__icon {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-lg);
   margin-right: var(--spacing-2);
 }
 
 .info-banner__text {
-  font-size: var(--font-size-base);
-  margin-bottom: 0;
-  position: relative;
-  z-index: 1;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-6);
+  color: var(--color-gray-100);
 }
 
 .info-banner__link {
   color: var(--color-white);
   text-decoration: underline;
   font-weight: var(--font-weight-medium);
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .info-banner__link:hover {
   color: var(--color-gray-100);
   text-decoration: none;
+}
+
+.info-banner__social {
+  display: flex;
+  gap: var(--spacing-4);
+}
+
+.info-banner__social-link {
+  color: var(--color-white);
+  font-size: var(--font-size-2xl);
+  transition: transform var(--transition-fast);
+}
+
+.info-banner__social-link:hover {
+  transform: translateY(-2px);
+  color: var(--color-gray-100);
 }
 </style>

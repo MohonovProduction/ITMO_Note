@@ -1,34 +1,41 @@
 <template>
   <div class="category-filter">
-    <select
+    <SelectField
+      id="category-filter"
+      label="Категория"
       v-model="selectedCategory"
-      class="category-filter__select"
-      @change="handleCategoryChange"
-    >
-      <option value="">Все категории</option>
-      <option
-        v-for="category in categories"
-        :key="category.id"
-        :value="category.name"
-      >
-        {{ category.name }}
-      </option>
-    </select>
+      :options="categoryOptions"
+      placeholder="Все категории"
+      @update:modelValue="handleCategoryChange"
+    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import SelectField from '@/components/atoms/SelectField.vue';
 
 export default {
   name: 'CategoryFilter',
+  components: {
+    SelectField
+  },
   data() {
     return {
       selectedCategory: ''
     };
   },
   computed: {
-    ...mapGetters('notes', ['categories'])
+    ...mapGetters('notes', ['categories']),
+    categoryOptions() {
+      return [
+        { value: '', label: 'Все категории' },
+        ...this.categories.map(category => ({
+          value: category.name,
+          label: category.name
+        }))
+      ];
+    }
   },
   methods: {
     handleCategoryChange() {
