@@ -4,6 +4,7 @@ import SubmitButton from '@/components/atoms/SubmitButton.vue'
 import TextField from '@/components/atoms/TextField.vue'
 import SelectField from '@/components/atoms/SelectField.vue'
 import TextAreaField from '@/components/atoms/TextAreaField.vue'
+import CheckboxField from '@/components/atoms/CheckboxField.vue'
 import notesApi from '@/api/notes'
 import { mapState, mapGetters, mapActions } from 'vuex';
 
@@ -14,7 +15,8 @@ export default {
     SubmitButton,
     TextField,
     SelectField,
-    TextAreaField
+    TextAreaField,
+    CheckboxField
   },
   data() {
     return {
@@ -335,94 +337,87 @@ export default {
       <div class="generator-header">
         <h1>Запись конпсекта</h1>
 
-      <button class="auth-modal__close" @click="closeModal">
-          <span class="material-symbols-outlined">
-            close
-          </span>
-      </button>
-    </div>
+        <BaseButton @click="closeModal" icon="close" iconOnly variant="clear" />
+      </div>
 
-    <!-- Основной контент -->
-    <div v-if="isAuthenticated" class="content-section">
+      <!-- Основной контент -->
+      <div v-if="isAuthenticated" class="content-section">
 
-      <!-- Секция с метаданными -->
-      <div class="metadata-section">
-        <TextField
-            id="title"
-            label="Заголовок:"
-            v-model="title"
-            placeholder="Введите заголовок"
-            :error="errors.title"
-        >
-          <template #button>
-            <BaseButton @click="handleTitleMagic" icon="wand_stars" iconOnly />
-          </template>
-        </TextField>
-        <TextField
-            id="description"
-            label="Описание:"
-            v-model="description"
-            placeholder="Введите описание"
-            :error="errors.description"
-        >
-          <template #button>
-            <BaseButton @click="handleDescriptionMagic" icon="wand_stars" iconOnly />
-          </template>
-        </TextField>
-        <SelectField
-            id="category"
-            label="Категория:"
-            v-model="category"
-            :options="categoryOptions"
-            :is-loading="isLoadingCategories"
-            :error="errors.category"
-        />
-        <div class="checkbox-field">
-          <input
-              type="checkbox"
-              id="isPublic"
-              v-model="isPublic"
+        <!-- Секция с метаданными -->
+        <div class="metadata-section">
+          <TextField
+              id="title"
+              label="Заголовок:"
+              v-model="title"
+              placeholder="Введите заголовок"
+              :error="errors.title"
+          >
+            <template #button>
+              <BaseButton @click="handleTitleMagic" icon="wand_stars" iconOnly />
+            </template>
+          </TextField>
+          <TextField
+              id="description"
+              label="Описание:"
+              v-model="description"
+              placeholder="Введите описание"
+              :error="errors.description"
+          >
+            <template #button>
+              <BaseButton @click="handleDescriptionMagic" icon="wand_stars" iconOnly />
+            </template>
+          </TextField>
+          <SelectField
+              id="category"
+              label="Категория:"
+              v-model="category"
+              :options="categoryOptions"
+              :is-loading="isLoadingCategories"
+              :error="errors.category"
           />
-          <label for="isPublic">Сделать публичным</label>
+          <div class="checkbox-field">
+            <CheckboxField v-model="isPublic">
+              Сделать публичным
+            </CheckboxField>
+          </div>
+        </div>
+
+        <!-- Секция с промптом -->
+        <div class="prompt-section">
+          <TextAreaField
+              id="prompt"
+              label="Промпт:"
+              v-model="prompt"
+              placeholder="Введите промпт для форматирования текста"
+              :error="errors.prompt"
+          />
+          <BaseButton @click="formatText" class="format-button" icon="wand_stars" iconOnly />
+        </div>
+
+        <!-- Секция с текстом -->
+        <div class="text-section">
+          <TextAreaField
+              id="content"
+              label="Текст:"
+              v-model="content"
+              placeholder="Введите или вставьте текст для форматирования"
+              :error="errors.content"
+          />
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="button-group">
+          <SubmitButton
+              :is-submitting="isSubmitting"
+              text="Сохранить"
+              icon="save"
+              @click="saveContent"
+          />
+          <BaseButton variant="clear" @click="clearForm" icon="delete">Очистить форму</BaseButton>
         </div>
       </div>
-
-      <!-- Секция с промптом -->
-      <div class="prompt-section">
-        <TextAreaField
-            id="prompt"
-            label="Промпт:"
-            v-model="prompt"
-            placeholder="Введите промпт для форматирования текста"
-            :error="errors.prompt"
-        />
-        <BaseButton @click="formatText" class="format-button" icon="wand_stars" iconOnly />
-      </div>
-
-      <!-- Секция с текстом -->
-      <div class="text-section">
-        <TextAreaField
-            id="content"
-            label="Текст:"
-            v-model="content"
-            placeholder="Введите или вставьте текст для форматирования"
-            :error="errors.content"
-        />
-      </div>
-
-      <!-- Кнопки действий -->
-      <div class="button-group">
-        <SubmitButton
-            :is-submitting="isSubmitting"
-            text="Сохранить"
-            icon="save"
-            @click="saveContent"
-        />
-        <BaseButton variant="clear" @click="clearForm" icon="delete">Очистить форму</BaseButton>
-      </div>
     </div>
-  </div>
-</transition>
+  </transition>
 </template>
 
 <style scoped>
