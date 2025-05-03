@@ -6,7 +6,8 @@
       :value="modelValue"
       :placeholder="placeholder"
       :class="['textarea-field', { 'input-error': error }]"
-      @input="$emit('update:modelValue', $event.target.value)"
+      @input="handleInput"
+      ref="textarea"
     ></textarea>
     <transition name="error">
       <span v-if="error" class="input-error-message">{{ error }}</span>
@@ -39,7 +40,21 @@ export default {
       default: ''
     }
   },
-  emits: ['update:modelValue']
+  emits: ['update:modelValue'],
+  methods: {
+    autoResize() {
+      const textarea = this.$refs.textarea;
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    },
+    handleInput(event) {
+      this.$emit('update:modelValue', event.target.value);
+      this.autoResize();
+    }
+  },
+  mounted() {
+    this.autoResize();
+  }
 }
 </script>
 
@@ -52,14 +67,15 @@ export default {
 
 .textarea-field {
   width: 100%;
-  min-height: 150px;
+  min-height: 40px;
   padding: var(--spacing-4);
   border: 1px solid var(--color-gray-300);
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   font-family: var(--font-family-base);
   line-height: 1.6;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   transition: all var(--transition-normal);
 }
 
