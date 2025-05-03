@@ -17,13 +17,13 @@
           <span class="material-symbols-outlined">person</span>
           Личное
         </router-link>
-        <router-link to="/stand" class="nav-link" @click="closeMenu">
-          <span class="material-symbols-outlined">dashboard</span>
-          Стенд
-        </router-link>
         <router-link to="/teams" class="nav-link" @click="closeMenu">
           <span class="material-symbols-outlined">groups</span>
-          Команды
+          Группы
+        </router-link>
+        <router-link to="/about" class="nav-link" @click="closeMenu">
+          <span class="material-symbols-outlined">dashboard</span>
+          Стенд
         </router-link>
       </nav>
 

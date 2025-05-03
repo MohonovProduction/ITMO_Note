@@ -15,6 +15,10 @@
     <Loader v-if="loader" />
   </transition>
 
+  <transition name="slide-up">
+    <FloatActionButton v-if="!isGeneratorOpen" />
+  </transition>
+
   <!-- Глобальные компоненты -->
   <Teleport to="body">
     <AuthModal
@@ -37,8 +41,6 @@
     <Teleport to="body">
       <SlideOutGenerator />
     </Teleport>
-
-    <FloatActionButton />
   </section>
 </template>
 
@@ -69,11 +71,15 @@ export default {
   },
   computed: {
     ...mapState('ui', ['authModal']),
+    ...mapState('ui', ['slideOutGenerator']),
     isAuthModalOpen() {
       return this.authModal?.isOpen || false;
     },
     authModalProps() {
       return this.authModal?.props || {};
+    },
+    isGeneratorOpen() {
+      return this.slideOutGenerator?.isOpen || false;
     }
   },
   methods: {
@@ -101,6 +107,8 @@ export default {
 
 <style>
 @import '@/assets/styles/variables.css';
+@import '@/assets/styles/reset.css';
+@import '@/assets/styles/animations.css';
 
 /* Подключение шрифта Roboto */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');

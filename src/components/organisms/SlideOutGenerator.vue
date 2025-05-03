@@ -332,9 +332,10 @@ export default {
 </script>
 
 <template>
-  <div v-if="isOpen" class="generator-container">
-    <div class="generator-header">
-      <h1>Запись конпсекта</h1>
+  <transition name="slide-fade-right">
+    <div v-if="isOpen" class="generator-container">
+      <div class="generator-header">
+        <h1>Запись конпсекта</h1>
 
       <button class="auth-modal__close" @click="closeModal">
           <span class="material-symbols-outlined">
@@ -425,6 +426,7 @@ export default {
       </div>
     </div>
   </div>
+</transition>
 </template>
 
 <style scoped>
@@ -445,7 +447,7 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
-  width: 800px;
+  width: min(800px, 100vw);
   height: 100vh;
   background-color: var(--color-white);
   border-radius: var(--radius-lg) 0 0 var(--radius-lg);

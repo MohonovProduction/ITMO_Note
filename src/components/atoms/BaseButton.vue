@@ -33,6 +33,10 @@ const props = defineProps({
     type: String,
     default: 'left',
     validator: (value) => ['left', 'right'].includes(value)
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -44,7 +48,19 @@ const buttonClasses = computed(() => ({
   [`base-button--${props.size}`]: true,
   'base-button--disabled': props.disabled,
   'base-button--full-width': props.fullWidth,
-  [`base-button--icon-${props.iconPosition}`]: props.icon
+  [`base-button--icon-${props.iconPosition}`]: props.icon,
+  'base-button--loading': props.loading
+}))
+
+const contentClasses = computed(() => ({
+  'base-button__content': true,
+  'base-button__content--hidden': props.loading
+}))
+
+const iconClasses = computed(() => ({
+  'base-button__icon': true,
+  'material-symbols-outlined': true,
+  'base-button__icon--hidden': props.loading
 }))
 
 const handleClick = (event) => {
@@ -58,11 +74,12 @@ const handleClick = (event) => {
   <button
     :class="buttonClasses"
     :type="type"
-    :disabled="disabled"
+    :disabled="disabled || loading"
     @click="handleClick"
   >
-    <span v-if="icon" class="base-button__icon material-symbols-outlined">{{ icon }}</span>
-    <slot></slot>
+    <span class="base-button__loader"></span>
+    <span :class="iconClasses" v-if="icon">{{ icon }}</span>
+    <span :class="contentClasses"><slot></slot></span>
   </button>
 </template>
 
@@ -170,6 +187,37 @@ const handleClick = (event) => {
   .base-button--medium {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--font-size-sm);
+  }
+}
+
+.base-button__content--hidden,
+.base-button__icon--hidden {
+  visibility: hidden;
+}
+
+.base-button__loader {
+  position: absolute;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid currentColor;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  animation: rotation 1s linear infinite;
+  color: var(--color-white);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.base-button--loading .base-button__loader {
+  opacity: 1;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style> 

@@ -13,10 +13,10 @@
         <BaseButton @click="collapseAll" icon="expand_less">
           Свернуть все
         </BaseButton>
-        <BaseButton @click="refreshNotes" icon="refresh">
+        <BaseButton @click="refreshNotes" icon="refresh" :loading="loading">
           Обновить
         </BaseButton>
-        <span v-if="loading" class="loading-status">Загрузка...</span>
+      
       </div>
     </div>
 
