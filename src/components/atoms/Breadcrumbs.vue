@@ -1,8 +1,12 @@
 <script>
 import { mapActions } from 'vuex';
+import BaseButton from './BaseButton.vue'
 
 export default {
   name: 'Breadcrumbs',
+  components: {
+    BaseButton
+  },
   computed: {
     crumbs() {
       const crumbs = [];
@@ -46,9 +50,13 @@ export default {
 
 <template>
   <div class="breadcrumbs">
-    <button class="burger-button" @click="openSlideOutMenu">
-      <span class="material-symbols-outlined">menu</span>
-    </button>
+    <BaseButton 
+      class="burger-button" 
+      @click="openSlideOutMenu" 
+      icon="menu" 
+      iconOnly 
+      variant="clear"
+    />
     <transition-group name="m-fade">
       <router-link
           v-for="(crumb, index) in crumbs"
@@ -74,26 +82,7 @@ export default {
 }
 
 .burger-button {
-  background: none;
-  border: none;
-  padding: var(--spacing-2);
   margin-right: var(--spacing-4);
-  cursor: pointer;
-  color: var(--color-primary);
-  transition: all 0.2s ease-in-out;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.burger-button:hover {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary-hover);
-}
-
-.burger-button:active {
-  transform: scale(0.95);
 }
 
 .breadcrumb {

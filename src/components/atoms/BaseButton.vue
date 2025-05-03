@@ -99,7 +99,7 @@ const handleClick = (event) => {
   font-weight: var(--font-weight-medium);
   transition: all var(--transition-normal);
   white-space: nowrap;
-  gap: 0.5rem;
+  gap: var(--spacing-2);
   position: relative;
   overflow: hidden;
 }
@@ -140,11 +140,17 @@ const handleClick = (event) => {
 .base-button--primary:hover:not(.base-button--disabled) {
   background-color: var(--color-primary-hover);
   box-shadow: var(--shadow);
+  transform: translateY(-1px);
 }
 
 .base-button--primary:active:not(.base-button--disabled) {
   background-color: var(--color-primary-dark);
   box-shadow: var(--shadow-sm);
+  transform: translateY(0);
+}
+
+.base-button--primary:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .base-button--secondary {
@@ -155,10 +161,12 @@ const handleClick = (event) => {
 .base-button--secondary:hover:not(.base-button--disabled) {
   background-color: var(--color-gray-200);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 .base-button--secondary:active:not(.base-button--disabled) {
   background-color: var(--color-gray-300);
+  transform: translateY(0);
 }
 
 .base-button--outline {
@@ -169,11 +177,13 @@ const handleClick = (event) => {
 
 .base-button--outline:hover:not(.base-button--disabled) {
   background-color: var(--color-primary-light);
+  transform: translateY(-1px);
 }
 
 .base-button--outline:active:not(.base-button--disabled) {
   background-color: var(--color-primary);
   color: var(--color-white);
+  transform: translateY(0);
 }
 
 .base-button--danger {
@@ -184,11 +194,33 @@ const handleClick = (event) => {
 .base-button--danger:hover:not(.base-button--disabled) {
   background-color: var(--color-danger-hover);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 .base-button--danger:active:not(.base-button--disabled) {
   background-color: var(--color-danger-hover);
   box-shadow: none;
+  transform: translateY(0);
+}
+
+.base-button--clear {
+  background-color: transparent;
+  color: var(--color-gray-700);
+}
+
+.base-button--clear:hover:not(.base-button--disabled) {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  transform: translateY(-1px);
+}
+
+.base-button--clear:active:not(.base-button--disabled) {
+  background-color: var(--color-gray-200);
+  transform: translateY(0);
+}
+
+.base-button--clear:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .base-button--text {
@@ -199,11 +231,13 @@ const handleClick = (event) => {
 
 .base-button--text:hover:not(.base-button--disabled) {
   background-color: var(--color-primary-light);
+  transform: translateY(-1px);
 }
 
 .base-button--text:active:not(.base-button--disabled) {
   background-color: var(--color-primary);
   color: var(--color-white);
+  transform: translateY(0);
 }
 
 /* Размеры */
@@ -280,5 +314,117 @@ const handleClick = (event) => {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border: none;
+  outline: none;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.button.selected {
+  background-color: var(--color-primary-dark);
+  color: var(--color-white);
+}
+
+/* Варианты кнопок */
+.button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.button.primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.button.primary:active {
+  background-color: var(--color-primary-dark);
+}
+
+.button.clear {
+  background-color: transparent;
+  color: var(--color-gray-700);
+}
+
+.button.clear:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+}
+
+.button.clear:active {
+  background-color: var(--color-gray-200);
+}
+
+.button.clear.selected {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.button.danger {
+  background-color: var(--color-danger);
+  color: var(--color-white);
+}
+
+.button.danger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+.button.danger:active {
+  background-color: var(--color-danger);
+}
+
+.button.success {
+  background-color: var(--color-success);
+  color: var(--color-white);
+}
+
+.button.success:hover {
+  background-color: var(--color-success-hover);
+}
+
+.button.success:active {
+  background-color: var(--color-success);
+}
+
+/* Состояние отключения */
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Кнопка только с иконкой */
+.button.icon-only {
+  padding: var(--spacing-2);
+  border-radius: var(--radius-full);
+}
+
+.button.icon-only .icon {
+  margin: 0;
 }
 </style> 

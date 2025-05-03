@@ -3,9 +3,13 @@
     <div v-if="isOpen" class="slide-out-menu">
       <div class="menu-header">
         <h2>Меню</h2>
-        <button class="close-button" @click="closeMenu">
-          <span class="material-symbols-outlined">close</span>
-        </button>
+        <BaseButton 
+          class="close-button" 
+          @click="closeMenu" 
+          icon="close" 
+          iconOnly 
+          variant="clear"
+        />
       </div>
 
       <nav class="menu-nav">
@@ -43,9 +47,13 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import BaseButton from '@/components/atoms/BaseButton.vue'
 
 export default {
   name: 'SlideOutMenu',
+  components: {
+    BaseButton
+  },
   computed: {
     ...mapGetters('ui', ['isSlideOutMenuOpen']),
     ...mapGetters('auth', ['isAuthenticated']),
@@ -90,19 +98,6 @@ export default {
   font-size: var(--font-size-xl);
   color: var(--color-gray-800);
   margin: 0;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  color: var(--color-gray-600);
-  cursor: pointer;
-  padding: var(--spacing-2);
-  transition: color var(--transition-normal);
-}
-
-.close-button:hover {
-  color: var(--color-gray-800);
 }
 
 .menu-nav {
