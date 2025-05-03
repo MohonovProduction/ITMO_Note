@@ -16,18 +16,6 @@
         </p>
       </section>
 
-      <!-- GitHub виджет -->
-      <section class="github-section">
-        <iframe
-          src="https://ghbtns.com/github-btn.html?user=MohonovProduction&repo=ITMO_Note&type=star&count=true&size=large"
-          frameborder="0"
-          scrolling="0"
-          width="170"
-          height="30"
-          title="GitHub"
-        ></iframe>
-      </section>
-
       <!-- Основные возможности -->
       <section class="features">
         <h2>Основные возможности</h2>
@@ -68,6 +56,9 @@
         <h2>Используемые технологии</h2>
         <div class="tech-grid">
           <div class="tech-card">
+            <div class="tech-icon">
+              <span class="material-symbols-outlined">web</span>
+            </div>
             <h3>Frontend</h3>
             <ul>
               <li>Vue.js 3 - основной фреймворк</li>
@@ -78,6 +69,22 @@
             </ul>
           </div>
           <div class="tech-card">
+            <div class="tech-icon">
+              <span class="material-symbols-outlined">storage</span>
+            </div>
+            <h3>Backend</h3>
+            <ul>
+              <li>C# - основной язык программирования</li>
+              <li>.NET Core - платформа разработки</li>
+              <li>Docker - контейнеризация</li>
+              <li>GitHub Actions - CI/CD</li>
+              <li>REST API - архитектура</li>
+            </ul>
+          </div>
+          <div class="tech-card">
+            <div class="tech-icon">
+              <span class="material-symbols-outlined">design_services</span>
+            </div>
             <h3>UI/UX</h3>
             <ul>
               <li>CSS Variables</li>
@@ -88,6 +95,9 @@
             </ul>
           </div>
           <div class="tech-card">
+            <div class="tech-icon">
+              <span class="material-symbols-outlined">api</span>
+            </div>
             <h3>Интеграции</h3>
             <ul>
               <li>Telegram Auth API</li>
@@ -142,6 +152,16 @@
             </div>
             <h3>Frontend</h3>
             <p class="repository-description">Клиентская часть приложения на Vue.js 3</p>
+            <div class="repository-widgets">
+              <iframe
+                src="https://ghbtns.com/github-btn.html?user=MohonovProduction&repo=ITMO_Note&type=star&count=true&size=large"
+                frameborder="0"
+                scrolling="0"
+                width="170"
+                height="30"
+                title="GitHub"
+              ></iframe>
+            </div>
             <a href="https://github.com/MohonovProduction/ITMO_Note" target="_blank" class="github-link">
               <i class="fab fa-github"></i> Перейти в репозиторий
             </a>
@@ -152,6 +172,16 @@
             </div>
             <h3>Backend</h3>
             <p class="repository-description">Серверная часть приложения</p>
+            <div class="repository-widgets">
+              <iframe
+                src="https://ghbtns.com/github-btn.html?user=Tor4narek&repo=ItmoNoteApi&type=star&count=true&size=large"
+                frameborder="0"
+                scrolling="0"
+                width="170"
+                height="30"
+                title="GitHub"
+              ></iframe>
+            </div>
             <a href="https://github.com/Tor4narek/ItmoNoteApi" target="_blank" class="github-link">
               <i class="fab fa-github"></i> Перейти в репозиторий
             </a>
@@ -189,16 +219,21 @@ h1 {
   font-size: var(--font-size-4xl);
   color: var(--color-primary);
   margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-bold);
 }
-
 
 h2 {
   text-align: center;
+  color: var(--color-gray-800);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-8);
 }
 
 .subtitle {
   font-size: var(--font-size-xl);
   color: var(--color-gray-600);
+  font-weight: var(--font-weight-medium);
 }
 
 .description {
@@ -206,7 +241,7 @@ h2 {
   max-width: 800px;
   margin: 0 auto var(--spacing-12);
   font-size: var(--font-size-lg);
-  line-height: 1.6;
+  line-height: var(--line-height-base);
   color: var(--color-gray-700);
 }
 
@@ -231,6 +266,8 @@ h2 {
   padding: var(--spacing-6);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .feature-icon {
@@ -257,11 +294,26 @@ h2 {
   padding: var(--spacing-6);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow);
+}
+
+.tech-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-4);
+  color: var(--color-primary);
+  text-align: center;
+}
+
+.tech-icon .material-symbols-outlined {
+  font-size: 2.5rem;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 .tech-card h3 {
   color: var(--color-primary);
   margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
 }
 
 .tech-card ul {
@@ -273,6 +325,7 @@ h2 {
   margin-bottom: var(--spacing-2);
   padding-left: var(--spacing-4);
   position: relative;
+  color: var(--color-gray-700);
 }
 
 .tech-card li::before {
@@ -295,6 +348,9 @@ h2 {
   padding: var(--spacing-6);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .author-avatar {
@@ -303,6 +359,7 @@ h2 {
   border-radius: 50%;
   margin-bottom: var(--spacing-4);
   object-fit: cover;
+  border: 3px solid var(--color-primary-light);
 }
 
 .author-links {
@@ -320,16 +377,25 @@ h2 {
   border-radius: var(--radius-md);
   text-decoration: none;
   transition: all var(--transition-normal);
+  font-weight: var(--font-weight-medium);
 }
 
 .telegram-link {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-white);
+}
+
+.telegram-link:hover {
+  background-color: var(--color-primary-hover);
 }
 
 .github-link {
   background-color: var(--color-gray-800);
-  color: white;
+  color: var(--color-white);
+}
+
+.github-link:hover {
+  background-color: var(--color-gray-900);
 }
 
 .repositories-grid {
@@ -344,11 +410,14 @@ h2 {
   padding: var(--spacing-6);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .repository-card h3 {
   color: var(--color-primary);
   margin-bottom: var(--spacing-2);
+  font-weight: var(--font-weight-semibold);
 }
 
 .repository-card .github-link {
@@ -360,7 +429,8 @@ h2 {
   text-decoration: none;
   transition: all var(--transition-normal);
   background-color: var(--color-gray-800);
-  color: white;
+  color: var(--color-white);
+  font-weight: var(--font-weight-medium);
 }
 
 .repository-card .github-link:hover {
@@ -385,6 +455,18 @@ h2 {
   font-size: var(--font-size-base);
 }
 
+.repository-widgets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+}
+
+.repository-widgets iframe {
+  border: none;
+  overflow: hidden;
+}
+
 .license {
   text-align: center;
   margin-top: var(--spacing-12);
@@ -392,6 +474,17 @@ h2 {
   background: var(--color-white);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow);
+}
+
+.license a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+}
+
+.license a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

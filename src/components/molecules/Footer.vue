@@ -5,16 +5,32 @@
       <div class="footer-section">
         <h3>ITMO Notes</h3>
         <p>Платформа для создания и хранения учебных конспектов</p>
-        
+        <div class="social-links">
+          <a href="https://t.me/mohonovproduction" target="_blank" class="social-link" aria-label="Telegram">
+            <i class="fab fa-telegram"></i>
+          </a>
+          <a href="https://github.com/MohonovProduction/ITMO_Note" target="_blank" class="social-link" aria-label="GitHub">
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
       </div>
 
       <!-- Навигация -->
       <div class="footer-section">
         <h3>Навигация</h3>
         <nav class="footer-nav">
-          <router-link to="/" class="nav-link">Архив</router-link>
-          <router-link to="/generator" class="nav-link">Записать</router-link>
-          <router-link to="/about" class="nav-link">О проекте</router-link>
+          <router-link to="/" class="nav-link">
+            <span class="material-symbols-outlined">archive</span>
+            <span>Архив</span>
+          </router-link>
+          <router-link to="/generator" class="nav-link">
+            <span class="material-symbols-outlined">note_add</span>
+            <span>Записать</span>
+          </router-link>
+          <router-link to="/about" class="nav-link">
+            <span class="material-symbols-outlined">info</span>
+            <span>О проекте</span>
+          </router-link>
         </nav>
       </div>
 
@@ -59,8 +75,14 @@
     <div class="footer-bottom">
       <p>&copy; {{ currentYear }} ITMO Notes. Все права защищены.</p>
       <div class="footer-links">
-        <a href="https://github.com/MohonovProduction/ITMO_Note/blob/main/LICENSE" target="_blank">Лицензия</a>
-        <a href="https://github.com/MohonovProduction/ITMO_Note/issues" target="_blank">Сообщить об ошибке</a>
+        <a href="https://github.com/MohonovProduction/ITMO_Note/blob/main/LICENSE" target="_blank">
+          <span class="material-symbols-outlined">gavel</span>
+          <span>Лицензия</span>
+        </a>
+        <a href="https://github.com/MohonovProduction/ITMO_Note/issues" target="_blank">
+          <span class="material-symbols-outlined">bug_report</span>
+          <span>Сообщить об ошибке</span>
+        </a>
       </div>
     </div>
   </footer>
@@ -82,6 +104,7 @@ export default {
   background-color: var(--color-gray-900);
   padding: var(--spacing-8) 0 var(--spacing-4);
   margin-top: auto;
+  box-shadow: var(--shadow-lg);
 }
 
 .footer-content {
@@ -102,12 +125,13 @@ export default {
 .footer-section h3 {
   color: var(--color-gray-100);
   font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-2);
 }
 
 .footer-section p {
   color: var(--color-gray-400);
-  line-height: 1.6;
+  line-height: var(--line-height-base);
 }
 
 .social-links {
@@ -121,14 +145,16 @@ export default {
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   color: var(--color-white);
-  transition: opacity var(--transition-normal);
+  transition: all var(--transition-normal);
   background-color: var(--color-gray-800);
 }
 
 .social-link:hover {
-  opacity: 0.8;
+  background-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .footer-nav {
@@ -138,13 +164,23 @@ export default {
 }
 
 .nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
   color: var(--color-gray-400);
   text-decoration: none;
-  transition: color var(--transition-normal);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
 }
 
 .nav-link:hover {
   color: var(--color-gray-100);
+  background-color: var(--color-gray-800);
+}
+
+.nav-link .material-symbols-outlined {
+  font-size: var(--font-size-lg);
 }
 
 .authors {
@@ -161,7 +197,7 @@ export default {
   gap: var(--spacing-2);
   text-decoration: none;
   padding: var(--spacing-3);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--radius-md);
   transition: all var(--transition-normal);
   background-color: var(--color-gray-800);
   border: 1px solid var(--color-gray-700);
@@ -169,27 +205,29 @@ export default {
 
 .author:hover {
   background-color: var(--color-gray-700);
-  border-color: var(--color-gray-600);
+  border-color: var(--color-primary);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .author-avatar {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   object-fit: cover;
   border: 2px solid var(--color-gray-600);
   transition: border-color var(--transition-normal);
 }
 
 .author:hover .author-avatar {
-  border-color: var(--color-gray-400);
+  border-color: var(--color-primary);
 }
 
 .author-info h4 {
   font-size: var(--font-size-sm);
   color: var(--color-gray-100);
   margin-bottom: 2px;
+  font-weight: var(--font-weight-medium);
 }
 
 .author-info p {
@@ -220,14 +258,24 @@ export default {
 }
 
 .footer-links a {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
   color: var(--color-gray-400);
   text-decoration: none;
   font-size: var(--font-size-sm);
-  transition: color var(--transition-normal);
+  transition: all var(--transition-normal);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
 }
 
 .footer-links a:hover {
   color: var(--color-gray-100);
+  background-color: var(--color-gray-800);
+}
+
+.footer-links .material-symbols-outlined {
+  font-size: var(--font-size-lg);
 }
 
 .repositories {
@@ -243,7 +291,7 @@ export default {
   color: var(--color-gray-400);
   text-decoration: none;
   padding: var(--spacing-2) var(--spacing-3);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--radius-md);
   background-color: var(--color-gray-800);
   transition: all var(--transition-normal);
 }
@@ -252,6 +300,7 @@ export default {
   color: var(--color-gray-100);
   background-color: var(--color-gray-700);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .repository-link i {

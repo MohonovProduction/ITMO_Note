@@ -50,7 +50,7 @@ export default {
     }
   },
   created() {
-    this.checkAuth();
+   
   },
   watch: {
     prompt(newValue) {
@@ -92,15 +92,6 @@ export default {
     ...mapActions('notes', ['createNote', 'formatNote', 'fetchCategories']),
     ...mapActions('ui', ['openAuthModal', 'closeAuthModal', 'addNotification']),
 
-    checkAuth() {
-      const token = localStorage.getItem('token');
-      const user = localStorage.getItem('user');
-      if (!(token && user)) {
-        this.openAuthModal();
-      } else if (this.isAuthenticated) {
-        this.loadCategories();
-      }
-    },
     saveToStorage() {
       const data = {
         prompt: this.prompt,
