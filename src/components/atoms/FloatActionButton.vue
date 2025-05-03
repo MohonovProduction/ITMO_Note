@@ -1,8 +1,12 @@
 <script>
 import { mapActions } from 'vuex';
+import BaseButton from './BaseButton.vue';
 
 export default {
   name: 'FloatActionButton',
+  components: {
+    BaseButton
+  },
   props: {
     type: {
       type: String,
@@ -20,11 +24,13 @@ export default {
 
 <template>
   <div class="float-action-button">
-    <button class="fab-button" @click="openGenerator">
-      <span class="material-symbols-outlined">
-        add
-      </span>
-    </button>
+    <BaseButton
+      variant="primary"
+      size="large"
+      icon="add"
+      iconOnly
+      @click="openGenerator"
+    />
   </div>
 </template>
 
@@ -34,29 +40,5 @@ export default {
   bottom: 2rem;
   right: 2rem;
   z-index: 1000;
-}
-
-.fab-button {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.fab-button:hover {
-  background-color: var(--color-primary-hover);
-  transform: scale(1.1);
-}
-
-.material-symbols-outlined {
-  font-size: 24px;
 }
 </style>
