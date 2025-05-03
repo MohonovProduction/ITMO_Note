@@ -104,11 +104,7 @@
           icon="save"
           @click="saveNote"
         />
-        <ClearButton 
-          @click="clearForm" 
-          icon="undo" 
-          text="Отменить изменения"
-        />
+        <BaseButton variant="clear" @click="clearForm" icon="delete">Очистить форму</BaseButton>
       </div>
     </template>
     <template v-else>
@@ -157,7 +153,6 @@ import Modal from '@/components/molecules/Modal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import debounce from 'lodash/debounce'
 import SubmitButton from '@/components/atoms/SubmitButton.vue'
-import ClearButton from '@/components/atoms/ClearButton.vue'
 import TextField from '@/components/atoms/TextField.vue'
 import SelectField from '@/components/atoms/SelectField.vue'
 
@@ -168,7 +163,6 @@ export default {
     Modal,
     BaseButton,
     SubmitButton,
-    ClearButton,
     TextField,
     SelectField
   },

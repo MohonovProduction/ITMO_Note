@@ -1,7 +1,6 @@
 <script>
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import SubmitButton from '@/components/atoms/SubmitButton.vue'
-import ClearButton from '@/components/atoms/ClearButton.vue'
 import TextField from '@/components/atoms/TextField.vue'
 import SelectField from '@/components/atoms/SelectField.vue'
 import TextAreaField from '@/components/atoms/TextAreaField.vue'
@@ -13,7 +12,6 @@ export default {
   components: {
     BaseButton,
     SubmitButton,
-    ClearButton,
     TextField,
     SelectField,
     TextAreaField
@@ -422,7 +420,7 @@ export default {
             icon="save"
             @click="saveContent"
         />
-        <ClearButton @click="clearForm" icon="delete" />
+        <BaseButton variant="clear" @click="clearForm" icon="delete">Очистить форму</BaseButton>
       </div>
     </div>
   </div>

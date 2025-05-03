@@ -5,7 +5,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'secondary', 'outline', 'danger'].includes(value)
+    validator: (value) => ['primary', 'secondary', 'outline', 'danger', 'clear'].includes(value)
   },
   size: {
     type: String,
@@ -166,6 +166,19 @@ const handleClick = (event) => {
   box-shadow: var(--shadow);
 }
 
+.base-button--clear {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
+  min-width: 200px;
+}
+
+.base-button--clear:hover:not(.base-button--disabled) {
+  background-color: var(--color-gray-200);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
 /* Размеры */
 .base-button--small {
   padding: var(--spacing-2) var(--spacing-3);
@@ -187,6 +200,12 @@ const handleClick = (event) => {
   .base-button--medium {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .base-button--clear {
+    min-width: 160px;
   }
 }
 
