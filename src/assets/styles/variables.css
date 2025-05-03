@@ -60,11 +60,6 @@
   --spacing-10: 2.5rem;
   --spacing-12: 3rem;
   
-  /* Анимации */
-  --transition-fast: 150ms ease;
-  --transition-normal: 200ms ease;
-  --transition-slow: 300ms ease;
-  
   /* Размеры шрифтов */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -86,7 +81,6 @@
 .input-error {
   border-color: var(--color-danger) !important;
   box-shadow: 0 0 0 2px var(--color-danger-light) !important;
-  transition: all var(--transition-normal);
 }
 
 .input-error-message {
@@ -94,25 +88,4 @@
   font-size: var(--font-size-sm);
   margin-top: var(--spacing-1);
   overflow: hidden;
-}
-
-/* Анимации для ошибок */
-.error-enter-active,
-.error-leave-active {
-  transition: all var(--transition-normal);
-  max-height: 2rem;
-}
-
-.error-enter-from,
-.error-leave-to {
-  max-height: 0;
-  opacity: 0;
-  margin-top: 0;
-}
-
-.error-enter-to,
-.error-leave-from {
-  max-height: 2rem;
-  opacity: 1;
-  margin-top: var(--spacing-1);
 } 

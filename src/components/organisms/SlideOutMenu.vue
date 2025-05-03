@@ -74,6 +74,8 @@ export default {
   display: flex;
   flex-direction: column;
   z-index: 1000;
+
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
 }
 
 .menu-header {

@@ -448,7 +448,7 @@ export default {
   width: 800px;
   height: 100vh;
   background-color: var(--color-white);
-  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow-y: auto;
   z-index: 999;
