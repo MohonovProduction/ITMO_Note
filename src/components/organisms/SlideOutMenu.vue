@@ -36,7 +36,7 @@
           <div class="user-name">Иванов Иван</div>
           <div class="user-telegram">@ivanov</div>
         </div>
-        <button v-else class="auth-button" @click="openAuthModal">
+        <button v-else class="auth-button" @click="handleAuthClick">
           <span class="material-symbols-outlined">login</span>
           Войти
         </button>
@@ -65,6 +65,10 @@ export default {
     ...mapActions('ui', ['closeSlideOutMenu', 'openAuthModal']),
     closeMenu() {
       this.closeSlideOutMenu();
+    },
+    handleAuthClick() {
+      this.closeMenu();
+      this.openAuthModal();
     }
   }
 };

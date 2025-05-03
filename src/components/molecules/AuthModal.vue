@@ -1,35 +1,43 @@
 <template>
-  <div class="auth-modal" v-if="isOpen">
-    <div class="auth-modal__overlay" @click="closeModal"></div>
-    <div class="auth-modal__content">
-      <div class="auth-modal__header">
-        <h2>Авторизация</h2>
-        <button class="auth-modal__close" @click="closeModal">
-          <span class="material-symbols-outlined">
-            close
-          </span>
-        </button>
-      </div>
-      <div class="auth-modal__body">
-        <p>Для продолжения необходимо авторизоваться через Telegram</p>
-        <telegramLoginTemp
-          mode="callback"
-          telegram-login="itmo_note_bot"
-          @loaded="telegramLoadedCallbackFunc"
-          @callback="handleTelegramCallback"
-        />
-      </div>
+  <Transition name="fade">
+    <div class="auth-modal" v-if="isOpen">
+      <div class="auth-modal__overlay" @click="closeModal"></div>
+      <Transition name="scale">
+        <div class="auth-modal__content">
+          <div class="auth-modal__header">
+            <h2>Авторизация</h2>
+            <BaseButton
+              variant="clear"
+              size="small"
+              icon="close"
+              iconOnly
+              @click="closeModal"
+            />
+          </div>
+          <div class="auth-modal__body">
+            <p>Для продолжения необходимо авторизоваться через Telegram</p>
+            <telegramLoginTemp
+              mode="callback"
+              telegram-login="itmo_note_bot"
+              @loaded="telegramLoadedCallbackFunc"
+              @callback="handleTelegramCallback"
+            />
+          </div>
+        </div>
+      </Transition>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script>
 import { telegramLoginTemp } from "vue3-telegram-login";
 import { mapActions } from 'vuex';
+import BaseButton from '@/components/atoms/BaseButton.vue';
 
 export default {
   components: {
-    telegramLoginTemp
+    telegramLoginTemp,
+    BaseButton
   },
   props: {
     isOpen: {
@@ -118,31 +126,34 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
 }
 
 .auth-modal__content {
   position: relative;
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
+  background-color: var(--color-white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
   max-width: 400px;
   width: 90%;
   z-index: 1001;
+  box-shadow: var(--shadow-lg);
 }
 
 .auth-modal__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-6);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
-.auth-modal__close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
+.auth-modal__header h2 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-gray-800);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
 }
 
 .auth-modal__body {
@@ -150,6 +161,25 @@ export default {
 }
 
 .auth-modal__body p {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-6);
+  color: var(--color-gray-700);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .auth-modal__content {
+    padding: var(--spacing-4);
+    width: 95%;
+  }
+
+  .auth-modal__header h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  .auth-modal__body p {
+    font-size: var(--font-size-sm);
+  }
 }
 </style> 

@@ -180,33 +180,9 @@ export default {
 
 .controls {
   display: flex;
+  flex-direction: row;
+  align-self: flex-end;
   gap: var(--spacing-3);
-  flex-wrap: wrap;
-}
-
-.controls button {
-  padding: 0.5rem 1rem;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.controls button:hover {
-  background-color: var(--color-link-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.controls button .material-symbols-outlined {
-  font-size: 1.2rem;
 }
 
 .loading-status {
@@ -248,29 +224,11 @@ export default {
     align-items: flex-start;
     gap: var(--spacing-3);
   }
-
-  .controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .controls button {
-    flex: 1;
-    min-width: 120px;
-  }
 }
 
 @media (max-width: 480px) {
   .notes-list {
     padding: var(--spacing-2);
-  }
-
-  .controls {
-    flex-direction: column;
-  }
-
-  .controls button {
-    width: 100%;
   }
 
   .empty-state {

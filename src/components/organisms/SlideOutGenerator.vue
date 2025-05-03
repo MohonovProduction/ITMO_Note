@@ -416,6 +416,14 @@ export default {
           <BaseButton variant="clear" @click="clearForm" icon="delete">Очистить форму</BaseButton>
         </div>
       </div>
+
+      <!-- Секция авторизации -->
+      <div v-else class="auth-section">
+        <button class="auth-button" @click="openAuthModal">
+          <span class="material-symbols-outlined">login</span>
+          Войти
+        </button>
+      </div>
     </div>
   </transition>
 </template>
@@ -552,5 +560,31 @@ h2 {
   h1 {
     font-size: var(--font-size-xl);
   }
+}
+
+.auth-section {
+  padding: var(--spacing-4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.auth-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
+}
+
+.auth-button:hover {
+  background-color: var(--color-primary-hover);
 }
 </style>

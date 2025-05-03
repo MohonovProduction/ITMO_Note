@@ -55,6 +55,7 @@ import SlideOutMenu from "@/components/organisms/SlideOutMenu.vue";
 import { mapState, mapActions } from 'vuex';
 import SlideOutGenerator from "@/components/organisms/SlideOutGenerator.vue";
 import FloatActionButton from "@/components/atoms/FloatActionButton.vue";
+import { authApi } from '@/api/auth';
 
 export default {
   name: 'App',
@@ -72,6 +73,7 @@ export default {
   computed: {
     ...mapState('ui', ['authModal']),
     ...mapState('ui', ['slideOutGenerator']),
+    ...mapState('auth', ['token']),
     isAuthModalOpen() {
       return this.authModal?.isOpen || false;
     },
@@ -84,17 +86,31 @@ export default {
   },
   methods: {
     ...mapActions('ui', ['closeAuthModal', 'openSlideOutGenerator']),
+    ...mapActions('auth', ['logout']),
     handleAuthSuccess(user) {
       this.closeAuthModal();
       // Дополнительная логика после успешной авторизации
     },
     openGenerator() {
       this.openSlideOutGenerator();
+    },
+    checkAuth() {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      
+      if (!(token && user)) {
+        // Очищаем данные из localStorage
+        authApi.removeToken();
+        localStorage.removeItem('user');
+        // Очищаем состояние в store
+        this.logout();
+      }
     }
   },
   created() {
     console.log("App created");
     console.log(process.env.VUE_APP_API_BASE_URL);
+    this.checkAuth();
     setTimeout(() => this.loader = false, 2000)
   },
   data() {
