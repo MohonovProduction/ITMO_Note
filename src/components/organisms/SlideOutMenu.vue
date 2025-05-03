@@ -33,8 +33,8 @@
 
       <div class="auth-section">
         <div v-if="isAuthenticated" class="user-info">
-          <div class="user-name">Иванов Иван</div>
-          <div class="user-telegram">@ivanov</div>
+          <div class="user-name">{{ user.name }}</div>
+          <div class="user-telegram">@{{ user.username }}</div>
         </div>
         <button v-else class="auth-button" @click="handleAuthClick">
           <span class="material-symbols-outlined">login</span>
@@ -57,6 +57,7 @@ export default {
   computed: {
     ...mapGetters('ui', ['isSlideOutMenuOpen']),
     ...mapGetters('auth', ['isAuthenticated']),
+    ...mapGetters('user', ['user']),
     isOpen() {
       return this.isSlideOutMenuOpen;
     }
