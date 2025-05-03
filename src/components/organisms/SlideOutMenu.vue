@@ -1,56 +1,57 @@
 <template>
-<!--  <transition name="slide-fade">-->
-  <div v-if="true" class="slide-out-menu">
-    <div class="menu-header">
-      <h2>Меню</h2>
-      <button class="close-button" @click="closeMenu">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-
-    <nav class="menu-nav">
-      <router-link to="/" class="nav-link" @click="closeMenu">
-        <span class="material-symbols-outlined">archive</span>
-        Архив
-      </router-link>
-      <router-link to="/personal" class="nav-link" @click="closeMenu">
-        <span class="material-symbols-outlined">person</span>
-        Личное
-      </router-link>
-      <router-link to="/stand" class="nav-link" @click="closeMenu">
-        <span class="material-symbols-outlined">dashboard</span>
-        Стенд
-      </router-link>
-      <router-link to="/teams" class="nav-link" @click="closeMenu">
-        <span class="material-symbols-outlined">groups</span>
-        Команды
-      </router-link>
-    </nav>
-
-    <div class="auth-section">
-      <div v-if="isAuthenticated" class="user-info">
-        <div class="user-name">Иванов Иван</div>
-        <div class="user-telegram">@ivanov</div>
+  <transition name="slide-fade">
+    <div v-if="isOpen" class="slide-out-menu">
+      <div class="menu-header">
+        <h2>Меню</h2>
+        <button class="close-button" @click="closeMenu">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
-      <button v-else class="auth-button" @click="openAuthModal">
-        <span class="material-symbols-outlined">login</span>
-        Войти
-      </button>
+
+      <nav class="menu-nav">
+        <router-link to="/" class="nav-link" @click="closeMenu">
+          <span class="material-symbols-outlined">archive</span>
+          Архив
+        </router-link>
+        <router-link to="/personal" class="nav-link" @click="closeMenu">
+          <span class="material-symbols-outlined">person</span>
+          Личное
+        </router-link>
+        <router-link to="/stand" class="nav-link" @click="closeMenu">
+          <span class="material-symbols-outlined">dashboard</span>
+          Стенд
+        </router-link>
+        <router-link to="/teams" class="nav-link" @click="closeMenu">
+          <span class="material-symbols-outlined">groups</span>
+          Команды
+        </router-link>
+      </nav>
+
+      <div class="auth-section">
+        <div v-if="isAuthenticated" class="user-info">
+          <div class="user-name">Иванов Иван</div>
+          <div class="user-telegram">@ivanov</div>
+        </div>
+        <button v-else class="auth-button" @click="openAuthModal">
+          <span class="material-symbols-outlined">login</span>
+          Войти
+        </button>
+      </div>
     </div>
-  </div>
-<!--  </transition>-->
+  </transition>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'SlideOutMenu',
   computed: {
-    ...mapState('ui', {
-      isOpen: 'isSlideOutMenuOpen'
-    }),
-    ...mapGetters('auth', ['isAuthenticated'])
+    ...mapGetters('ui', ['isSlideOutMenuOpen']),
+    ...mapGetters('auth', ['isAuthenticated']),
+    isOpen() {
+      return this.isSlideOutMenuOpen;
+    }
   },
   methods: {
     ...mapActions('ui', ['closeSlideOutMenu', 'openAuthModal']),
@@ -176,5 +177,15 @@ export default {
   .slide-out-menu {
     width: 85%;
   }
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(-100%);
 }
 </style> 

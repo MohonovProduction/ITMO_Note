@@ -1,4 +1,6 @@
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'Breadcrumbs',
   computed: {
@@ -30,6 +32,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('ui', ['openSlideOutMenu']),
     formatCrumbName(name) {
       // Форматируем имя для отображения (например, убираем дефисы)
       return name
@@ -43,6 +46,9 @@ export default {
 
 <template>
   <div class="breadcrumbs">
+    <button class="burger-button" @click="openSlideOutMenu">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
     <transition-group name="m-fade">
       <router-link
           v-for="(crumb, index) in crumbs"
@@ -64,6 +70,20 @@ export default {
   background-color: #f9f9f9;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.burger-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  margin-right: 1rem;
+  cursor: pointer;
+  color: #4d6bfe;
+  transition: color 0.3s ease;
+}
+
+.burger-button:hover {
+  color: #3a5bff;
 }
 
 .breadcrumb {
