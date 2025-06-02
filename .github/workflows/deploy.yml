@@ -37,7 +37,7 @@ jobs:
       - name: Deploy on server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << EOF
-            cd /vue-frontend || exit 1
+            cd vue-frontend || exit 1
             docker pull tor4narek/vue-frontend:latest
             docker compose down
             docker compose up -d --build
