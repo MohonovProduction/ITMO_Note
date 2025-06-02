@@ -4,7 +4,7 @@ export const notesApi = {
     // Получить все публичные заметки
     getPublicNotes: () => api.get('/notes'),
 
-    // Создать новую заметку
+    //  Создать новую заметку
     createNote: (data) => {
         const { title, description, category, userId, isPublic, text } = data;
         return api.post('/notes', text, {
