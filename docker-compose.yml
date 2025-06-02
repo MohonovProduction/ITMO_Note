@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  vue-builder:
+    build: .
+    container_name: vue_frontend
+    volumes:
+      - vue_dist:/app/dist
+    command: sleep infinity
+
+volumes:
+  vue_dist:
