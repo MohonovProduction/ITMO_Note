@@ -99,7 +99,7 @@ export default {
       const user = localStorage.getItem('user');
       
       if (!(token && user)) {
-        // Очищаем данные из localStorage
+       
         authApi.removeToken();
         localStorage.removeItem('user');
         // Очищаем состояние в store
